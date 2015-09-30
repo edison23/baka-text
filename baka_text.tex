@@ -113,11 +113,15 @@ Problematika predikce textu je intenzivně zkoumána od dob, kdy se rozšířily
 
 Aby bylo dosaženo KSPC rovného jedné, stačí technologie typu T9, která vyhledává ve slovníku možné kombinacee písmen ze stisknutých kláves a nalezené pak předkládá uživateli. V případě, že existuje ve slovníku pouze jedno slovo, které odpovídá kombinaci písmen ze stisknutých kláves, je dosaženo KSPC rovného jedné. Pokud však takových slov ve slovníku existuje více, je nutno provést výběr a jeho potvrzení, což zvyšuje KSPC nad jedna.
 
-Pro dosažení hodnot KSPC nižších než jedna je už nutné implementovat predikci textu. To znamená, že aplikace musí uhádnout psané slovo ještě dříve, než uživatel napíše všechna písmena daného slova. K tomu, aby mohla účinně předvídat, které slovo uživatel píše, potřebuje kvalitní jazykový model. Jazykový model může být buď slovník nebo statistický model. [/ chapu to spravne? /] 
+Pro dosažení hodnot KSPC nižších než jedna je už nutné implementovat predikci textu. To znamená, že aplikace musí uhádnout psané slovo ještě dříve, než uživatel napíše všechna písmena daného slova. K tomu, aby mohla účinně předvídat, které slovo uživatel píše, potřebuje kvalitní jazykový model. Jazykový model může být buď slovník nebo statistický model. 
 
 Pokud systém používá slovníkovou metodu, potřebuje mít k dispozici relativně rozsáhlý frekvenční slovník slovních tvarů a jejich frekvence. Ke slovníku slovních tvarů se obvykle přidává ještě frekvenční slovník n-gramů, který zajišťuje účinnější predikce díky zohlednění kontextu. Pokud například tedy implementace využívá slovníku bi-gramů, je pak teoreticky aplikace, která je na ní postavena, předvídat nejen doplnění slova, které zrovna píše, ale i celá slova, která by mohl chtít napsat po dokončení předchozího slova.
 
 Frekvenční slovník je slovník, který ke každému heslu uvádí hodnoty spojené s frekvencí daného slova. Obvykle to jsou absolutní frekvence daného slova a v případě Frekvenčního slovníku češtiny [/ Čerák et al. /] ještě průměrné redukované frekvence, což je hodnota, jež vychází z absolutní frekvence, avšak zohledňuje rozložení daného slova v korpusu. Pokud tedy mají dvě slova stejnou frekvenci, avšak jedno z nich se vyskytuje pouze v malém množství odborných textů, zatímco výskyty druhého jsou rovnoměrně rozloženy přes celý korpus, ukazuje to na fakt, že druhé slovo je obecně známější a užívanější širším publikem. Po zohlednění tohoto faktu tak druhé slovo dostane výrazně vyšší číselnou hodnotu ARF než slovo první. [/ Frek slovník, Čermák /]
+
+[/ dneska se to dela z korpusu, velke korpusy, je to presneji - da se to aktualizovat /]
+
+[/ z uziv. dat - gmail and stuff, ale jinak je to zavreny]
 
 Implementace frekvenčních slovníků v aplikacích pro predikci textu se pravděpodobně značně liší a vzhledem k tomu, že jde o uzavřené komerční systémy, není možné konkrétní implementace zjistit. [/ tohle je muj odhad, protoze se mi prave nepodarilo zjistit nic smysluplneho u swype a fleksy /] 
 
