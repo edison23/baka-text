@@ -255,18 +255,46 @@ Jako zdrojová data pro skript produkující doplnění slouží předem vygener
 
 Vygenerované n-gramy byly pak vyfiltrovány podle různých kritérií s cílem vytvořit databázi n-gramů, která bude mít přijatelné pokrytí textů korpusu se zachováním rozumné datové velikosti databáze.
 [/ konec parafraze clanku neverilova+ulipova::ch3.1, nutno ocitovat spravne /]
+
 [/ pak se tam pise, ze n-gramy jsou skladovany v FSA, ale mne prijde, ze jsou v textaku ngram na radek.. xD co mi uchazi? /]
+
+[/ prostor pro popis, jak se ty n-gramy vazi /]
 
 Vstupem skriptu ve zde popisované implementaci jsou poslední dvě slova z textového editoru na frontendu. Serverový skript pracuje v základu ve dvou režimech, a to v závislosti na tom, zda vstup, který dostává, končí mezerou, či nikoliv. Pokud končí mezerou, předpokládá se, uživatel poslední slovo vstupu dokončil a chystá se psát další, pokud mezera na konci vstupu není, je rozumné předpokládat, že uživatel slovo ještě nedokončil a chystá se v něm pokračovat. Podle tohoto jsou také rozdělené režimy, ve kterých serverový skript pracuje. 
 
-V prvním případě, tedy pokud na konci vstupu mezera je, jsou jeho výstupem nejpravděpodobnější celá slova, která se v bigramech vyskytovala za slovem, které je posledním slovem vstupu. Pokud mezera na konci vstupu není, výstupem skriptu jsou slova, která se v bigramech vyskytovala na pozici za předposledním slovem vstupu a zároveň začínají řetězcem, který je shodný s posledním (nedokončeným) slovem na vstupu. Je důležité si povšimnout, že výstupem nejsou pouze doplnění posledního nedokončeného slova,ale celá slova obsahující i vstupní řetězec. Tímto se tento režim odlišuje od prvního, který vrací slova, jejichž žádná část se v editoru ještě nevyskytuje (myšleno na aktuální pozici kursoru). 
+V prvním případě, tedy pokud na konci vstupu mezera je, jsou jeho výstupem nejpravděpodobnější celá slova, která se v bigramech vyskytovala za slovem, které je posledním slovem vstupu. Pokud mezera na konci vstupu není, výstupem skriptu jsou slova, která se v bigramech vyskytovala na pozici za předposledním slovem vstupu a zároveň začínají řetězcem, který je shodný s posledním (nedokončeným) slovem na vstupu. Je důležité si povšimnout, že výstupem nejsou pouze doplnění posledního nedokončeného slova,ale celá slova obsahující i vstupní řetězec. Tímto se druhý režim odlišuje od prvního, který vrací doplnění, která lze jednoduše připojit za text bez nutnosti odstraňovat část v editoru již existujícího textu.
 
+Co se formy vstupu a výstupu týče, má tento serverový skript velmi jednoduché rozhraní. Vstupní řetězce přijímá přes HTTP požadavek, v němž jsou data přenášena metodou GET, tedy jako parametry URL, například {\tt http://nlp.fi.muni.cz/projekty/predictive/predict.py?input=sk\%C3\%A1kal+pes+}. Vstupem je v uvedeném příkladu tedy {\it skákal_pes_} (podtržítka značí mezery). Jelikož posledním znakem je mezera, očekávaným výstupem budou slova, která lze doplnit za {\it pes}. 
 
+Skript pak vrací aplikaci, z níž byl požadavek odeslán, text (zobrazitelný jako stránka v prohlížeči) s maximálně 13 doplněními, která jsou oddělená mezerou.
 
+Díky tomuto jednoduchému konceptu komunikace tedy stačí, aby aplikace, která serverového skriptu využívá, byla schopna odesílat HTTP požadavky na konkrétní URL adresu. 
 
+\subsubsection{Frontend}
 
+Cílem této práce bylo vyvinout zásuvný modul do webového editoru CKEditor, což je textový HTML editor, jehož cílem je zjednodušit produkci obsahu pro webové stránky. Editor umožňuje pracovat s pokročilým formátováním ve značkovacím jazyce jazyce HTML (HyperText Markup Language), který se používá pro tvorbu webových stránek a webového obsahu. Práce s formátováním je založena na principu WYSIWYG, což znamená, že uživatel nemusí mít žádné znalosti HTML, protože pro aplikaci formátování lze použít vizuální prvky ve formě tlačítek a rozbalovacích menu, podobně jako v klasických kancelářských textových procesorech typu LibreOffice Writer nebo Microsoft Office Word.
+
+CKEditor je open source aplikace, což znamená, že jeho zdrojový kód je veřejně přístupný a každý jej může libovolně modifikovat, používat a distribuovat za dodržení jistých podmínek. 
+
+Výhodou CKEditoru je jeho modularita, která spočívá v možnosti rozšiřovat jej pomocí zásuvných modulů. Tvorba zásuvných modulů není vyhrazena pouze pro vybrané autory, ale  díky otevřenosti kódu editoru se jí může zabývat takřka kdokoliv. Proto je CKEditor vhodným výběrem pro účely této práce. [/ cit. http://ckeditor.com/about /]
+
+[/ napsat, v cem je naprogramovany? /]
+
+\subsection{Návrh}
+
+Použité technologie
+
+Jelikož je celé uživatelské rozhraní zde popisované aplikace určeno pro webové prohlížeče a aplikace samotná je postavena jako zásuvný modul do webového HTML editoru CKEditor, byly při vývoji využity výhradně webové technologie, tedy JavaScript v kombinaci s knihovnou AJAX (asynchronní JavaScript a XML), značkovacím jazykem HTML (HyperText Markup Language) a kaskádovými styly (CSS). 
+
+JavaScript
+
+JavaScript (JS) je dynamický, interpretovaný, objektově orientovaný programovací jazyk široce využívaný pro vývoj webových aplikací. Z hlediska komunikačního modelu klient-server se jedná o jazyk pro skriptování na straně klienta, takže se používá pro programování uživatelského rozhraní webových stránek. [/ https://developer.mozilla.org/en-US/docs/Web/JavaScript/About_JavaScript /]
+
+Jeho vývoj, který probíhá od roku 1995 dodnes, začal ve společnosti Netscape Communications Corporation pod jmény Mocha a LiveScript jako doplněk programovacího jazyka Java pro amatérské programátory. V roce 1997 se JavaScript stal průmyslovým standardem poté, co Ecma International, mezinárodní nevýdělečná organizace pro normalizaci komunikačních systému, vydala první standardizovanou verzi JavaScriptu pojmenovanou ECMAScript. [/ cit. https://en.wikipedia.org/wiki/JavaScript --vytahat primarni zdroje /]
 
 Vzhledem k tomu, že návrh nepočítal s implementací do některé konkrétní desktopové aplikace, ale s webovým rozhraním univerzálně přístupným ze široké škály zařízení, bylo logickým krokem zvolit jako základní technologie implementace uživatelského rozhraní HTML, JavaScript a AJAX. Uživatelské rozhraní je tedy zobrazitelné ve standardním webovém prohlížeči, toto prostředí na pozadí komunikuje se vzdáleným serverem, který vyhodnocuje zaslaná data a na základě výsledku vyhodnocení posílá data uživatelskému rozhraní.
+
+Ve zde popisované aplikaci tedy slouží JavaScript k obstarání hlavní logiky rozhraní. 
 
 HTML (HyperText Markup Language) je standardní značkovací jazyk, ve kterém jsou, ve spojení se styly v jazyce CSS, poskytovány webové stránky webovým prohlížečům na straně uživatelů. Je to jazyk strukturou velice podobný jazyku XML. HTML tedy v naší implementaci využíváme na zobrazení uživatelského rozhraní. [/ http://en.wikipedia.org/wiki/HTML /]
 
