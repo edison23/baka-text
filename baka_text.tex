@@ -42,7 +42,7 @@ Všechny systémy automatického doplňování textu fungují nejlépe v impleme
 
 Systémy pro predikci textu určené k tvorbě volného textu jsou obvykle založeny na více či méně rozsáhlém lokálně uloženém korpusu slov či spojení, ze kterého vybírají možná doplnění. Tyto systémy zpravidla umožňují uživateli přidávat manuálně slova, která napsal a nejsou v základním korpusu, což slouží jako základní uživatelské přizpůsobení. Lokální korpus má ovšem tu nevýhodu, že jeho velikost je značně limitována možnostmi zařízení, tj. jeho paměťovou a výpočetní kapacitou. To je problém především pro jazyky s rozvinutou flexí, jako je čeština, které potřebují na rozdíl analytických jazyků, např. angličtiny, mnohem větší množství tvarů jednotlivých slov. 
 
-Tento poměr lze porovnat například na dvou velkých korpusech, enTenTen13 a czTenTen12. Jde o rozsáhlé korpusy vytvořené z textů získaných na Internetu, které byly vyčištěny a zbaveny duplikátů.[/ rucne? to asi ne pri ty velikosti, coz? /] Anglický korpus enTenTen13 obsahuje 39 011 368 slov a 37 065 442 lemmat, což jsou základní slovní tvary. Naproti tomu český korpus czTenTen12 obsahuje slov 18 725 879 a lemmat pouze 13 976 481. 
+Tento poměr lze porovnat například na dvou velkých korpusech, enTenTen13 a czTenTen12. Jde o rozsáhlé korpusy vytvořené z textů získaných na Internetu, které byly vyčištěny a zbaveny duplikátů nástrojem Onion [/ cit. http://corpus.tools/wiki/Onion /] Anglický korpus enTenTen13 obsahuje 39 011 368 slov a 37 065 442 lemmat, což jsou základní slovní tvary. Naproti tomu český korpus czTenTen12 obsahuje slov 18 725 879 a lemmat pouze 13 976 481. 
 
 Tento rozdíl v poměru lemmat a slov ukazuje na relativně zjevý fakt, že v češtině připadá na jedno lemma mnohem více slovních tvarů než v angličtině, jelikož je čeština flektivní jazyk. Tento fakt značně komplikuje implementaci jazykových  modelů do aplikací pro predikci textu, protože v případě slovníkového modelu je nutno uchovávavat značně větší množství slovních tvarů než u angličtiny. Stejně tak je výrazně větší potřeba zohledňovat kontext, aby byly slovní tvary vybírány správně.
 
@@ -89,11 +89,11 @@ Jako základ pro výpočet KSPC pro jednotlivé metody zadávání je vhodná st
 
 Pro další metody zadávání už proces výpočtu tak jednoduchý není a má dva požadavky. Prvním z nich je jednoznačný popis postupu, kterým lze dojít k zadání jednotlivých znaků, druhým je pak jazykový model. Ten je nutný proto, aby výsledné KSPC bylo nezávislé na konkrétním textu v daném jazyce (tedy aby pro daný jazyk bylo průměrné).
 
-Jazykový model
+\seubsection{Jazykový model}
 
 Jazykovým modelem je v tomto případě korpus a jeho omezené formy. Tyto formy se liší podle toho, jaká metoda zadávání je testována. Pokud například jde o metodu, která vybírá znaky nezávisle na kontextu (na okolních znacích), stačí mít informace o frekvenčním rozložení jednotlivých písmen v korpusu. Pokud by byl výběr znaku závislý na kontextu jednoho písmene, byl by jazykový model frekvenční slovník bi-gramů. Pro delší závislosti MacKenzie et al. (2015) použili frekvenční slovník celých slov.
 
-Výpočet KSPC
+\subsection{Výpočet KSPC}
 
 
 \[
@@ -115,11 +115,13 @@ Aby bylo dosaženo KSPC rovného jedné, stačí technologie typu T9, která vyh
 
 Pro dosažení hodnot KSPC nižších než jedna je už nutné implementovat predikci textu. To znamená, že aplikace musí uhádnout psané slovo ještě dříve, než uživatel napíše všechna písmena daného slova. K tomu, aby mohla účinně předvídat, které slovo uživatel píše, potřebuje kvalitní jazykový model. Jazykový model může být buď slovník nebo statistický model. 
 
-Pokud systém používá slovníkovou metodu, potřebuje mít k dispozici relativně rozsáhlý frekvenční slovník slovních tvarů a jejich frekvence. Ke slovníku slovních tvarů se obvykle přidává ještě frekvenční slovník n-gramů, který zajišťuje účinnější predikce díky zohlednění kontextu. Pokud například tedy implementace využívá slovníku bi-gramů, je pak teoreticky aplikace, která je na ní postavena, předvídat nejen doplnění slova, které zrovna píše, ale i celá slova, která by mohl chtít napsat po dokončení předchozího slova.
+\subsection{Slovníkový model}
 
-Frekvenční slovník je slovník, který ke každému heslu uvádí hodnoty spojené s frekvencí daného slova. Obvykle to jsou absolutní frekvence daného slova a v případě Frekvenčního slovníku češtiny [/ Čerák et al. /] ještě průměrné redukované frekvence, což je hodnota, jež vychází z absolutní frekvence, avšak zohledňuje rozložení daného slova v korpusu. Pokud tedy mají dvě slova stejnou frekvenci, avšak jedno z nich se vyskytuje pouze v malém množství odborných textů, zatímco výskyty druhého jsou rovnoměrně rozloženy přes celý korpus, ukazuje to na fakt, že druhé slovo je obecně známější a užívanější širším publikem. Po zohlednění tohoto faktu tak druhé slovo dostane výrazně vyšší číselnou hodnotu ARF než slovo první. [/ Frek slovník, Čermák /]
+Pokud systém používá slovníkovou metodu, potřebuje mít k dispozici relativně rozsáhlý frekvenční slovník slovních tvarů a jejich frekvence. Ke slovníku slovních tvarů se obvykle přidává ještě frekvenční slovník n-gramů, který zajišťuje účinnější predikce díky zohlednění kontextu. Pokud například tedy implementace využívá slovníku bi-gramů, je pak teoreticky aplikace, která je na ní postavena, schopna předvídat nejen doplnění slova, která uživatel zrovna píše, ale i celá slova, která by mohl chtít napsat po dokončení předchozího slova.
 
-[/ dneska se to dela z korpusu, velke korpusy, je to presneji - da se to aktualizovat /]
+Frekvenční slovník je slovník, který ke každému heslu uvádí hodnoty spojené s frekvencí daného slova ve zdrojovém korpusu. Obvykle to je hodnota absolutní frekvence daného slova a například Frekvenční slovník češtiny [/ cit. Čerák et al. /] uvádí také průměrnou redukovanou frekvenci, což je hodnota, jež vychází z absolutní frekvence, avšak zohledňuje rozložení daného slova v korpusu. Pokud tedy mají dvě slova stejnou frekvenci, avšak první z nich se vyskytuje pouze v malém množství odborných textů, zatímco výskyty druhého jsou rovnoměrně rozloženy přes celý korpus, druhé slovo dostane vyšší číselnou hodnotu ARF než slovo první. Podle hodnoty ARF tak lze vyvodit, že druhé slovo je obecně známější a užívanější širším publikem. [/ cit. Frek slovník, Čermák, předmluva /] V kontextu s predikcí slov to může například znamenat, že je pravděpodobnější, že uživatel chce napsat spíše druhé slovo nežli to první, které je pravděpodobně značně odborné.
+
+Tvorba frekvenčních slovníků byla v dobách před rozvojem počítačů schopných zpracovat velká množství textů poněkud komplikovaná. Vzniklé databáze bylo obtížné aktualizovat, jejich výroba byla náročná a pomalá. Nástup počítačů však většinu těchto problémů odstranil, takže je možné velmi snadno z korpusu vyrobit frekvenční slovník, který bude tak aktuální, jako je samotný korpus. Na rozdíl od ručního zpracování dat navíc počítačové zpracování dovoluje pracovat s mnohem většími korpusy, takže výsledný frekvenční slovník může být i přesnější. Pro srovnání, jeden z prvních frekvenčních slovníků pro angličtinu, The Teachers Word Book of 30,000 words, měl 30 tisíc lemmat (z 13 tisíc slovních rodin [/ cit. Goulden, Nation and Read, 1990 /]) a byl vyroben z ručně psaného korpusu, který obsahoval 18 milionů slov. [/ cit. http://www.lextutor.ca/research/nation_waring_97.html /] Naproti tomu Britský národní korpus (BNC) má 112 milionů tokenů a webový korpus enTenTen (2013) má tokenů téměř 23 miliard. [/ cit. sketch engine /] [/ jeste by to chtelo nejaky data o soucasnych frekvencnich slovnicich, kde je vzit? /]
 
 [/ z uziv. dat - gmail and stuff, ale jinak je to zavreny]
 
@@ -132,7 +134,7 @@ Statistický model naproti tomu nevyužívá slovníku jako zdroje predikcí, al
 
 Původním smyslem automatického doplňování bylo usnadnit zadávání textu uživatelům s fyzickým postižením, aby museli provést menší počet stisků kláves pro napsání požadovaného textu. Brzy se však ukázalo, že funkce automatického doplňování je užitečná pro široké spektrum uživatelů, kteří často zadávají např. dlouhé technické či medicínské termíny, pro vyplňování formulářů a pro zařízení, která disponují nejednoznačnou klávesnicí, jako jsou mobilní telefony, tedy klávesnicí, kde jedna klávesa zastupuje více znaků. 
 
-Poslední případ byl zvláště důležitý, protože na zmíněných klávesnicích bylo např. pro napsání slova "nejlepsi" bylo bez prediktivního textu nutno stisknout 17 kláves, naproti tomu s prediktivním textem stacilo kláves pouze 8. \cite{dXVv6nPb2KifFXYv}
+Poslední případ byl zvláště důležitý, protože na zmíněných klávesnicích bylo např. pro napsání slova "nejlepsi" bylo bez prediktivního textu nutno stisknout 17 kláves, naproti tomu s prediktivním textem stačilo kláves pouze 8. \cite{dXVv6nPb2KifFXYv}
 
 \subsection{Typy predikce textu podle využití}
 
@@ -231,23 +233,40 @@ Jak bylo naznačeno v kapitolách výše, většina implementací predikce textu
 
 Existují ale případy, kdy je predikce textu vhodná i pro použití s klávesnicemi fyzickými. Lze usuzovat, že se tyto případy nebudou týkat uživatelů, kteří nemají motorický handycap a jsou na fyzickou QWERTY klávesnici zvyklí, ale spíš uživatelů, kteří z nějakého důvodu nemohou zadávat text normální rychlostí. Takoví uživatelé většinou trpí nějakým typem omezení motoriky rukou, a tudíž nejsou schopni rychlého pohybu prstů po klávesnici. Pro takové uživatele má predikce textu smysl v tom, že nemusí zadávat celá slova, ale stačí zadat jeho menší část a poté vybrat požadované slovo z nabídky předvídaných slov, což pro ně patrně bude jednodušší, než muset zadávat celá slova. Taková predikce textu může napomoci např. lepší sociální interakci těchto uživatelů, protože rychlost komunikace může být značnou překážkou v účinné výměně informací s protistranou, která takovým handycapem netrpí, a nemá tudíž například trpělivost čekat na odpověď v chatu nadstandardní dobu. [/ nejaky citace? jako nekde jsem neco podobneho cetl, ale buh vi kde..   /]
 
-Proto jsme se rozhodli v rámci této práce implementovat systém prediktivního textu, který se zaměří na automatické doplňování dlouhých slov (doplňování krátkých slov obvykle účinnost zadávání nezvyšuje, protože počet stisků kláves nutný k výběru daného slova nebude nijak výrazně nižší než počet stisků kláves nutný k manuálnímu doplnění daného slova) s důrazem na eventuální schopnost navrhovat na základě již zadaných slov možné další výrazy. Druhým základním požadavkem na tuto implementaci je jednoduchá použitelnost uživatelského prostředí, které by nabízené výrazy mělo zobrazovat neobtruzivním způsobem a umožňovat uživateli z nich jednoduše vybírat.
+Proto jsme se rozhodli v rámci této práce implementovat systém prediktivního textu, který se zaměří na automatické doplňování delších slov (doplňování krátkých slov obvykle účinnost zadávání nezvyšuje, protože počet stisků kláves nutný k výběru daného slova nebude nijak výrazně nižší než počet stisků kláves nutný k manuálnímu doplnění daného slova) s důrazem na eventuální schopnost navrhovat na základě již zadaných slov možné další výrazy. Druhým základním požadavkem na tuto implementaci je jednoduchá použitelnost uživatelského prostředí, které by nabízené výrazy mělo zobrazovat neobtruzivním způsobem a umožňovat uživateli z nich jednoduše vybírat.
 
 
 
 \section{Praktická část}
 
-\subsection{Návrh} (asi? nejsem si jist pojmenovanim tech kapitol tady)
+Jak bylo naznačeno v úvodu, cíl této práce leží v úmyslu pokusit se implementovat tradiční, byť poněkud zjednodušený, model automatického doplňování textu pro uživatele s fyzickou QWERTY klávesnicí s tím, že na rozdíl od tradičních systémů popsaných v práci výše nebude mít tato aplikace lokální slovník nebo databázi n-gramů, ale vešekeré operace produkující možná doplnění budou prováděny na vzdáleném serveru.
 
-Jak bylo naznačeno v úvodu této práce, její cíl leží v úmyslu pokusit se implementovat tradiční, byť poněkud zjednodušený, model automatického doplňování textu pro uživatele s fyzickou QWERTY klávesnicí s tím, že na rozdíl od tradičních systémů popsaných v práci výše nebude mít lokální databázi známých slov, případně jazykového modelu, ale vešekeré operace produkující možná doplnění budou prováděny na vzdáleném serveru.
+Základní výhodou tohoto modelu je fakt, že na vzdáleném serveru, na němž se provádí všechny operace spojené s analýzou vstupu a tvorbou predikcí, je možné skladovat výrazně vyšší množství jazykových dat, které slouží jako databáze známých slov. Při implementaci predikce textu a automatického doplňování na straně klienta je totiž nutno počítat se značně omezeným datovým prostorem, nehledě na to, že mnohé klienty stále nemají výpočetní výkon dostatečný k rychlému prohledávání extrémně velkých textových korpusů.
 
-Základní výhodou tohoto návrhu je fakt, že na vzdáleném serveru, na němž se provádí všechny operace spojené s analýzou vstupu a tvorbou predikcí, je možné skladovat prakticky neomezeně velké množství jazykových dat, které mohou sloužit jako databáze známých slov. Při implementaci predikce textu a automatického doplňování na straně klienta je totiž nutno počítat se značně omezeným datovým prostorem, nehledě na to, že mnohé klienty stále nemají výpočetní výkon dostatečný k rychlému prohledávání extrémně velkých (jednotky až desítky gigabytů) textových korpusů. [/ nejsou to moc velky blbost? xD /]
+Při umístění jazykových dat na vzdálený server je sice nutno počítat s neustálým připojením k internetové síti, na druhou stranu nutno uznat, že v implementaci určené pro klasické počítače, která je součástí této práce, by to neměl být omezující faktor. 
 
-Další výhodou tohoto modelu je možnost snadné aktualizace korpusových dat. U modelů, které počítají s jazykovými daty uloženými na straně klienta, může být poměrně obtížné účinně distribuovat aktualizace korpusů. Tyto aktualizace jsou však důležité, protože jazyk se relativně rychle mění. Dále je možnost prostřednictvím klientů připojených na centrální server řízeně aktualizovat korpusová data sběrem některých vstupních dat, například neznámých slov. Zde je ovšem značně velký prostor pro diskusi jak o bezpečnosti uživatelů, tak např. o tom, jak takové přírůstky účinně filtrovat.
+\subsection{Analýza}
 
-Při umístění jazykových dat, příp. jazykového modelu na vzdálený server, je sice nutno počítat s neustálým připojením k internetové síti, na druhou stranu nutno uznat, že v naší zamýšlené implementaci určené pro klasické počítače by to neměl být omezující faktor. 
+\subsubsection{Backend}
 
-Vzhledem k tomu, že návrh nepočítal s implementací do nějaké konkrétní desktopové aplikace, ale s webovým rozhraním univerzálně přístupným ze široké škály zařízení, bylo logickým krokem zvolit jako základní technologie implementace uživatelského rozhraní HTML, JavaScript a AJAX. Uživatelské rozhraní je tedy zobrazitelné ve standardním webovém prohlížeči, toto prostředí na pozadí komunikuje se vzdáleným serverem, který vyhodnocuje zaslaná data a na základě výsledku vyhodnocení posílá data uživatelskému rozhraní.
+Na počátku vývoje zde popisované aplikace byl již vyvinut backend, jenž zajišťuje tvorbu seznamu možných doplnění pro zadané slovo. Je jím několik skript naprogramovaný v dynamickém programovacím jazyce Python, který s webovým serverem komunikuje pomocí protokolu CGI. 
+
+Jako zdrojová data pro skript produkující doplnění slouží předem vygenerované n-gramy o délce 3 až 12 tokenů. [/ proc jich je tolik, kdyz to stejne funguje jenom s bigramama? /] Tyto n-gramy pochází z nejrozsáhlejšího českého korpusu czTenTen, který je kolekcí textů z různých webových zdrojů. Texty v korpusu neprošly korekturami, takže nemusí nutně obsahovat pouze spisovnou češtinu, což může být závažným problémem, pokud by aplikace pro predikci textu měla být využíváná pro kontrolu správnosti psaní. Vzhledem k tomu, že ale není primární cíl, nebyl na tuto skutečnost během vývoje aplikace brán zřetel. [/ cit. https://ske.fi.muni.cz/auth/corpora/ /]
+
+Vygenerované n-gramy byly pak vyfiltrovány podle různých kritérií s cílem vytvořit databázi n-gramů, která bude mít přijatelné pokrytí textů korpusu se zachováním rozumné datové velikosti databáze.
+[/ konec parafraze clanku neverilova+ulipova::ch3.1, nutno ocitovat spravne /]
+[/ pak se tam pise, ze n-gramy jsou skladovany v FSA, ale mne prijde, ze jsou v textaku ngram na radek.. xD co mi uchazi? /]
+
+Vstupem skriptu ve zde popisované implementaci jsou poslední dvě slova z textového editoru na frontendu. Serverový skript pracuje v základu ve dvou režimech, a to v závislosti na tom, zda vstup, který dostává, končí mezerou, či nikoliv. Pokud končí mezerou, předpokládá se, uživatel poslední slovo vstupu dokončil a chystá se psát další, pokud mezera na konci vstupu není, je rozumné předpokládat, že uživatel slovo ještě nedokončil a chystá se v něm pokračovat. Podle tohoto jsou také rozdělené režimy, ve kterých serverový skript pracuje. 
+
+V prvním případě, tedy pokud na konci vstupu mezera je, jsou jeho výstupem nejpravděpodobnější celá slova, která se v bigramech vyskytovala za slovem, které je posledním slovem vstupu. Pokud mezera na konci vstupu není, výstupem skriptu jsou slova, která se v bigramech vyskytovala na pozici za předposledním slovem vstupu a zároveň začínají řetězcem, který je shodný s posledním (nedokončeným) slovem na vstupu. Je důležité si povšimnout, že výstupem nejsou pouze doplnění posledního nedokončeného slova,ale celá slova obsahující i vstupní řetězec. Tímto se tento režim odlišuje od prvního, který vrací slova, jejichž žádná část se v editoru ještě nevyskytuje (myšleno na aktuální pozici kursoru). 
+
+
+
+
+
+
+Vzhledem k tomu, že návrh nepočítal s implementací do některé konkrétní desktopové aplikace, ale s webovým rozhraním univerzálně přístupným ze široké škály zařízení, bylo logickým krokem zvolit jako základní technologie implementace uživatelského rozhraní HTML, JavaScript a AJAX. Uživatelské rozhraní je tedy zobrazitelné ve standardním webovém prohlížeči, toto prostředí na pozadí komunikuje se vzdáleným serverem, který vyhodnocuje zaslaná data a na základě výsledku vyhodnocení posílá data uživatelskému rozhraní.
 
 HTML (HyperText Markup Language) je standardní značkovací jazyk, ve kterém jsou, ve spojení se styly v jazyce CSS, poskytovány webové stránky webovým prohlížečům na straně uživatelů. Je to jazyk strukturou velice podobný jazyku XML. HTML tedy v naší implementaci využíváme na zobrazení uživatelského rozhraní. [/ http://en.wikipedia.org/wiki/HTML /]
 
@@ -271,7 +290,9 @@ Funkcionalitu samotného "contenteditable" jsme se rozhodli rozšířit o znám�
 
 \subsubsection{Backend}
 
-Backend, tedy serverová strana aplikace, je implementována v dynamickém programovacím jazyce Python a ... [/ a dela to n-gramy.. a vic nevim .. asi k tomu neni nejaka dokumentace, coz? /]
+Backend, tedy serverová strana, zde popisované aplikace je implementována v dynamickém programovacím jazyce Python a její komunikace s webserverem probíhá pomocí komunikačního protokolu CGI (Common Gateway Interface). [/ did i get it right? /]
+
+
 
 
 	
