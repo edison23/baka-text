@@ -282,25 +282,34 @@ Výhodou CKEditoru je jeho modularita, která spočívá v možnosti rozšiřova
 
 \subsection{Návrh}
 
-Použité technologie
+Jelikož výsledkem práce je zásuvný modul do webového HTML editoru CKEditor, byly při vývoji využity výhradně webové technologie, tedy JavaScript v kombinaci s knihovnou AJAX (asynchronní JavaScript a XML), značkovacím jazykem HTML (HyperText Markup Language) a kaskádovými styly (Cascading Style Sheets, CSS). 
 
-Jelikož je celé uživatelské rozhraní zde popisované aplikace určeno pro webové prohlížeče a aplikace samotná je postavena jako zásuvný modul do webového HTML editoru CKEditor, byly při vývoji využity výhradně webové technologie, tedy JavaScript v kombinaci s knihovnou AJAX (asynchronní JavaScript a XML), značkovacím jazykem HTML (HyperText Markup Language) a kaskádovými styly (CSS). 
-
-JavaScript
+\subsubsection{JavaScript}
 
 JavaScript (JS) je dynamický, interpretovaný, objektově orientovaný programovací jazyk široce využívaný pro vývoj webových aplikací. Z hlediska komunikačního modelu klient-server se jedná o jazyk pro skriptování na straně klienta, takže se používá pro programování uživatelského rozhraní webových stránek. [/ https://developer.mozilla.org/en-US/docs/Web/JavaScript/About_JavaScript /]
 
 Jeho vývoj, který probíhá od roku 1995 dodnes, začal ve společnosti Netscape Communications Corporation pod jmény Mocha a LiveScript jako doplněk programovacího jazyka Java pro amatérské programátory. V roce 1997 se JavaScript stal průmyslovým standardem poté, co Ecma International, mezinárodní nevýdělečná organizace pro normalizaci komunikačních systému, vydala první standardizovanou verzi JavaScriptu pojmenovanou ECMAScript. [/ cit. https://en.wikipedia.org/wiki/JavaScript --vytahat primarni zdroje /]
 
-Vzhledem k tomu, že návrh nepočítal s implementací do některé konkrétní desktopové aplikace, ale s webovým rozhraním univerzálně přístupným ze široké škály zařízení, bylo logickým krokem zvolit jako základní technologie implementace uživatelského rozhraní HTML, JavaScript a AJAX. Uživatelské rozhraní je tedy zobrazitelné ve standardním webovém prohlížeči, toto prostředí na pozadí komunikuje se vzdáleným serverem, který vyhodnocuje zaslaná data a na základě výsledku vyhodnocení posílá data uživatelskému rozhraní.
+Ve zde popisovaném zásuvném modulu slouží JavaScript k obstarání hlavní logiky rozhraní, tedy extrakci textových dat editoru a jejich zpracování do formy vhodné k odeslání serverovému skriptu, sledování aktivity uživatele a případné zajištění, že data budou odeslána. Po přijetí odpovědi serveru zpracovává JavaScript přijatý text, zajišťuje uživateli nabídku doplnění a jejich případně vložení na správné místo v editoru. 
 
-Ve zde popisované aplikaci tedy slouží JavaScript k obstarání hlavní logiky rozhraní. 
+\subsubsection{AJAX}
+
+AJAX, nebo-li Asynchronous JavaScript and XML, je souhrnné označení webových technologií, které se používají pro vývoj webových aplikací. Hlavním využítím AJAXu bývají právě aplikace, které potřebují komunikovat se vzdáleným serverem bez nutnosti načítat celou webovou stránku znova. 
+
+Asynchronní výměna dat se serverem probíhá pomocí aplikačního rozhraní XMLHttpRequest (XHR), které skriptovacím jazykům na straně klienta, jako je například JavaScript, umožňuje odesílat data na vzdálený server. Po přijetí odpovědi se pak stará od dodání dat zpět do skriptu.
+
+Pro komunikaci se serverem se využívá vzhledem k velmi malým objemům dat, které je nutno přenášet, prostého textu, a to ve dvou formách. První z forem se používá při odesílání požadavku, kde jsou data serveru dodávána v rámci URL jako parametry. Jedná se vždy o posledních několik slov (záleží na konfiguraci skriptu na klientově straně), která jsou zakódována globální funkcí JavaScriptu {\tt encodeURI}, aby byla zajištěna správná funkčnost i v případě výskytu zvláštních znaků, jako jsou například písmena s diakritikou nebo jakékoliv jiné znaky, které v URL adrese být přímo nemohou. Jednotlivá slova jsou oddělována pomocí znaku {\tt +}, který je v URL adrese může nahrazovat mezeru.Druhá forma prostého textu se využívá v odpovědích serveru. Skript na požadavky odpovídá textovým řetězcem, který obsahuje navrhovaná slova oddělená mezerou. Tento textový řetězec je odesílán klientu jako dokument obsahující prostý text, který neobsahuje žádné přídavné strukturní nebo designové prvky, takže je opět velmi snadno zpracovatelný.
+
+[/ nejaky schema typu "klient odesle serveru url se slovama, server to zpracuje a odesle uzivateli text"? /]
+
+\subsubsection{HTML}
+
+hic sunt leones
+
 
 HTML (HyperText Markup Language) je standardní značkovací jazyk, ve kterém jsou, ve spojení se styly v jazyce CSS, poskytovány webové stránky webovým prohlížečům na straně uživatelů. Je to jazyk strukturou velice podobný jazyku XML. HTML tedy v naší implementaci využíváme na zobrazení uživatelského rozhraní. [/ http://en.wikipedia.org/wiki/HTML /]
 
-JavaScript je dynamický programovací jazyk široce rozšířený také v oblasti webových stránek, který umožňuje měnit zobrazené webové stránky na straně klienta na základě aktivity uživatele bez nutnosti zasílání nových požadavků na server. [/ http://en.wikipedia.org/wiki/JavaScript /] JavaScript slouží v implementaci popisované v této práci ke zjistění obsahu uživatelského vstupu, zajištění dynamického zobrazování nabízených predikcí, umožnění uživateli výběr z nich a následné vložení do textového pole.
-
-AJAX, nebo-li Asynchronous JavaScript and XML, je kombinací několika webových technologií, konkrétně Javascriptu a XML. Umožňuje asynchronně (na pozadí, bez zásahů do zobrazeného obsahu na klientovi) komunikovat se serverem. Pro nás tedy AJAX zajišťuje odesílání uživatelem zadaných textových řetězců na server a následné přijímání navrhovaných slov ze serveru.
+AJAX, nebo-li Asynchronous JavaScript and XML, je kombinací několika webových technologií, konkrétně JavaScriptu a XML. Umožňuje asynchronně (na pozadí, bez zásahů do zobrazeného obsahu na klientovi) komunikovat se serverem. Pro nás tedy AJAX zajišťuje odesílání uživatelem zadaných textových řetězců na server a následné přijímání navrhovaných slov ze serveru.
 
 \subsubsection{Frontend}
 
