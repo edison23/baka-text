@@ -342,6 +342,7 @@ Pro komunikaci se serverem se využívá vzhledem k velmi malým objemům dat, k
 
 %  nejaky schema typu "klient odesle serveru url se slovama, server to zpracuje a odesle uzivateli text"? 
 
+% nekde bych tu taky měl popsat jQuery, coz?
 
 \subsubsection{HTML}
 
@@ -367,41 +368,79 @@ Ve zde popisované aplikaci je tedy CSS využíváno k definici vizuální preze
 
 \subsubsection{Uživatelské rozhraní}
 
-Mluvit o uživatelském rozhraní jako celku je v tomto případě poněkud problematické, protože jde o zásuvný modul a není tudíž možné předvídat, jak přesně bude koncový uživatel modulu mít CKEditor nakonfigurován. Pro účely této práce však postačí uvažovat základní konfiguraci CKEditoru tak, jak je poskytována na oficiálních webových stránkách. Tam jsou k disposici ke stažení předpřipravené tři balíčky, jež se liší množstvím zásuvných modulů, které jsou obsahují. Pro účely vývoje zde popisovaného pluginu i pro účely samotného popisu jsme vybrali %  prvni osoba! ok? 
- nejmenší balíček {\it Basic Package}, který obsahuje 17 zásuvných modulů obstarávající základní formátování. V popisu uživatelského rozhraní pak bude uvažována webová stránka, na níž se bude nacházet pouze CKEditor v konfiguraci {\it Basic Package} s přidaným pluginem, který je předmětem této práce.
+Mluvit o uživatelském rozhraní jako celku je v tomto případě poněkud problematické, protože jde o zásuvný modul a není tudíž možné předvídat, jak přesně bude koncový uživatel modulu mít CKEditor nakonfigurován. Pro účely této práce však postačí uvažovat základní konfiguraci CKEditoru tak, jak je poskytována na oficiálních webových stránkách. Tam jsou k disposici ke stažení předpřipravené tři balíčky, jež se liší množstvím zásuvných modulů, které jsou obsahují. Pro účely vývoje zde popisovaného pluginu i pro účely samotného popisu jsme vybrali %  prvni osoba! ok? nikde jinde to nemam… 
+nejmenší balíček {\it Basic Package}, který obsahuje 17 zásuvných modulů obstarávající základní formátování. V popisu uživatelského rozhraní pak bude uvažována webová stránka, na níž se bude nacházet pouze CKEditor v konfiguraci {\it Basic Package} s přidaným pluginem, který je předmětem této práce.
 
 %  screenshot editoru 
 
 
 Práce v takto nakonfigurovaném editoru probíhá tak, že uživatel zadává text do editoru pomocí klasické klávesnice a vybírá si (případně nevybírá) doplnění, která jsou mu v průběhu nabízena. Doplnění jsou nabízena vždy, když na určitou dobu přestane vyvíjet aktivitu (pro účely testování se jako vhoné ukázalo být 300 ms), a když jsou pro danou kombinaci slov a písmen před pozicí kursoru nalezena doplnění. Pokud nalezena nejsou, nabídka se nezobrazuje. Ve chvíli, kdy si uživatel některé doplnění z nabídky vybere, skript jej v závislosti na situaci vhodným způsobem doplní do editoru, přidá za nově doplněné slovo mezeru a posune na její místo kursor. Pokud uživatel poté nevyvine žádnou další aktivitu po 300 ms, zobrazí se mu další doplnění zvolené na základě předchozího slova zadaného (či vybraného) slova. V ideálním případě by tak mělo na základě prvního slova být možné doplnit určité standardní věty pouhým vybíráním vhodných predikcí. %  tomu ale brani to nastaveni, ze filtrujeme kratky slova, bo nema smysl je nabizet 
 
+\subsubsection{Zpracování textu v editoru}
+
+Aby mohla být serverovému skriptu odeslána data, na jejichž základě budou vyhledána možná doplnění, musí být na straně klienta zpracován text, který uživatel napsal do editoru. To probíhá v několika krocích, jejichž výsledkem je řetězec předem definovaného počtu posledních slov v editoru, který je vhodný k odeslání na server.
+
+Všechny operace spojené s modifikacemi textu v editoru i prezentací nabídky predikcí prováděny pouze v případě aktivity uživatele. Touto aktivitou se myslí JavaScriptové % pise se to tak, kdyz je to adjektivum? mne je nejak proti srsti to napsat s malym j a velkym S xD
+události {\tt keydown} a {\tt keyup}, které reprezentují stisky kláves -- konkrétně stisknutí klávesy ({\tt keydown}) a její uvolnění ({\tt keyup}).
+
+Prvním krokem je rozdělení obsahu editoru na jednotlivá slova. To zajišťuje funkce {\tt sliceContent()}, jež přijímá text editoru ve formě řetězce (datový typ String). Text rozděluje postupně na řádky podle tagu {\tt <br>}, kterým končí v CKEditoru každý řádek, a dále zpracovává pouze poslední řádek. To sice znemožňuje používat predikci na jiném než posledním řádku, což ale nevadí, protože momentálně celkově plugin nepodporuje práci s predikcemi na jiných místech než na úplném konci vkládaného textu. To je jeden ze známých nedostatků, který bude rozebrán ve vyhodnocení. Následně funkce HTML tagy odstraní, nahradí nedělitelné mezery normálními a rozdělí zpracovávaný řádek na jednotlivá slova. Jako datový typ pro uložení řetězce rozděleného na slova bylo zvoleno pole (Array) pro velké množství operací, má v jazyce JavaScript připraveno. Další operace prováděné funkcí {\tt sliceContent()} na výsledném poli jsou čistě technického rázu. % jak se spravne rika to, ze to jsou proste nepodstatny blbosti, kteryma spravuju ruzny divny chovani CKEditoru? xD 
+
+Poté, co má skript k dispozici slova z aktuálního (posledního) řádku v editoru, se v případě, že současné slovo u kurzoru má délku alespoň tři znaky, zjišťuje, zda se v editoru už nevyskytuje slovo, které začíná na řetězec shodný se současným slovem a má délku alespoň pět znaků. Pokud ano, přidá se do seznamu predikcí, který později bude uživateli nabídnut. Tento krok se provádí proto, že lze předpokládat, že pokud uživatel napsal jednou nějaké delší slovo a znova začal psát slovo, které začíná stejnými znaky, bude chtít napsat téže slovo. Jde o funkcionalitu podobou té z textového procesoru LibreOffice Writer.
+
+Po tomto kroku už přichází na řadu funkce {\tt getSuggestions()}, která provádí AJAXové volání na server za účelem získání predikcí vytvořených z korpusových dat. Funkce {\tt getSuggestions()} přijímá několik hodnot, a to pole se slovy z posledního řádku, počet slov, která mají být odeslána na server a dále callback na funkci {\tt handleSuggestion()}, která zpracovává získaná doplnění.
+
+Ve funkci {\tt getSuggestions()} pak proběhne připravení řetězce se slovy, která mají být odeslána na server. To znamená, že funkce metodou {\tt slice()} vyřízne z pole posledních N slov, kde N je počet slov odesílaných na server a výsledné pole N prvků spojí do řetězce s tím, že mezi jednotlivé prvky pole, tedy slova, vloží znak {\tt +} (plus). Znak {\tt +} byl zvolen proto, že slova jsou odesílána, jak již bylo popsáno v kapitole Návrh, metodou GET, tedy jako parametry adresy URL, a v rámci dat odesílaných metodou GET lze reprezentovat mezeru buď znakem {\tt +} nebo řetězcem {\tt \%20}, přičemž tyto způsoby jsou v praxi rovnocenné.
+
+Nyní funkce čeká předem nastavenou dobu, zda nenastane další aktivita uživatele, a v případě, že nenastane, odešle AJAXový požadavek na server. Tento požadavek má velice jednoduchou formu, jak již bylo uvedeno výše, jedná se pouze o zavolání URL a předání řetězce se slovy, jenž byl připraven výše uvedeným způsobem, formou požadavku GET.
+
+V případě, že AJAXové volání na server uspělo (návratový kód 202 (Success)), zavolá se díky callbacku, který byl funkci {\tt getSuggestions()} předán dříve, funkce {\tt handleSuggestion()}. Pokud volání z jakéhokoliv důvodu skončilo chybou (příkladem budiž nedostupný server, což způsobí, že volání skončí návratovým kódem 404 (Not Found)), vypíše se chyba do konsole a z hlediska uživatele se nic nestane. 
+
+Funkce {\tt handleSuggestion()} přijímá jako argumenty mj. současné slovo pod kursorem, jedno doplnění z existujícího textu v editoru a odpověď serveru. Odpověď serveru je řetězec znaků, který obsahuje slova oddělená od sebe znakem {\tt <TAB>}. 
+
+Základním předpokladem při vývoji zde popisované aplikace je fakt, že tento systém bude využíván uživatelem, který má nějakou potíž při vkládání textu pomocí klasické QWERTY klávesnice. Proto návrh počítá s tím, že není smysluplné nabízet slova kratší než tři znaky, protože výběr takového slova ze seznamu nabízených predikcí vyžaduje přibližně stejný počet stisků kláves, jako napsat samotné slovo. Vzhledem k tomu, že úprava serverového skriptu tak, aby splňoval tento požadavek, by mohla ztížit jeho využití v jiné aplikaci, se filtrování slov provádí až na straně klienta. Proto funkce handleSuggestion() poté, co obdrží pravděpodobná doplnění současného slova v editoru, případně slova, která by mohla následovat, filtruje doplnění tak, aby mezi nimi byla pouze taková, která jsou delší, než předem zadaná délka (tedy čtyři znaky). Tím vzniká seznam slov, do něhož stačí doplnit případná doplnění, která byla nalezena v již existujícím textu v editoru, aby bylo možno jej prezentovat uživateli.
+
+\subsubsection{Zobrazení predikcí}
+
+Nabídka predikcí sestává ze dvou různých částí. První z nich je predikce (jíž může být celé slovo po mezeře, či část slova doplňující již zadanou část slova v editoru), která se zobrazuje méně výrazným typem písma topograficky ihned za zadávaným textem v hlavním editoru. Takové doplnění lze přijmout pouhým stiskem tabulátoru. Tento způsob doplnění je inspirován technologií Google Suggest, která funguje na podobném principu. 
+
+Pro tento způsob zobrazení predikce je využíváno tzv. stínového editoru, který je pomocí CSS umístěn přesně pod hlavní editor, v němž uživatel zadává text, a do něhož je pomocí JavaScriptové funkce {\tt copyContent()} ve zde popisovaném zásuvném modulu kopírován text z hlavního editoru. Pro zobrazení predikce je pak využíváno toho, že text zkopírovaný z hlavního editoru má ve stínovém editoru identické prostorové vlastnosti jako text hlavního editoru a lze na jeho konec snadno připojit aktuální predikci, která se tak zobrazuje uživateli fontem stínového editoru, který v případě zde popisované implementace má šedou barvu (předpokládá se, že text v hlavním editoru má černou barvu). 
+
+Vzhledem k tomu, že predikce nejsou vždy dokonalé nebo není možné jednoznačně rozhodnout, které slovo uživatel zamýšlí napsat, ukázalo se být nutným zobrazovat i alternativní predikce. 
+
+Tyto alternativní predikce jsou prezentovány pod pozicí kursoru ve formě seznamu. Pokud chce uživatel vyžít některou predikci zobrazenou v seznamu, stačí mu opětovně stisknout klávesu tabulátor, s jejíž pomocí lze v seznamu jednosměrně cyklovat mezi položkami. Aktuální položka se pak zároveň kopíruje do hlavního editoru, takže po dosažení požadované predikce uživatel stiskne klávesu mezerník a může pokračovat v psaní. Tato metoda volby byla navržena především s ohledem na původní cíl aplikace, tedy usnadnit psaní uživatelům, kteří z mají z nějakého důvodu problém zadávat text na QWERTY klávesnici. Cílem tedy není zrychlení psaní, jako tomu bývá u implementací prediktivního textu například pro dotyková zařízení, ale co nejvíce snížit množství stisků různých kláves pro volby predikce.
+
+Nabídka alternativních predikcí je zobrazována vždy pod kursorem, aby uživatel nebyl nucen dělit svou poroznost na různá místa obrazovky. O zobrazení nabídky v místě kursoru se stará funkce showAlternatives(), která je závislá na funkci getSelectionCoords(). Z pohledu problematiky implementace je zajímavá především funkce getSelectionCoords(), která pomocí zjišťování pozice aktuálního výběru textu získává pixelovou pozici kursoru, jež je nutná pro správné zobrazení alternativ. Implementace výběrů je velmi závislá na konkrétním prohlížeči, avšak lze obecně říci, že aktuální výběr vždy končí v místě, kde je právě umístěn kursor. S ohledem na tuto skutečnost a na to, že API moderních prohlížečů umožňuje získat pixelové pozice začátku a konce výběru lze pak pixelovou pozici výběru považovat za pixelovou pozici kursoru, na níž se má zobrazit nabídka alternativních doplnění. 
+
+Výběry mají v aplikaci ještě další způsob využití, a to přesunutí kursoru na korektní místo poté, co je vložena zvolená predikce. Je zřejmé, že kursor nemůže zůstat na původním místě, na němž byl před vložením predikce, protože pak by uživatel buď psal další text před vloženou predikci, nebo by musel manuálně přejít na konec vkládaného textu. Tento problém je sice snadno řešitelný přemístěním kursoru o délku predikce dále, ale v praxi se ukazuje, že existuje nezanedbatelné množstí případů, kdy výběr není korektně umístěn v textu a tudíž ani pozice kursoru na jeho umístění závislá není správná. Je to způsobeno především odlišnou a nedokonalou implementací v různých prohlížečích, protože nejde o standardizovanou součást API prohlížečů. Zajistit tak například korektní umístění kursoru při vkládání predikce nikoliv na konec, ale doprostřed textu, se ukázalo být velice problematické, a proto od toho v rámci této práce bylo upuštěno. 
+
+% nejsem si uplne jist, jak moc zabihat do podrobnosti o selections a tehle vecech, protoze jejich vysvetleni pro filozofy by mohlo zabrat docela hodne textu.. a vlastne pro vsechny, protoze je to dost silena vec
+
+\subsubsection{Vkládání predikcí}
+
+Ve verzi zásuvného modulu rozebírané touto prací jsou vybrané predikce do textu vkládány na úplný konec řetězce znaků v hlavním editoru. Úplným koncem je myšlen viditelných znaků, tedy vyjma HTML značek a konce řádku.
+
+V případě vkládání celého slova, nikoliv doplnění zbytku již zadaného slova, je vložení predikce relativně triviální. Jde pouze o připojení dané predikce za mezeru na konec již existujícího řetězce znaků. 
+
+Ovšem v případě doplňování pouhé části slova jde, vzhledem k tomu, že serverový skript i v tomto případě vrací celá slova, nikoliv jejich příslušné části, o úkon, který obsahuje zásah do již existujícího textu. Pokud tedy uživatel napíše jako poslední slovo řetězec "p" a předcházející slovo je "vážený", navrácená slova jsou "paciente", "pane", etc. Je tedy zřejmé, že nelze zvolenou predikci (např. "paciente") vložit přímo za existující text, ale je nutné nejdříve začátek slova, pro který je predikce určena, smazat, a pak až predikci vložit. Tento problém je řešen smazáním již napsané části slova z predikce, jejíž zbytek je pak vložen za napsaný text. Do hlavního editoru se tedy nevkládá celá predikce "paciente", nýbrž pouze její zbývající část po odtržení již napsané části, tedy "aciente".
+
+Z hlediska plynulosti práce se tento způsob ukázal být vhodnější než mazání již vložené části slova z hlavního editoru a vkládání celé predikce na jeho místo, mimo jiné proto, že se pozice kursoru přitom mění pouze jednou, nikoliv dvakrát.
+
+\subsection{Vyhodnocení}
+
+Při testování hotového zásuvného modulu se projevilo několik probémů, jejichž obrysy byly naznačeny v předcházejícíh kapitolách. 
+
+Nejdůležitější cíl práce, tedy vyvinout aplikaci, která by umožňovala zadávání textu bez nutnosti stisku všech kláves korespondujících s písmeny ve slovech zadávaného textu, byl splněn. Pokud uživatel chce zadat text, jehož slova existují v korpusu, z něhož jsou vybírány predikce, má možnost z těchto predikcí vybrat vhodně ty, které odpovídají jeho záměru, a snížit tak KSPC na hodnotu menší než jedna. % tady by to chtelo nejake pojednani o tom, ze vlastne cilem bylo dosahnout KSPC < 1, coz jsem tam nikde nemel
+Vzhledem k velikosti korpusu, z něhož jsou predikce vybírány, je rozumné předkládat, že takového výsledku lze dosáhnout téměř s libovolným textem v českém jazyce. Současná implementace navíc umožňuje snížit počet stisknutých kláves na počet znaků v textu také tím, že mezi predikce zařazuje již zadaná delší slova. Tato funkcionalita může být užitečná například pro uživatele, kteří zadávají odborný text s větším množstvím dlouhých odborných termínů (dobrým příkladem budiž lékařské texty).
+
+Dalším využitím tohoto zásuvného modulu může být případ, že text zadává uživatel, který si není jist správným psaním jednotlivých slov. Po zadání začátku slova mu jsou prezentovány varianty slova, které na dané pozici mohou být, a uživatel si z nich může vybrat, aniž by byl zběhlý v morfologii a syntaxi českého jazyka. K tomuto bodu je však nutno podotknout, že korpus, jehož data jsou zdrojem k tvorbě predikcí, má za zdroj texty publikované na Internetu, které neprošly korekturami, a tudíž se u nich nelze spoléhat na gramatickou správnost. Pokud by tedy zde popisovaná aplikace měla být primárně určena uživatelům, jejichž rodným jazykem není čeština, bylo by nutné zdrojové texty zkontrolovat a zajistit tak jejich gramamtickou správnost.
+
+Co se problémů týče, hlavním z nich je fakt, že momentální implementace neumožňuje práci vprostřed těla textu, ale pouze na jeho konci. Není tak možné mít text, do jehož části chce uživatel vložit odstavec, ve kterém by využíval predikce textu, protože se způsob, jakým je momentálně algoritmus vkládání navržen, umožňuje pouze na úplném konci textu. Zde je tedy značný prostor pro zlepšení, a to hlavně v případě, že se zlepší implementace výběrů textu v prohlížečích.
+
+% tady by bylo na miste zminit naprostou neschopnost podporu formatovani textu, ale to az pokud zjistime, ze to nejsme schopni spravit.. stejne jako to vraceni kursoru na spravne misto, pokud ma text vic jak jeden odstavec.. bylo by docela trapne, kdybychom tohle tam museli nejak vysvetlovat xD (teda ja, lol)
 
 
 
 
-
-\subsubsection{Frontend}
-
-Frontend, neboli uživatelské rozhraní, je implementováno pomocí webových technologí tak, aby bylo zobrazitelné a použitelné ve standardním webovém prohlížeči, např. Firefox. Nejdůležitější dva prvky rozhraní jsou textové pole, do něhož uživatel zadává vlastní text a návrhy, které jsou zobrazovány přímo pod pozicí textového kursoru (angl. caret) jako vertikální seznam 4 slov. %  checknout s hotovou verzi 
- Pokud mezi nimi uživatel najde slovo, které chtěl napsat, vybírá mezi nimi pomocí směrových šipek na klávesnici "nahoru" a "dolů". Výběr daného slova potvrdí stiskem klávesy Tab (tabulátor), čímž se provede nejprve smazání již napsané části daného slova, poté vložení výběru a nakonec vložení mezery. %  check na hotovou verzi, jestli ma smysl tu mezeru doplnovat, bo by to mohlo zpomalovat v pripade interpunkce 
- 
-
-Dále je na frontendu umístěno počítadlo, které indikuje, kolik znaků bylo zadáno a kolik kláves bylo stisknuto, a vedle se zobrazuje z těchto dvou údajů vypočtená hodnota KSPC pro daný vstup. Smysl tohoto počítadla spočívá především v testovacích účelech a v psychologickém efektu na uživatele. %  popsat jak se meni barva nejakyho toho progress baru, ted nevim, jak to tam je (resp. asi to naimplementuju jinak, bude-li cas). 
-
-
-{\bf Textové pole}
-
-Vzhledem k tomu, že je u implementace kladen značný důraz na pohodlí uživatele, rozhodli jsme se textové pole implementovat jako prvek typu div s atributem z HTML5 "contenteditable" (dále jen "contenteditable"). Vedlo nás k tomu několik důvodů. Jedním z nich je fakt, že klasická "textarea" je poněkud zastaralá a její možnosti jsou velmi omezené, a navíc její implementace je velmi závislá na prohlížeči, což by mohlo některé vlastnosti našeho frontendu částečně znehodnocovat. 
-
-Funkcionalitu samotného "contenteditable" jsme se rozhodli rozšířit o známý webový editor CKEditor, a to ze dvou důvodů. Prvním z nich je uživatelský komfort, protože CKEditor dovoluje uživateli provádět v textu různé úpravy formátování, druhým je čistě praktický důvod týkající se případné distribuce našeho projektu. CKEditor je vysoce rozšiřitelný zásuvnými moduly, které jsou tvořeny komunitou, tzn. že i náš systém prediktivního psaní lze po vytvoření upravit tak, aby si jej mohl kterýkoliv uživatel CKEditoru bez zvláštních obtíží nainstalovat do své instalace CKEditoru.
-
-%  nevim, co dal bych sem mel psat.. 
-
-
-
-
-
-	
 
 \section{Zdroje}
 
