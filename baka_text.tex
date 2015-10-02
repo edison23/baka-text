@@ -294,7 +294,7 @@ Ve zde popisovaném zásuvném modulu slouží JavaScript k obstarání hlavní 
 
 \subsubsection{AJAX}
 
-AJAX, nebo-li Asynchronous JavaScript and XML, je souhrnné označení webových technologií, které se používají pro vývoj webových aplikací. Hlavním využítím AJAXu bývají právě aplikace, které potřebují komunikovat se vzdáleným serverem bez nutnosti načítat celou webovou stránku znova. 
+AJAX, neboli Asynchronous JavaScript and XML, je souhrnné označení webových technologií, které se používají pro vývoj webových aplikací. Hlavním využítím AJAXu bývají právě aplikace, které potřebují komunikovat se vzdáleným serverem bez nutnosti načítat celou webovou stránku znova. 
 
 Asynchronní výměna dat se serverem probíhá pomocí aplikačního rozhraní XMLHttpRequest (XHR), které skriptovacím jazykům na straně klienta, jako je například JavaScript, umožňuje odesílat data na vzdálený server. Po přijetí odpovědi se pak stará od dodání dat zpět do skriptu.
 
@@ -304,12 +304,21 @@ Pro komunikaci se serverem se využívá vzhledem k velmi malým objemům dat, k
 
 \subsubsection{HTML}
 
-hic sunt leones
+HTML, neboli HyperText Markup Language je standardní značkovací jazyk velice podobný jazyku XML široce používaný pro tvorbu webových stránek pro webové prohlížeče, jako je kupříkladu Mozilla Firefox či Google Chrome. Webové prohlížeče jsou schopny HTML zpracovat a zobrazit uživateli výslednou stránku, která obsahuje vizuální prvky a textové formátování. 
 
+Standard HTML vychází ze obecného značkovacího jazyka SGML (Standard Generalized Markup Language), který je založen na dvou principech, a to že by značkovací jazyk měl být deklarativní, tedy popisovat strukturu a další atributy spíše než definovat způsob, jakým je dokument zpracováván, a že by definice v dokumentu měly být jednoznačné a pevně definované, aby byl dokument zpracovatelný stejně jako například programový kód. [/ cit. https://en.wikipedia.org/wiki/Standard_Generalized_Markup_Language --vytahat primarni zdroje, budou-li /]
 
-HTML (HyperText Markup Language) je standardní značkovací jazyk, ve kterém jsou, ve spojení se styly v jazyce CSS, poskytovány webové stránky webovým prohlížečům na straně uživatelů. Je to jazyk strukturou velice podobný jazyku XML. HTML tedy v naší implementaci využíváme na zobrazení uživatelského rozhraní. [/ http://en.wikipedia.org/wiki/HTML /]
+HTML popisuje strukturu stránky po sémantické stránce, stejně jako definuje (částečně či úplně) její vzhled. Rozdíl mezi sémantickou informací a informací pouze o tom, jak by měla prezentace vypadat, lze ilustrovat na dvojici značek, jejichž výsledná prezentace je zpravidla identická, a to {\tt <strong>} a {\tt <b>}. Značka {\tt <strong>} webovému prohlížeči říká, že text uvnitř této značky je důležitější než okolní text a měl by podle toho také být naformátován (tedy zpravidla tučným řezem písma), zatímco značka {\tt <b>} pouze indikuje, že by text v ní uzavřený měl být naformátován tučně. [/ cit. https://en.wikipedia.org/wiki/HTML --primarni zdroje?? /]
 
-AJAX, nebo-li Asynchronous JavaScript and XML, je kombinací několika webových technologií, konkrétně JavaScriptu a XML. Umožňuje asynchronně (na pozadí, bez zásahů do zobrazeného obsahu na klientovi) komunikovat se serverem. Pro nás tedy AJAX zajišťuje odesílání uživatelem zadaných textových řetězců na server a následné přijímání navrhovaných slov ze serveru.
+Zde popisovaná aplikace využívá HTML relativně málo, protože se jedná o zásuvný modul, který ze své podstaty nesmí ovlivňovat vzhled stránky, do níž si uživatel vloží CKEditor s tímto modulem. V rámci editačního pole se však vyskytla potřeba HTML použít pro zobrazení nabídky s výběrem jednotlivých možných doplnění, z nichž si uživatel může vybrat. Jakkoliv tedy co do množství kódu je HTML zastupováno nejmenší částí ze zde popisovaných technologií, je jeho použití důležité pro komfort koncového uživatele.
+
+\subsubsection{CSS}
+
+Druhou technologií, která je relativně málo využita, ale pro koncového uživatele je zásadní z hlediska uživatelské přívětivosti rozhraní, jsou kaskádové styly (CSS). CSS je také jednou ze základních technologií používaných pro webové prezentace a zajišťuje definice vizuálního vzhledu stránek napsaných ve značkovacím jazyce.
+
+Hlavním smyslem CSS je oddělení obsahu webové stránky od její vizuální prezentace. To je důležité jednak pro snazší udržování stránky, a jednak to přispívá k přehlednějšímu zpracování zdrojového kódu. Použití CSS navíc umožňuje zobrazit jednu stránku různými způsoby, jedním z nichž může být například možnost zobrazení pro barvoslepé uživatele.
+
+Ve zde popisované aplikaci je tedy CSS využíváno k definici vizuální prezentace nabídky alternativních doplnění.
 
 \subsubsection{Frontend}
 
@@ -324,10 +333,6 @@ Vzhledem k tomu, že je u implementace kladen značný důraz na pohodlí uživa
 Funkcionalitu samotného "contenteditable" jsme se rozhodli rozšířit o známý webový editor CKEditor, a to ze dvou důvodů. Prvním z nich je uživatelský komfort, protože CKEditor dovoluje uživateli provádět v textu různé úpravy formátování, druhým je čistě praktický důvod týkající se případné distribuce našeho projektu. CKEditor je vysoce rozšiřitelný zásuvnými moduly, které jsou tvořeny komunitou, tzn. že i náš systém prediktivního psaní lze po vytvoření upravit tak, aby si jej mohl kterýkoliv uživatel CKEditoru bez zvláštních obtíží nainstalovat do své instalace CKEditoru.
 
 [/ nevim, co dal bych sem mel psat.. /]
-
-\subsubsection{Backend}
-
-Backend, tedy serverová strana, zde popisované aplikace je implementována v dynamickém programovacím jazyce Python a její komunikace s webserverem probíhá pomocí komunikačního protokolu CGI (Common Gateway Interface). [/ did i get it right? /]
 
 
 
