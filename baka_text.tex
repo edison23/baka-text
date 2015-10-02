@@ -320,6 +320,20 @@ Hlavním smyslem CSS je oddělení obsahu webové stránky od její vizuální p
 
 Ve zde popisované aplikaci je tedy CSS využíváno k definici vizuální prezentace nabídky alternativních doplnění.
 
+\subsection{Implementace}
+
+\subsubsection{Uživatelské rozhraní}
+
+Mluvit o uživatelském rozhraní jako celku je v tomto případě poněkud problematické, protože jde o zásuvný modul a není tudíž možné předvídat, jak přesně bude koncový uživatel modulu mít CKEditor nakonfigurován. Pro účely této práce však postačí uvažovat základní konfiguraci CKEditoru tak, jak je poskytována na oficiálních webových stránkách. Tam jsou k disposici ke stažení předpřipravené tři balíčky, jež se liší množstvím zásuvných modulů, které jsou obsahují. Pro účely vývoje zde popisovaného pluginu i pro účely samotného popisu jsme vybrali [/ prvni osoba! ok? /] nejmenší balíček {\it Basic Package}, který obsahuje 17 zásuvných modulů obstarávající základní formátování. V popisu uživatelského rozhraní pak bude uvažována webová stránka, na níž se bude nacházet pouze CKEditor v konfiguraci {\it Basic Package} s přidaným pluginem, který je předmětem této práce.
+
+[/ screenshot editoru /]
+
+Práce v takto nakonfigurovaném editoru probíhá tak, že uživatel zadává text do editoru pomocí klasické klávesnice a vybírá si (případně nevybírá) doplnění, která jsou mu v průběhu nabízena. Doplnění jsou nabízena vždy, když na určitou dobu přestane vyvíjet aktivitu (pro účely testování se jako vhoné ukázalo být 300 ms), a když jsou pro danou kombinaci slov a písmen před pozicí kursoru nalezena doplnění. Pokud nalezena nejsou, nabídka se nezobrazuje. Ve chvíli, kdy si uživatel některé doplnění z nabídky vybere, skript jej v závislosti na situaci vhodným způsobem doplní do editoru, přidá za nově doplněné slovo mezeru a posune na její místo kursor. Pokud uživatel poté nevyvine žádnou další aktivitu po 300 ms, zobrazí se mu další doplnění zvolené na základě předchozího slova zadaného (či vybraného) slova. V ideálním případě by tak mělo na základě prvního slova být možné doplnit určité standardní věty pouhým vybíráním vhodných predikcí. [/ tomu ale brani to nastaveni, ze filtrujeme kratky slova, bo nema smysl je nabizet /]
+
+
+
+
+
 \subsubsection{Frontend}
 
 Frontend, neboli uživatelské rozhraní, je implementováno pomocí webových technologí tak, aby bylo zobrazitelné a použitelné ve standardním webovém prohlížeči, např. Firefox. Nejdůležitější dva prvky rozhraní jsou textové pole, do něhož uživatel zadává vlastní text a návrhy, které jsou zobrazovány přímo pod pozicí textového kursoru (angl. caret) jako vertikální seznam 4 slov. [/ checknout s hotovou verzi /] Pokud mezi nimi uživatel najde slovo, které chtěl napsat, vybírá mezi nimi pomocí směrových šipek na klávesnici "nahoru" a "dolů". Výběr daného slova potvrdí stiskem klávesy Tab (tabulátor), čímž se provede nejprve smazání již napsané části daného slova, poté vložení výběru a nakonec vložení mezery. [/ check na hotovou verzi, jestli ma smysl tu mezeru doplnovat, bo by to mohlo zpomalovat v pripade interpunkce /] 
