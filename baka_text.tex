@@ -27,13 +27,13 @@
 
 \section{Úvod}
 
-Cílem této práce je popsat možná zadávání textu, rozebrat jejich positiva a negativa a ukázat praktickou implementaci jednoho řešení implementujícího prediktivní text pro webový editor CKEditor.
+Různé implementace predikce textu se objevují v mobilních telefonech a elektronických osobních asistentech již přes 20 let, přičemž jejich hlavním úkolem bylo usnadnit zadávání textu na nejednoznačných klávesnicích. V poslední době se s rozmachem chytrých telefonů objevily systémy predikce textu (a automatické opravy slov, která s ní souvisí) i pro jednoznačné klávesnice typu QWERTY, a to z důvodu zvýšení komfortu psaní. Tyto systémy mají (z praktických důvodů, které tato práce nijak nezpochybňuje) dvě nevýhody. První z nich je závislost na konkrétní aplikaci na konkrétním operačním systému, která zajišťuje zobrazení klávesnice na dotykovém displeji a nejsou tudíž použitelné například pro psaní na stolním počítači na klasické QWERTY klávesnici. Druhou nevýhodou je pak fakt, že musí spoléhat pouze na lokálně uložená jazyková data, která tak musí být relativně kompaktní co do datové velikosti a nemusí tedy obsahovat potřebné množství dat, aby uživatel nebyl omezován nedokonalostmi jazykového modelu.
 
-Teoretická část se bude zabývat historickým vývojem v oblasti prediktivního textu, motivacemi, jež stály za samotným vznikem a rozebere, které z motivací jsou aktuální dodnes a jak se situace v průběhu času změnila. Na základě toho se pak pokusí shrnout základní požadavky na funkce prediktivního textu, zejména v oblasti zadávání textu. 
-%  tady by to jeste neco chtelo 
+Co se aplikací pro predikci textu pro stolní počítače a jim podobné systémy, je jejich množina prakticky prázdná. Textové procesory typu LibreOffice Writer mívají vestavěné primitivní způsoby doplňování, která ale čerpají data dokonce pouze z textu, který je v danou chvíli v editovaném dokumentu. Textové editory typu Sublime Text mívají podobnou funkcionalitu, navíc například při editaci programového kódu nabízí relativně komplexní doplňování, ale pouze podle předem připravených šablon.
 
+Cílem této práce je tedy vytvořit implementaci systému predikce textu, která bude jednak nezávislá na platformě, a jednak bude čerpat data z velkého korpusu textů. Vzhledem k tomu, že korpusová data není možné uchovávat na straně klienta, bylo logickým krokem zvolit model tenkého klienta a server, který bude zajišťovat generování predikcí. Tento systém na serveru již v době tvorby této práce existoval, což umožnilo soustředit se především na vývoj uživatelského prostředí. 
 
-Praktická část popíše implementaci prediktivního textu do webového editoru CKEditor. Jako zdroj doplnění využívá tato aplikace data zasílaná vzdáleným serverem. Budou rozebrány použité metody, důvody stojícími za jejich volbou a výhody a nevýhody zvoleného řešení.
+Pro zajišťení co nejvyšší kompatibility s různými systémy a konfiguracemi byla zvolena forma zásuvného modulu do webového richtextového editoru CKEditor. Použitými technologiemi tedy byl především JavaScript pro programovou logiku, AJAX pro komunikaci se serverem a HTML a CSS pro uživatelské rozhraní.
 
 \section{Teoretická část}
 
@@ -44,7 +44,7 @@ Všechny systémy automatického doplňování textu fungují nejlépe v impleme
 Systémy pro predikci textu určené k tvorbě volného textu jsou obvykle založeny na více či méně rozsáhlém lokálně uloženém korpusu slov či spojení, ze kterého vybírají možná doplnění. Tyto systémy zpravidla umožňují uživateli přidávat manuálně slova, která napsal a nejsou v základním korpusu, což slouží jako základní uživatelské přizpůsobení. Lokální korpus má ovšem tu nevýhodu, že jeho velikost je značně limitována možnostmi zařízení, tj. jeho paměťovou a výpočetní kapacitou. To je problém především pro jazyky s rozvinutou flexí, jako je čeština, které potřebují na rozdíl analytických jazyků, např. angličtiny, mnohem větší množství tvarů jednotlivých slov. 
 
 Tento poměr lze porovnat například na dvou velkých korpusech, enTenTen13 a czTenTen12. Jde o rozsáhlé korpusy vytvořené z textů získaných na Internetu, které byly vyčištěny a zbaveny duplikátů nástrojem Onion %  cit. http://corpus.tools/wiki/Onion 
- Anglický korpus enTenTen13 obsahuje 39 011 368 slov a 37 065 442 lemmat, což jsou základní slovní tvary. Naproti tomu český korpus czTenTen12 obsahuje slov 18 725 879 a lemmat pouze 13 976 481. 
+Anglický korpus enTenTen13 obsahuje 39 011 368 slov a 37 065 442 lemmat, což jsou základní slovní tvary. Naproti tomu český korpus czTenTen12 obsahuje slov 18 725 879 a lemmat pouze 13 976 481. 
 
 Tento rozdíl v poměru lemmat a slov ukazuje na relativně zjevý fakt, že v češtině připadá na jedno lemma mnohem více slovních tvarů než v angličtině, jelikož je čeština flektivní jazyk. Tento fakt značně komplikuje implementaci jazykových  modelů do aplikací pro predikci textu, protože v případě slovníkového modelu je nutno uchovávavat značně větší množství slovních tvarů než u angličtiny. Stejně tak je výrazně větší potřeba zohledňovat kontext, aby byly slovní tvary vybírány správně.
 
@@ -110,10 +110,7 @@ Jazykovým modelem je v tomto případě korpus a jeho omezené formy. Tyto form
 
 kde $K_c$ je počet úhozů nutný pro zadání znaku, $C_c$ je velikost znaku a $F_c$ je frekvence daného znaku v korpusu. Pokud se tedy tento vzorec aplikuje na situaci, kdy metoda zadávání textu vybírá písmeno bez ohledu na kontext, platí, že $C_c$ = 1, pokud se vybírá v závislosti na jednom předešlém znaku, je $C_c$ = 2. Pokud metoda zohledňuje celá slova, počítá se s průměrnou délkou slov v daném jazyce. Ta se počítá jako vážený průměr počtu znaků ve slovech daného jazyka, který pro BNC vychází na 4,59 znaku; pro srovnání, [15] počítá při svých výpočtech s 5 úhozy na slovo.
 
-
 %  pokud bych potreboval natahovat, tak tady by se klidne dala dat podkapitola "rozdeleni metod vstupu podle KSPC - a vykrast MacKenzieho  
-
-
 
 \section{Technický bláboly okolo predikce}
 
@@ -135,11 +132,11 @@ Frekvenční slovník je slovník, který ke každému heslu uvádí hodnoty spo
 
 Tvorba frekvenčních slovníků byla v dobách před rozvojem počítačů schopných zpracovat velká množství textů poněkud komplikovaná. Vzniklé databáze bylo obtížné aktualizovat, jejich výroba byla náročná a pomalá. Nástup počítačů však většinu těchto problémů odstranil, takže je možné velmi snadno z korpusu vyrobit frekvenční slovník, který bude tak aktuální, jako je samotný korpus. Na rozdíl od ručního zpracování dat navíc počítačové zpracování dovoluje pracovat s mnohem většími korpusy, takže výsledný frekvenční slovník může být i přesnější. Pro srovnání, jeden z prvních frekvenčních slovníků pro angličtinu, The Teachers Word Book of 30,000 words, měl 30 tisíc lemmat (z 13 tisíc slovních rodin %  cit. Goulden, Nation and Read, 1990 
 ) a byl vyroben z ručně psaného korpusu, který obsahoval 18 milionů slov. %  cit. http://www.lextutor.ca/research/nation_waring_97.html 
- Naproti tomu Britský národní korpus (BNC) má 112 milionů tokenů a webový korpus enTenTen (2013) má tokenů téměř 23 miliard. %  cit. sketch engine 
- %  jeste by to chtelo nejaky data o soucasnych frekvencnich slovnicich, kde je vzit? 
+Naproti tomu Britský národní korpus (BNC) má 112 milionů tokenů a webový korpus enTenTen (2013) má tokenů téměř 23 miliard. %  cit. sketch engine 
 
+%  jeste by to chtelo nejaky data o soucasnych frekvencnich slovnicich, kde je vzit? 
 
-[/ z uziv. dat - gmail and stuff, ale jinak je to zavreny]
+% z uziv. dat - gmail and stuff, ale jinak je to zavreny
 
 Implementace frekvenčních slovníků v aplikacích pro predikci textu se pravděpodobně značně liší a vzhledem k tomu, že jde o uzavřené komerční systémy, není možné konkrétní implementace zjistit. %  tohle je muj odhad, protoze se mi prave nepodarilo zjistit nic smysluplneho u swype a fleksy 
  
@@ -152,7 +149,7 @@ Statistický model naproti tomu nevyužívá slovníku jako zdroje predikcí, al
 
 Původním smyslem automatického doplňování bylo usnadnit zadávání textu uživatelům s fyzickým postižením, aby museli provést menší počet stisků kláves pro napsání požadovaného textu. Brzy se však ukázalo, že funkce automatického doplňování je užitečná pro široké spektrum uživatelů, kteří často zadávají např. dlouhé technické či medicínské termíny, pro vyplňování formulářů a pro zařízení, která disponují nejednoznačnou klávesnicí, jako jsou mobilní telefony, tedy klávesnicí, kde jedna klávesa zastupuje více znaků. 
 
-Poslední případ byl zvláště důležitý, protože na zmíněných klávesnicích bylo např. pro napsání slova "nejlepsi" bylo bez prediktivního textu nutno stisknout 17 kláves, naproti tomu s prediktivním textem stačilo kláves pouze 8. \cite{dXVv6nPb2KifFXYv}
+Poslední případ byl zvláště důležitý, protože na zmíněných klávesnicích bylo např. pro napsání slova „nejlepsi“ bylo bez prediktivního textu nutno stisknout 17 kláves, naproti tomu s prediktivním textem stačilo kláves pouze 8. \cite{dXVv6nPb2KifFXYv}
 
 \subsection{Typy predikce textu podle využití}
 
@@ -175,11 +172,11 @@ Nejrozšířenějším
 
 Většina implementací umožňovala uživateli přidávat k vestavěnému slovníku do takzvané uživatelsky definované databáze (User Defined Database, UDB) nová slova pomocí předdefinované klávesy. Množství slov ve slovníku pak záviselo na konkrétní implementaci. Novější implementace navíc řadily slova podle frekvence užívání, což zajištovalo, že častěji používaná slova z n-tice slov psané stejnými klávesami byla nabízena jako první. 
 
-Taková slova, která se zapisují stiskem stejných kláves, se nazývají textonyma \cite{ZORN2007} a jsou jimi v angličtině např. slova "book" and "cool". Zatímco obvykle tento jev pouze snižuje efektivitu zápisu pomocí T9, v roce 2010 záměna dvou textonym v textové zprávě vedla ve Spojených státech k vraždě. \cite{bjjL0GPb5QxyO1A8} 
+Taková slova, která se zapisují stiskem stejných kláves, se nazývají textonyma \cite{ZORN2007} a jsou jimi v angličtině např. slova „book“ and „cool“. Zatímco obvykle tento jev pouze snižuje efektivitu zápisu pomocí T9, v roce 2010 záměna dvou textonym v textové zprávě vedla ve Spojených státech k vraždě. \cite{bjjL0GPb5QxyO1A8} 
 
 Jednou z hlavních výhod systému T9 je schopnost automatického doplňování textu po zadání prvních několika písmen ze slova. Systém po napsání prvního písmene obykle začne nabízet nejfrekventovanější slova začínající na dané písmeno a nabídku upravuje podle dalších stisknutých kláves. Některé implementace se také jsou schopny naučit nejpoužívanější dvojice slov a po napsání prvního slova z některé z dvojic nabídne systém automaticky další slovo, které uživatel může přijmout stiskem předdefinovaného tlačítka. \cite{hrzQ70bvKjUBgVml} 
 
-Další funkcí, která je pro uživatelské pohodlí důležitá, je schopnost rozpoznat a opravit překlepy. T9 toto činí tak, že se dívá i na přilehlé klávesy, tzn. pokud uživatel chce napsat slovo "testing", které lze zapsat klávesami "8378464", ale stiskne místo toho sekvenci kláves "8278464", systém T9 mu stejně nabídne vedle slova "tasting" i slova "testing" a "tapping" \cite{hrzQ70bvKjUBgVml}.
+Další funkcí, která je pro uživatelské pohodlí důležitá, je schopnost rozpoznat a opravit překlepy. T9 toto činí tak, že se dívá i na přilehlé klávesy, tzn. pokud uživatel chce napsat slovo „testing“, které lze zapsat klávesami {\tt 8378464}, ale stiskne místo toho sekvenci kláves {\tt 8278464}, systém T9 mu stejně nabídne vedle slova „tasting“ i slova „testing“ a „tapping“ \cite{hrzQ70bvKjUBgVml}.
 
 \subsubsection{iTap}
 
@@ -249,7 +246,7 @@ Swype se skládá ze tří základních částí - analyzátoru trasy dotyku, sy
 
 Nutno podotknout, že firma Nuance, jež systém Swype vyvíjí, nezahrnuje do své klávesnice pouze tento systém zadávání, ale i klasickou metodu zadávání s nabídkou predikcí v horizontálním seznamu. Navzdory faktu, že hlavním důvodem popularity klávesnicové aplikace Swype je systém zadávání Swype, i klasické klávesnice v této aplikaci kombinují různé technologie na zlepšení uživatelského pohodlí. Mezi ně patří například schopnost rozšiřovat virtuální (nikoliv vizuální) velikost klávesy podle toho, jaké klávesy předcházely. Pokud uživatel tedy např. často tapne na klávesu N, smaže zadaný znak N a tapne na klávesu B a pokračuje v psaní, pak se to klávesnice naučí a příště, pokud je tapnutí ne zcela jednoznačné, vybere pravděpodobnější klávesu, v tomto příkladu tedy B. 
 
-Swype používá Andvance Language Model (AML), "pokročilý jazykový model", který pracuje s bigramy a trigramy vytvořenými mimo jiné na základě textů, které už uživatel zadal. To aplikaci umožňuje účinněji desambiguovat slova, která vychází jako možná řešení uživatelova vstupu. AML také umožňuje předvídat další slovo, které by uživatel mohl chtít zadat, pomocí %  how the fuck am i supposed to know 
+Swype používá Andvance Language Model (AML), „pokročilý jazykový model“, který pracuje s bigramy a trigramy vytvořenými mimo jiné na základě textů, které už uživatel zadal. To aplikaci umožňuje účinněji desambiguovat slova, která vychází jako možná řešení uživatelova vstupu. AML také umožňuje předvídat další slovo, které by uživatel mohl chtít zadat, pomocí %  how the fuck am i supposed to know 
 . %  http://www.swype.com/product-features/android/features.html 
  %  http://www.nuance.com/ucmprod/groups/corporatecomms/@web-enus/documents/webasset/nc\_024737.pdf 
 
@@ -280,10 +277,12 @@ Při umístění jazykových dat na vzdálený server je sice nutno počítat s 
 
 \subsubsection{Backend}
 
-Na počátku vývoje zde popisované aplikace byl již vyvinut backend, jenž zajišťuje tvorbu seznamu možných doplnění pro zadané slovo. Je jím několik skript naprogramovaný v dynamickém programovacím jazyce Python, který s webovým serverem komunikuje pomocí protokolu CGI. 
+Zde popisovaná aplikace je závislá na serverovém skriptu, který tvoří takzvaný backend. Tento backend byl, společně s předchozími verzemi popisované aplikace, vyvinut již dříve a zcela nezávisle na této práci. 
+
+V této práci je tedy backendem skript naprogramovaný v dynamickém programovacím jazyce Python, který s webovou aplikací komunikuje pomocí protokolu CGI. 
 
 Jako zdrojová data pro skript produkující doplnění slouží předem vygenerované n-gramy o délce 3 až 12 tokenů. %  proc jich je tolik, kdyz to stejne funguje jenom s bigramama? 
- Tyto n-gramy pochází z nejrozsáhlejšího českého korpusu czTenTen, který je kolekcí textů z různých webových zdrojů. Texty v korpusu neprošly korekturami, takže nemusí nutně obsahovat pouze spisovnou češtinu, což může být závažným problémem, pokud by aplikace pro predikci textu měla být využíváná pro kontrolu správnosti psaní. Vzhledem k tomu, že ale není primární cíl, nebyl na tuto skutečnost během vývoje aplikace brán zřetel. %  cit. https://ske.fi.muni.cz/auth/corpora/ 
+Tyto n-gramy pochází z nejrozsáhlejšího českého korpusu czTenTen, který je kolekcí textů z různých webových zdrojů. Texty v korpusu neprošly korekturami, takže nemusí nutně obsahovat pouze spisovnou češtinu, což může být závažným problémem, pokud by aplikace pro predikci textu měla být využíváná pro kontrolu správnosti psaní. Vzhledem k tomu, že ale není primární cíl, nebyl na tuto skutečnost během vývoje aplikace brán zřetel. %  cit. https://ske.fi.muni.cz/auth/corpora/ 
 
 
 Vygenerované n-gramy byly pak vyfiltrovány podle různých kritérií s cílem vytvořit databázi n-gramů, která bude mít přijatelné pokrytí textů korpusu se zachováním rozumné datové velikosti databáze.
@@ -421,7 +420,7 @@ Ve verzi zásuvného modulu rozebírané touto prací jsou vybrané predikce do 
 
 V případě vkládání celého slova, nikoliv doplnění zbytku již zadaného slova, je vložení predikce relativně triviální. Jde pouze o připojení dané predikce za mezeru na konec již existujícího řetězce znaků. 
 
-Ovšem v případě doplňování pouhé části slova jde, vzhledem k tomu, že serverový skript i v tomto případě vrací celá slova, nikoliv jejich příslušné části, o úkon, který obsahuje zásah do již existujícího textu. Pokud tedy uživatel napíše jako poslední slovo řetězec "p" a předcházející slovo je "vážený", navrácená slova jsou "paciente", "pane", etc. Je tedy zřejmé, že nelze zvolenou predikci (např. "paciente") vložit přímo za existující text, ale je nutné nejdříve začátek slova, pro který je predikce určena, smazat, a pak až predikci vložit. Tento problém je řešen smazáním již napsané části slova z predikce, jejíž zbytek je pak vložen za napsaný text. Do hlavního editoru se tedy nevkládá celá predikce "paciente", nýbrž pouze její zbývající část po odtržení již napsané části, tedy "aciente".
+Ovšem v případě doplňování pouhé části slova jde, vzhledem k tomu, že serverový skript i v tomto případě vrací celá slova, nikoliv jejich příslušné části, o úkon, který obsahuje zásah do již existujícího textu. Pokud tedy uživatel napíše jako poslední slovo řetězec „p“ a předcházející slovo je „vážený“, navrácená slova jsou „paciente“, „pane“, etc. Je tedy zřejmé, že nelze zvolenou predikci (např. „paciente“) vložit přímo za existující text, ale je nutné nejdříve začátek slova, pro který je predikce určena, smazat, a pak až predikci vložit. Tento problém je řešen smazáním již napsané části slova z predikce, jejíž zbytek je pak vložen za napsaný text. Do hlavního editoru se tedy nevkládá celá predikce „paciente“, nýbrž pouze její zbývající část po odtržení již napsané části, tedy „aciente“.
 
 Z hlediska plynulosti práce se tento způsob ukázal být vhodnější než mazání již vložené části slova z hlavního editoru a vkládání celé predikce na jeho místo, mimo jiné proto, že se pozice kursoru přitom mění pouze jednou, nikoliv dvakrát.
 
@@ -429,7 +428,7 @@ Z hlediska plynulosti práce se tento způsob ukázal být vhodnější než maz
 
 Při testování hotového zásuvného modulu se projevilo několik probémů, jejichž obrysy byly naznačeny v předcházejícíh kapitolách. 
 
-Nejdůležitější cíl práce, tedy vyvinout aplikaci, která by umožňovala zadávání textu bez nutnosti stisku všech kláves korespondujících s písmeny ve slovech zadávaného textu, byl splněn. Pokud uživatel chce zadat text, jehož slova existují v korpusu, z něhož jsou vybírány predikce, má možnost z těchto predikcí vybrat vhodně ty, které odpovídají jeho záměru, a snížit tak KSPC na hodnotu menší než jedna. % tady by to chtelo nejake pojednani o tom, ze vlastne cilem bylo dosahnout KSPC < 1, coz jsem tam nikde nemel
+Cíl práce, tedy vyvinout aplikaci, která by umožňovala zadávání textu bez nutnosti stisku všech kláves korespondujících s písmeny ve slovech zadávaného textu, byl splněn. Pokud uživatel chce zadat text, jehož slova existují v korpusu, z něhož jsou vybírány predikce, má možnost z těchto predikcí vybrat vhodně ty, které odpovídají jeho záměru, a snížit tak KSPC na hodnotu menší než jedna. % tady by to chtelo nejake pojednani o tom, ze vlastne cilem bylo dosahnout KSPC < 1, coz jsem tam nikde nemel
 Vzhledem k velikosti korpusu, z něhož jsou predikce vybírány, je rozumné předkládat, že takového výsledku lze dosáhnout téměř s libovolným textem v českém jazyce. Současná implementace navíc umožňuje snížit počet stisknutých kláves na počet znaků v textu také tím, že mezi predikce zařazuje již zadaná delší slova. Tato funkcionalita může být užitečná například pro uživatele, kteří zadávají odborný text s větším množstvím dlouhých odborných termínů (dobrým příkladem budiž lékařské texty).
 
 Dalším využitím tohoto zásuvného modulu může být případ, že text zadává uživatel, který si není jist správným psaním jednotlivých slov. Po zadání začátku slova mu jsou prezentovány varianty slova, které na dané pozici mohou být, a uživatel si z nich může vybrat, aniž by byl zběhlý v morfologii a syntaxi českého jazyka. K tomuto bodu je však nutno podotknout, že korpus, jehož data jsou zdrojem k tvorbě predikcí, má za zdroj texty publikované na Internetu, které neprošly korekturami, a tudíž se u nich nelze spoléhat na gramatickou správnost. Pokud by tedy zde popisovaná aplikace měla být primárně určena uživatelům, jejichž rodným jazykem není čeština, bylo by nutné zdrojové texty zkontrolovat a zajistit tak jejich gramamtickou správnost.
@@ -438,7 +437,7 @@ Co se problémů týče, hlavním z nich je fakt, že momentální implementace 
 
 % tady by bylo na miste zminit naprostou neschopnost podporu formatovani textu, ale to az pokud zjistime, ze to nejsme schopni spravit.. stejne jako to vraceni kursoru na spravne misto, pokud ma text vic jak jeden odstavec.. bylo by docela trapne, kdybychom tohle tam museli nejak vysvetlovat xD (teda ja, lol)
 
-
+\subsection{Závěr}
 
 
 
