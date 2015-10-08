@@ -250,7 +250,7 @@ Swype se skládá ze tří základních částí - analyzátoru trasy dotyku, sy
 
 Nutno podotknout, že firma Nuance, jež systém Swype vyvíjí, nezahrnuje do své klávesnice pouze tento systém zadávání, ale i klasickou metodu zadávání s nabídkou predikcí v horizontálním seznamu. Navzdory faktu, že hlavním důvodem popularity klávesnicové aplikace Swype je systém zadávání Swype, i klasické klávesnice v této aplikaci kombinují různé technologie na zlepšení uživatelského pohodlí. Mezi ně patří například schopnost rozšiřovat virtuální (nikoliv vizuální) velikost klávesy podle toho, jaké klávesy předcházely. Pokud uživatel tedy např. často tapne na klávesu N, smaže zadaný znak N a tapne na klávesu B a pokračuje v psaní, pak se to klávesnice naučí a příště, pokud je tapnutí ne zcela jednoznačné, vybere pravděpodobnější klávesu, v tomto příkladu tedy B. % http://www.swype.com/product-features/android/features.html 
 
-% ttp://www.nuance.com/ucmprod/groups/corporatecomms/@web-enus/documents/webasset/nc\_024737.pdf
+% http://www.nuance.com/ucmprod/groups/corporatecomms/@web-enus/documents/webasset/nc\_024737.pdf
 
 Swype používá Andvance Language Model (AML), „pokročilý jazykový model“, který pracuje s bigramy a trigramy vytvořenými mimo jiné na základě textů, které už uživatel zadal. To aplikaci umožňuje účinněji desambiguovat slova, která vychází jako možná řešení uživatelova vstupu. AML také umožňuje předvídat další slovo, které by uživatel mohl chtít zadat, pomocí [/ how the fuck am i supposed to know .. aka edit this /].
 
@@ -285,16 +285,15 @@ V této práci je tedy backendem skript naprogramovaný v dynamickém programova
 
 Jako zdrojová data pro skript produkující doplnění slouží předem vygenerované n-gramy o délce 3 až 12 tokenů. Tyto n-gramy pochází z nejrozsáhlejšího českého korpusu czTenTen, který je kolekcí textů z různých webových zdrojů. Texty v korpusu neprošly korekturami, takže nemusí nutně obsahovat pouze spisovnou češtinu, což může být závažným problémem, pokud by aplikace pro predikci textu měla být využíváná pro kontrolu správnosti psaní. Vzhledem k tomu, že ale není primární cíl, nebyl na tuto skutečnost během vývoje aplikace brán zřetel. 
 
-\marginnote{cit. https://ske.fi.muni.cz/auth/corpora/ }[-2cm]
+% cit. https://ske.fi.muni.cz/auth/corpora/
 
 Vygenerované n-gramy byly pak vyfiltrovány podle různých kritérií s cílem vytvořit databázi n-gramů, která bude mít přijatelné pokrytí textů korpusu se zachováním rozumné datové velikosti databáze.
 
-\marginnote{konec parafraze clanku neverilova+ulipova::ch3.1, to se asi cituje jinak, ze?}[-2cm]
+% konec parafraze clanku neverilova+ulipova::ch3.1, to se asi cituje jinak, ze?}
 
+\marginnote{tady jeste popsat neco o tech FSA}[-2cm]
 
-[/ pak se tam pise, ze n-gramy jsou skladovany v FSA, ale mne prijde, ze jsou v textaku ngram na radek.. xD co mi uchazi? 
-
-+ prostor pro popis, jak se ty n-gramy vazi /]
+\marginnote{prostor pro popis, jak se ty n-gramy vazi}[1cm]
 
 Vstupem skriptu ve zde popisované implementaci jsou poslední dvě slova z textového editoru na frontendu. Serverový skript pracuje v základu ve dvou režimech, a to v závislosti na tom, zda vstup, který dostává, končí mezerou, či nikoliv. Pokud končí mezerou, předpokládá se, uživatel poslední slovo vstupu dokončil a chystá se psát další, pokud mezera na konci vstupu není, je rozumné předpokládat, že uživatel slovo ještě nedokončil a chystá se v něm pokračovat. Podle tohoto jsou také rozdělené režimy, ve kterých serverový skript pracuje. 
 
@@ -325,7 +324,6 @@ JavaScript (JS) je dynamický, interpretovaný, objektově orientovaný programo
 
 Jeho vývoj, který probíhá od roku 1995 dodnes, začal ve společnosti Netscape Communications Corporation pod jmény Mocha a LiveScript jako doplněk programovacího jazyka Java pro amatérské programátory. V roce 1997 se JavaScript stal průmyslovým standardem poté, co Ecma International, mezinárodní nevýdělečná organizace pro normalizaci komunikačních systému, vydala první standardizovanou verzi JavaScriptu pojmenovanou ECMAScript. %  cit. https://en.wikipedia.org/wiki/JavaScript --vytahat primarni zdroje 
 
-
 Ve zde popisovaném zásuvném modulu slouží JavaScript k obstarání hlavní logiky rozhraní, tedy extrakci textových dat editoru a jejich zpracování do formy vhodné k odeslání serverovému skriptu, sledování aktivity uživatele a případné zajištění, že data budou odeslána. Po přijetí odpovědi serveru zpracovává JavaScript přijatý text, zajišťuje uživateli nabídku doplnění a jejich případně vložení na správné místo v editoru. 
 
 \subsubsection{AJAX}
@@ -336,7 +334,7 @@ Asynchronní výměna dat se serverem probíhá pomocí aplikačního rozhraní 
 
 Pro komunikaci se serverem se využívá vzhledem k velmi malým objemům dat, které je nutno přenášet, prostého textu, a to ve dvou formách. První z forem se používá při odesílání požadavku, kde jsou data serveru dodávána v rámci URL jako parametry. Jedná se vždy o posledních několik slov (záleží na konfiguraci skriptu na klientově straně), která jsou zakódována globální funkcí JavaScriptu {\tt encodeURI}, aby byla zajištěna správná funkčnost i v případě výskytu zvláštních znaků, jako jsou například písmena s diakritikou nebo jakékoliv jiné znaky, které v URL adrese být přímo nemohou. Jednotlivá slova jsou oddělována pomocí znaku {\tt +}, který je v URL adrese může nahrazovat mezeru.Druhá forma prostého textu se využívá v odpovědích serveru. Skript na požadavky odpovídá textovým řetězcem, který obsahuje navrhovaná slova oddělená mezerou. Tento textový řetězec je odesílán klientu jako dokument obsahující prostý text, který neobsahuje žádné přídavné strukturní nebo designové prvky, takže je opět velmi snadno zpracovatelný.
 
-%  nejaky schema typu "klient odesle serveru url se slovama, server to zpracuje a odesle uzivateli text"? 
+\marginnote{nejaky schema typu "klient odesle serveru url se slovama, server to zpracuje a odesle uzivateli text"? }[-3cm]
 
 \subsubsection{jQuery}
 
@@ -380,10 +378,13 @@ Práce v takto nakonfigurovaném editoru probíhá tak, že uživatel zadává t
 
 Aby mohla být serverovému skriptu odeslána data, na jejichž základě budou vyhledána možná doplnění, musí být na straně klienta zpracován text, který uživatel napsal do editoru. To probíhá v několika krocích, jejichž výsledkem je řetězec předem definovaného počtu posledních slov v editoru, který je vhodný k odeslání na server.
 
-Všechny operace spojené s modifikacemi textu v editoru i prezentací nabídky predikcí prováděny pouze v případě aktivity uživatele. Touto aktivitou se myslí JavaScriptové % pise se to tak, kdyz je to adjektivum? mne je nejak proti srsti to napsat s malym j a velkym S xD
-události {\tt keydown} a {\tt keyup}, které reprezentují stisky kláves -- konkrétně stisknutí klávesy ({\tt keydown}) a její uvolnění ({\tt keyup}).
+\marginnote{JavaScriptove -- jak se to pise, kdyz je to adjektivum? mne je nejak proti srsti to napsat s malym j a velkym S xD}
 
-Prvním krokem je rozdělení obsahu editoru na jednotlivá slova. To zajišťuje funkce {\tt sliceContent()}, jež přijímá text editoru ve formě řetězce (datový typ String). Text rozděluje postupně na řádky podle tagu {\tt <br>}, kterým končí v CKEditoru každý řádek, a dále zpracovává pouze poslední řádek. To sice znemožňuje používat predikci na jiném než posledním řádku, což ale nevadí, protože momentálně celkově plugin nepodporuje práci s predikcemi na jiných místech než na úplném konci vkládaného textu. To je jeden ze známých nedostatků, který bude rozebrán ve vyhodnocení. Následně funkce HTML tagy odstraní, nahradí nedělitelné mezery normálními a rozdělí zpracovávaný řádek na jednotlivá slova. Jako datový typ pro uložení řetězce rozděleného na slova bylo zvoleno pole (Array) pro velké množství operací, má v jazyce JavaScript připraveno. Další operace prováděné funkcí {\tt sliceContent()} na výsledném poli jsou čistě technického rázu. % jak se spravne rika to, ze to jsou proste nepodstatny blbosti, kteryma spravuju ruzny divny chovani CKEditoru? xD 
+Všechny operace spojené s modifikacemi textu v editoru i prezentací nabídky predikcí prováděny pouze v případě aktivity uživatele. Touto aktivitou se myslí JavaScriptové události {\tt keydown} a {\tt keyup}, které reprezentují stisky kláves -- konkrétně stisknutí klávesy ({\tt keydown}) a její uvolnění ({\tt keyup}).
+
+Prvním krokem je rozdělení obsahu editoru na jednotlivá slova. To zajišťuje funkce {\tt sliceContent()}, jež přijímá text editoru ve formě řetězce (datový typ String). Text rozděluje postupně na řádky podle tagu {\tt <br>}, kterým končí v CKEditoru každý řádek, a dále zpracovává pouze poslední řádek. To sice znemožňuje používat predikci na jiném než posledním řádku, což ale nevadí, protože momentálně celkově plugin nepodporuje práci s predikcemi na jiných místech než na úplném konci vkládaného textu. To je jeden ze známých nedostatků, který bude rozebrán ve vyhodnocení. Následně funkce HTML tagy odstraní, nahradí nedělitelné mezery normálními a rozdělí zpracovávaný řádek na jednotlivá slova. Jako datový typ pro uložení řetězce rozděleného na slova bylo zvoleno pole (Array) pro velké množství operací, má v jazyce JavaScript připraveno. Další operace prováděné funkcí {\tt sliceContent()} na výsledném poli jsou čistě technického rázu. 
+
+\marginnote{jak se spravne rika to, ze to jsou proste nepodstatny blbosti, kteryma spravuju ruzny divny chovani CKEditoru? xD }[-3cm]
 
 Poté, co má skript k dispozici slova z aktuálního (posledního) řádku v editoru, se v případě, že současné slovo u kurzoru má délku alespoň tři znaky, zjišťuje, zda se v editoru už nevyskytuje slovo, které začíná na řetězec shodný se současným slovem a má délku alespoň pět znaků. Pokud ano, přidá se do seznamu predikcí, který později bude uživateli nabídnut. Tento krok se provádí proto, že lze předpokládat, že pokud uživatel napsal jednou nějaké delší slovo a znova začal psát slovo, které začíná stejnými znaky, bude chtít napsat téže slovo. Jde o funkcionalitu podobou té z textového procesoru LibreOffice Writer.
 
@@ -413,7 +414,7 @@ Nabídka alternativních predikcí je zobrazována vždy pod kursorem, aby uživ
 
 Výběry mají v aplikaci ještě další způsob využití, a to přesunutí kursoru na korektní místo poté, co je vložena zvolená predikce. Je zřejmé, že kursor nemůže zůstat na původním místě, na němž byl před vložením predikce, protože pak by uživatel buď psal další text před vloženou predikci, nebo by musel manuálně přejít na konec vkládaného textu. Tento problém je sice snadno řešitelný přemístěním kursoru o délku predikce dále, ale v praxi se ukazuje, že existuje nezanedbatelné množstí případů, kdy výběr není korektně umístěn v textu a tudíž ani pozice kursoru na jeho umístění závislá není správná. Je to způsobeno především odlišnou a nedokonalou implementací v různých prohlížečích, protože nejde o standardizovanou součást API prohlížečů. Zajistit tak například korektní umístění kursoru při vkládání predikce nikoliv na konec, ale doprostřed textu, se ukázalo být velice problematické, a proto od toho v rámci této práce bylo upuštěno. 
 
-% nejsem si uplne jist, jak moc zabihat do podrobnosti o selections a tehle vecech, protoze jejich vysvetleni pro filozofy by mohlo zabrat docela hodne textu.. a vlastne pro vsechny, protoze je to dost silena vec
+\marginnote{nejsem si uplne jist, jak moc zabihat do podrobnosti o selections a tehle vecech, protoze jejich vysvetleni pro filozofy by mohlo byt docela obtizne.. a vlastne pro vsechny, protoze je to dost silena vec}[-2cm]
 
 \subsubsection{Vkládání predikcí}
 
@@ -429,14 +430,15 @@ Z hlediska plynulosti práce se tento způsob ukázal být vhodnější než maz
 
 Při testování hotového zásuvného modulu se projevilo několik probémů, jejichž obrysy byly naznačeny v předcházejícíh kapitolách. 
 
-Cíl práce, tedy vyvinout aplikaci, která by umožňovala zadávání textu bez nutnosti stisku všech kláves korespondujících s písmeny ve slovech zadávaného textu, byl splněn. Pokud uživatel chce zadat text, jehož slova existují v korpusu, z něhož jsou vybírány predikce, má možnost z těchto predikcí vybrat vhodně ty, které odpovídají jeho záměru, a snížit tak KSPC na hodnotu menší než jedna. % tady by to chtelo nejake pojednani o tom, ze vlastne cilem bylo dosahnout KSPC < 1, coz jsem tam nikde nemel
-Vzhledem k velikosti korpusu, z něhož jsou predikce vybírány, je rozumné předkládat, že takového výsledku lze dosáhnout téměř s libovolným textem v českém jazyce. Současná implementace navíc umožňuje snížit počet stisknutých kláves na počet znaků v textu také tím, že mezi predikce zařazuje již zadaná delší slova. Tato funkcionalita může být užitečná například pro uživatele, kteří zadávají odborný text s větším množstvím dlouhých odborných termínů (dobrým příkladem budiž lékařské texty).
+\marginnote{ tady by to chtelo nejake pojednani o tom, ze vlastne cilem bylo dosahnout KSPC < 1, coz jsem tam nikde nemel}[3cm]
+
+Cíl práce, tedy vyvinout aplikaci, která by umožňovala zadávání textu bez nutnosti stisku všech kláves korespondujících s písmeny ve slovech zadávaného textu, byl splněn. Pokud uživatel chce zadat text, jehož slova existují v korpusu, z něhož jsou vybírány predikce, má možnost z těchto predikcí vybrat vhodně ty, které odpovídají jeho záměru, a snížit tak KSPC na hodnotu menší než jedna. Vzhledem k velikosti korpusu, z něhož jsou predikce vybírány, je rozumné předkládat, že takového výsledku lze dosáhnout téměř s libovolným textem v českém jazyce. Současná implementace navíc umožňuje snížit počet stisknutých kláves na počet znaků v textu také tím, že mezi predikce zařazuje již zadaná delší slova. Tato funkcionalita může být užitečná například pro uživatele, kteří zadávají odborný text s větším množstvím dlouhých odborných termínů (dobrým příkladem budiž lékařské texty).
 
 Dalším využitím tohoto zásuvného modulu může být případ, že text zadává uživatel, který si není jist správným psaním jednotlivých slov. Po zadání začátku slova mu jsou prezentovány varianty slova, které na dané pozici mohou být, a uživatel si z nich může vybrat, aniž by byl zběhlý v morfologii a syntaxi českého jazyka. K tomuto bodu je však nutno podotknout, že korpus, jehož data jsou zdrojem k tvorbě predikcí, má za zdroj texty publikované na Internetu, které neprošly korekturami, a tudíž se u nich nelze spoléhat na gramatickou správnost. Pokud by tedy zde popisovaná aplikace měla být primárně určena uživatelům, jejichž rodným jazykem není čeština, bylo by nutné zdrojové texty zkontrolovat a zajistit tak jejich gramamtickou správnost.
 
 Co se problémů týče, hlavním z nich je fakt, že momentální implementace neumožňuje práci vprostřed těla textu, ale pouze na jeho konci. Není tak možné mít text, do jehož části chce uživatel vložit odstavec, ve kterém by využíval predikce textu, protože se způsob, jakým je momentálně algoritmus vkládání navržen, umožňuje pouze na úplném konci textu. Zde je tedy značný prostor pro zlepšení, a to hlavně v případě, že se zlepší implementace výběrů textu v prohlížečích.
 
-% tady by bylo na miste zminit naprostou neschopnost podporu formatovani textu, ale to az pokud zjistime, ze to nejsme schopni spravit.. stejne jako to vraceni kursoru na spravne misto, pokud ma text vic jak jeden odstavec.. bylo by docela trapne, kdybychom tohle tam museli nejak vysvetlovat xD (teda ja, lol)
+\marginnote{tady by bylo na miste zminit naprostou neschopnost podporu formatovani textu, ale to az pokud zjistime, ze to nejsme schopni spravit.. stejne jako to vraceni kursoru na spravne misto, pokud ma text vic jak jeden odstavec.. bylo by docela trapne, kdybychom tohle tam museli nejak vysvetlovat xD (teda ja, lol)}[-5cm]
 
 \subsection{Závěr}
 
