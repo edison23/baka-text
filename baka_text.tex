@@ -57,11 +57,21 @@ Pro zajištění co nejvyšší kompatibility s různými systémy byla zvolena 
 
 \section{Teoretická část}
 
+\subsection{Automatické opravy a predikce textu}
+
+Automatické opravy a predikce textu jsou dva velmi úzce svázané pojmy. Tím prvním se myslí opravení textu poté, co jej uživatel chybně zadal, tím druhým pak nabídnutí uživateli text předtím, než jej zadal. Na pomezí těchto dvou technik se ještě vyskytuje třetí, a to desambiguace vstupu z nejednoznačné klávesnice. Všechny tyto tři techniky jsou úzce spjaty proto, že vyžadují nějakým způsobem odhadnout, co uživatel chtěl, nebo bude chtít napsat.
+
+Ačkoliv je praktická část této práce zaměřena na predikci textu a opravami se nezabývá, zdálo se vhodné popsat i vývoj a některé způsoby řešení problematiky desambiguace vstupu a automatických oprav, protože řeší podobné problémy.
+
+\subsection{Definice pojmu prediktivní text}
+
 Prediktivní text, neboli automatické doplňování textu (angl. autocomplete) je funkce v aplikaci, která na základě uživatelského vstupu (většinou prvních několika znaků slova) doplňuje zbytek části textu (většinou slova). V ideálním případě funkce jednoznačně rozpozná, co chtěl uživatel napsat, a nabídne mu právě to doplnění, jež uživatel chce. V praxi obvykle uživatel dostává na výběr z několika možností, které systém vyhodnotil jako nejpravděpodobnější doplnění vstupu. Systémy se liší způsobem zužování výběru možností a jejich řazením, stejně tak jako vizuálním podáním nabídky.
 
 Všechny systémy automatického doplňování textu fungují nejlépe v implementacích na omezených doménách, tzn. například doplňování e-mailových adres v e-mailových klientech, klíčových slov určitého programovacího jazyka v programátorských editorech či doplňování ve formulářových polích s předem vymezeným očekávaným vstupem. 
 
-Systémy pro predikci textu určené k tvorbě volného textu jsou obvykle založeny na více či méně rozsáhlém lokálně uloženém korpusu slov či slovních spojení, ze kterého vybírají možná doplnění. Tyto systémy zpravidla umožňují uživateli přidávat manuálně slova, která napsal a nejsou v základním korpusu, což slouží jako základní uživatelské přizpůsobení. Lokální korpus má ovšem tu nevýhodu, že jeho velikost je značně limitována možnostmi zařízení, tj. jeho paměťovou a výpočetní kapacitou. To je problém především pro jazyky s rozvinutou flexí, jako je čeština, které potřebují na rozdíl analytických jazyků, např. angličtiny, poněkud větší množství tvarů jednotlivých slov. 
+\subsection{Úskalí jazyků s rozvinutou flexí}
+
+Systémy pro predikci textu určené k tvorbě volného textu jsou obvykle, jak bude zřejmé z dalšího popisu jednotlivých aplikací, založeny na více či méně rozsáhlém lokálně uloženém korpusu slov či slovních spojení, ze kterého vybírají možná doplnění. Tyto systémy zpravidla umožňují uživateli přidávat manuálně slova, která napsal a nejsou v základním korpusu, což slouží jako základní uživatelské přizpůsobení. Lokální korpus má ovšem tu nevýhodu, že jeho velikost je značně limitována možnostmi zařízení, tj. jeho paměťovou a výpočetní kapacitou. To je problém především pro jazyky s rozvinutou flexí, jako je čeština, které potřebují na rozdíl analytických jazyků, např. angličtiny, poněkud větší množství tvarů jednotlivých slov. 
 
 Rozdílnost angličtiny a češtiny v ohledu množství slovních tvarů připadajících na jedno lemma lze porovnat například na dvou velkých korpusech, enTenTen13 a czTenTen12. Jde o rozsáhlé korpusy vytvořené z textů získaných na Internetu, které byly vyčištěny a zbaveny duplikátů nástrojem Onion\footnote{http://corpus.tools/wiki/Onion}. Anglický korpus enTenTen13 obsahuje\td{jak jsem k tomu kurva došel?} 39 011 368 slov a 37 065 442 lemmat (základních slovních tvary). Naproti tomu český korpus czTenTen12 obsahuje slov 18 725 879 a lemmat pouze 13 976 481.\td{doplnit to info z majky o teoretickem pomeru?} V češtině tedy podle výše uvedených dat připadá na jedno lemma 1,339 slovního tvaru, naproti tomu v angličtině na jedno lemma připadá pouze 1,052 slovního tvaru. Je tedy vidět, že slovník pro češtinu by v ideálním případě měl být minimálně 1,27× větší než slovník o stejném množství základních tvarů pro angličtinu.
 % cit.: info o korpusech
@@ -70,10 +80,10 @@ Tento fakt komplikuje implementaci slovníkových jazykových  modelů do aplika
 
 \subsection{Klíčové vlastnosti systému pro predikci textu}
 
-Navzdory velmi odlišným způsobům použití systémů pro doplňování textů jsou některé jejich klíčové vlastnosti pro většinu implementací společné. Studie, které zkoumaly efektivitu těchto systémů, obecně docházejí ke podobným závěrům co se požadavků na tyto systémy týče. Ať jde o vyhledávač typu Google nebo Yahoo, o našeptávač e-mailových adres v e-mailovém klientu nebo o predikci volného textu v textovém editoru, aby uživatel měl při užívání aplikace pocit, že mu doplňování textu skutečně pomáhá spíše než překáží, je klíčových několik vlastností.  Primární je rychlost, s níž aplikace možná doplnění uživateli zobrazuje. Nandi a Jagadish uvádí, že by odezva neměla převyšovat 100 ms \cite{Nandi2007}. Tento faktor je rozhodující pro to, zda si uživatel zvolí nabídnutá doplnění použít, nebo raději napíše zbytek textu sám. V případě implementace predikce textu do editoru, kde uživatel zadává volný text, jímž si je relativně jist, je tato vlastnost pro uživatelovo rozhodnutí patrně klíčová. Naproti tomu ve vyhledávání lze očekávat, že uživatel bude ochoten počkat delší chvíli na zobrazení doplnění. S tímto souvisí i další vlastnost, kterou uvádí\td{přehodit jako normalni citaci} Ward a kol. v publikaci Autocomplete as a Research Tool: A Study on Providing Search Suggestions -- umožnění uživateli pohodlně nabízené predikce ignorovat. Rozhodne-li se totiž, že např. bude rychlejší text manuálně napsat a predikce nepoužít, je žádoucí, aby mu grafické zpracování nabídky žádným způsobem neztěžovalo takto učinit. Z tohoto důvodu je ve většině systémů nabídka předvídaných výrazů zobrazována pod textovým polem\td{citace na google suggest? pripadne jak? je to obecne znamy fakt} (např. Google Suggest). 
+Navzdory velmi odlišným způsobům použití systémů pro doplňování textů jsou některé jejich klíčové vlastnosti pro většinu implementací společné. Studie, které zkoumaly efektivitu těchto systémů, obecně docházejí ke podobným závěrům co se požadavků na tyto systémy týče. Ať jde o vyhledávač typu Google nebo Yahoo, o našeptávač e-mailových adres v e-mailovém klientu nebo o predikci volného textu v textovém editoru, aby uživatel měl při užívání aplikace pocit, že mu doplňování textu skutečně pomáhá spíše než překáží, je klíčových několik vlastností.  Primární je rychlost, s níž aplikace možná doplnění uživateli zobrazuje. Nandi a Jagadish uvádí, že by odezva neměla převyšovat 100 ms \cite{Nandi2007}. Tento faktor je rozhodující pro to, zda si uživatel zvolí nabídnutá doplnění použít, nebo raději napíše zbytek textu sám. V případě implementace predikce textu do editoru, kde uživatel zadává volný text, jímž si je relativně jist, je tato vlastnost pro uživatelovo rozhodnutí patrně klíčová. Naproti tomu ve vyhledávání lze očekávat, že uživatel bude ochoten počkat delší chvíli na zobrazení doplnění. S tímto souvisí i další vlastnost, kterou uvádí\td{da se tenhle zpusob citace pouzivat, kdyz pak budu citovat normalne treba ciselne?} Ward a kol. v publikaci Autocomplete as a Research Tool: A Study on Providing Search Suggestions -- umožnění uživateli pohodlně nabízené predikce ignorovat. Rozhodne-li se totiž, že např. bude rychlejší text manuálně napsat a predikce nepoužít, je žádoucí, aby mu grafické zpracování nabídky žádným způsobem neztěžovalo takto učinit. Z tohoto důvodu je ve většině systémů nabídka předvídaných výrazů zobrazována pod textovým polem\td{citace na google suggest? pripadne jak? je to obecne znamy fakt} (např. Google Suggest). 
 
 Zobrazení nabídky v textových editorech, kde se nejedná o jednořádkové pole s očekávaným vstupem pouze několika jednotlivých slov, je předmětem několika studií, z nichž např. jedna navrhuje zobrazovat nabídku na spodní části obrazovky, aby uživatel nebyl nucen přesouvat pozornost příliš daleko od klávesnice. % ocitovat
-Lze ale polemizovat nad tím, jak je tato argumentace validní pro uživatele bez motorického nebo jiného postižení, jelikož tací většinou při psaní na klávesnici nehledí. Textové editory pro psaní programového kódu tento problém většinou řeší zobrazováním nabízených doplnění v menu nad nebo pod kursorem (tedy zhruba podobně jako jednořádková vyhledávací a jiná pole). Podobně to řeší i kancelářský balík OpenOffice (příp. LibreOffice), který zobrazuje po napsání prvních tří písmen slova jednu predikci nad kursorem. Výběr predikce se odvíjí od frekvence, přičemž velký důraz je kladen na délku nabízeného slova (obrázek \ref{fig:LOpredict} na straně \pageref{fig:LOpredict}). Tento systém uživateli umožňuje udržovat pozornost na relativně malé oblasti obrazovky, čímž se zvyšuje pravděpodobnost, že se rozhodne doplnění použít. 
+Lze ale polemizovat nad tím, jak je tato argumentace validní pro uživatele bez motorického nebo jiného postižení, jelikož tací většinou při psaní na klávesnici nehledí. Textové editory pro psaní programového kódu tento problém většinou řeší zobrazováním nabízených doplnění v menu nad nebo pod kursorem (tedy zhruba podobně jako jednořádková vyhledávací a jiná pole). Podobně to řeší i kancelářský balík LibreOffice, který zobrazuje po napsání prvních tří písmen slova jednu predikci nad kursorem. Výběr predikce se odvíjí od frekvence, přičemž velký důraz je kladen na délku nabízeného slova (obrázek \ref{fig:LOpredict} na straně \pageref{fig:LOpredict}). Tento systém uživateli umožňuje udržovat pozornost na relativně malé oblasti obrazovky, čímž se zvyšuje pravděpodobnost, že se rozhodne doplnění použít. 
 
 \begin{figure}[h]
 	\caption{Implementace predikce textu v LibreOffice Writer 4.2.8.2}
@@ -82,23 +92,40 @@ Lze ale polemizovat nad tím, jak je tato argumentace validní pro uživatele be
 	\includegraphics[width=0.7\textwidth]{LO_prediction_1}
 \end{figure}
 
+Lze tedy říci, že nabídka slov, která daný systém vyhodnotil jako vhodná doplnění, by neměla být obtruzivní, mělo by být snadné ji ignorovat a měla by se nacházet co nejblíže místu, kam je soustředěna uživatelova pozornost. To, jak bylo naznačeno výše, může být odlišné v závislosti na cílové kategorii uživatelů.
+
 \subsection{Smysl automatického doplňování pro uživatele}
 
-Vedle původního určení predikce textu, kterým je zrychlit zadávání textu a tím komunikaci na rozhraní člověk-počítač, plní pro běžného uživatele automatické doplňování textu ještě několik dalších funkcí. Nejde ani tolik o rychlost zadávání textu, jako spíše o to, co je zadáváno. 
+\subsubsection{Predikce jako způsob zjednodušení zápisu}
+
+Důvody, pro které si může uživatel vybrat užívat prediktivní text, se liší podle přístroje, na němž píše, a dalších okolností.
+
+Na mobilních zařízeních, která disponují nejednoznačnou klávesnicí (typicky starší mobilní telefony s 12tlačítkovou klávesnicí) je predikce výhodná proto, že umožňuje zadávat text jediným stisknutím kláves, které reprezentují znaky obsažené v psaném slově. Bez predikce by byl uživatel nucen v případě písmene, které na klávese není na první pozici, stisknout tutéž klávesu vícekrát po sobě.\td{detaily v kapitole o ITU klavesnicich, mam to sem nejak napsat?}
+
+Dalším případem jsou mobilní zařízení, která mají dotykový displej, kde je zase problém s přesností, s jakou je uživatel schopen se na klávesy trefit svým prstem nebo stylusem. Tento případ sice spadá do kategorie automatických oprav, ale může být kombinován s prediktivním textem.
+
+Při psaní na jednoznačné fyzické klávesnici (typicky klasická QWERTY klávesnice, jež je pro jednoduchost v této práci považována za reprezentanta všech ostatních lokalizovaných rozložení) obvykle není predikce potřeba, ale například pro uživatele fyzicky postiženého může být výhodné mít k dispozici systém, který mu ušetří stisky kláves nutné k zapsání celého slova.
+
+\subsubsection{Predikce jako inspirace}\td{isnt that too… poetic, if I may? (ten nadpis myslím) xD}
+
+Vedle původního určení predikce textu, kterým je zrychlit zadávání textu a tím komunikaci na rozhraní člověk--počítač, může pro běžného uživatele automatické doplňování textu plnit ještě několik dalších funkcí.
+
+Takovým případem může být doplňování ve vstupním poli vyhledávače typu Google, případně jeho obdoby v nějaké menší síti, například univerzitní knihovně.
 
 Ward et al. (Autocomplete as a Research Tool) ve své studii uvádí, že studenti, na kterých testoval automatické doplňování ve vyhledávání v rámci informačního systému knihovny, poukázali v následném dotazníku na několik dalších funkcí, které pro ně predikce plnila. 
 
-Na otázku, jak by svým přátelům vysvětlil, k čemu je našeptávač dobrý, odpověděl jeden student, že rozhodně jako asistence v pravopise. Studenti totiž často nemají z ústních zadání v hodinách úplně přesnou představu, jak se např. autor, jehož díla jim jejich vyučující doporučil jako zdroj informací k práci, přesně píše. Autoři studie ze záznamů hledání vyvodili, že někteří studenti si ani nemuseli být vědomi faktu, že začátek jména autora zadali špatně, protože predikce jim nabídla rovnou správnou verzi a oni ji vybrali, aniž by přemýšleli, v čem se nabídka liší od jejich vstupu. 
+Na otázku, jak by svým přátelům vysvětlil, k čemu je našeptávač dobrý, odpověděl jeden student, že rozhodně jako asistence v pravopisu. Studenti totiž často nemají z ústních zadání v hodinách úplně přesnou představu, jak se např. jméno autora, jehož díla jim jejich vyučující doporučil jako zdroj informací k práci, přesně píše. Autoři studie ze záznamů hledání vyvodili, že někteří studenti si ani nemuseli být vědomi faktu, že začátek jména autora zadali špatně, protože predikce jim nabídla rovnou správnou verzi a oni ji vybrali, aniž by přemýšleli, v čem se nabídka liší od jejich vstupu. 
 
-Mezi další výhody, které studenti uvedli ve výše uvedené studii, patřilo například to, že automatické doplňování jim potvrdilo, že podobné téma již někdo před nimi hledal, a jejich pojetí zpracovávaného tématu je tedy pravděpodobně správné. 
+Mezi další výhody, které studenti uvedli ve zmíněné studii, patřilo například to, že automatické doplňování jim potvrdilo, že podobné téma již někdo před nimi hledal a jejich postup je tedy pravděpodobně správný. 
 
-S tímto souvisí i jedna odpověď od dalšího účastníka studie, která uvádí, že autocomplete pro ně fungoval jako nástroj pro dotvoření myšlenky, jako brainstorming od počítače. 
+S tímto souvisí i jedna odpověď od dalšího účastníka studie, která uvádí, že našeptávač pro ně fungoval jako nástroj pro dotvoření myšlenky, jako brainstorming od počítače. 
 
-Z výše uvedeného lze tedy vyvozovat, že automatické doplňování textu skutečně nemá význam pouze pro uživatele tělesně či jinak postižené, kteří mohou mít problém se samotným zadáváním textu, ale může posloužit i běžným uživatelům jako nástroj pro kontrolu toho, zda to, co píšou, je správně, k tématu a podobně. [14]
+Z výše uvedeného lze tedy vyvozovat, že automatické doplňování textu na klasickém počítači skutečně nemá význam pouze pro uživatele tělesně či jinak postižené, kteří mohou mít problém se samotným zadáváním textu, ale může posloužit i běžným uživatelům jako nástroj pro kontrolu toho, zda to, co píšou, je správně, k tématu a podobně. V základním rozdílem oproti předchozím případům využití predikce je fakt, že uživatel nemusí přesně vědět, co chce napsat, předtím, než to vidí jako doplnění.
+% cit. autocomplete_as_a_research_tool.pdf
 
 \subsection{Měření účinnosti zadávání textu}
 
-S ohledem na velké množství metod zadávání textu, z nichž mnohé obsahují technologie na ušetření počtu nutných stisků, je nutné mít možnost nějakým objektivním způsobem testovat jednotlivé metody, porovnávat je a zjistit jejich skutečné možnosti. Pro tyto účely slouží metoda výpočtu KSPC (zkratka pro keystrokes per character). Jak název napovídá, udává průměrný počet stisků kláves nutných k zadání jednoho znaku danou metodou\footnote{přestože název obsahuje stisky kláves, veličina se používá i pro měření účinnosti zadávání textu např. pomocí stylusu na dotykovém zařízení}.
+S ohledem na velké množství metod zadávání textu, z nichž mnohé obsahují technologie prediktivního textu pro ušetření počtu nutných stisků kláves, je nutné mít možnost objektivním způsobem testovat jednotlivé metody, porovnávat je a hodnotit jejich skutečné možnosti. Pro tyto účely slouží metoda výpočtu KSPC (zkratka pro keystrokes per character). Výpočet čísla, které lze pak použít pro srovnávání, se provádí pomocí vzorce, který bere v potaz  udává průměrný počet stisků kláves nutných k zadání jednoho znaku danou metodou\footnote{přestože název obsahuje stisky kláves, veličina se používá i pro měření účinnosti zadávání textu např. pomocí stylusu na dotykovém zařízení}.
 
 Metody zadávání textu lze podle KSPC rozdělit do tří kategorií: ty, pro které je KSPC větší než 1, ty, pro které je rovno 1 a nakonec ty, jejichž KSPC dosahuje hodnot nižších než 1.
 
@@ -114,7 +141,7 @@ Jazykovým modelem je v tomto případě korpus a jeho omezené formy. Tyto form
 
 
 \[
-	KSPC = \frac{\sum{ (K_c × F_c) }}{\sum{ (C_c × F_c) }}
+	KSPC = \frac{\sum{ (K_c \times F_c) }}{\sum{ (C_c \times F_c) }}
 \]
 
 kde $K_c$ je počet úhozů nutný pro zadání znaku, $C_c$ je velikost znaku a $F_c$ je frekvence daného znaku v korpusu. Pokud se tedy tento vzorec aplikuje na situaci, kdy metoda zadávání textu vybírá písmeno bez ohledu na kontext, platí, že $C_c$ = 1, pokud se vybírá v závislosti na jednom předešlém znaku, je $C_c$ = 2. Pokud metoda zohledňuje celá slova, počítá se s průměrnou délkou slov v daném jazyce. Ta se počítá jako vážený průměr počtu znaků ve slovech daného jazyka, který pro BNC vychází na 4,59 znaku; pro srovnání, [15] počítá při svých výpočtech s 5 úhozy na slovo.
@@ -418,7 +445,7 @@ Co se problémů týče, hlavním z nich je fakt, že momentální implementace 
 
 \todo[inline]{tady by bylo na miste zminit naprostou neschopnost podporu formatovani textu, ale to az pokud zjistime, ze to nejsme schopni spravit.. stejne jako to vraceni kursoru na spravne misto, pokud ma text vic jak jeden odstavec.. bylo by docela trapne, kdybychom tohle tam museli nejak vysvetlovat xD (teda ja, lol)}
 
-\subsection{Závěr}
+\section{Závěr}
 
 \begin{figure}[h]
 	\centering
