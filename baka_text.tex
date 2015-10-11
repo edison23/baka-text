@@ -44,7 +44,7 @@
 
 \section*{Úvod}
 
-Různé implementace predikce textu se objevují v mobilních telefonech a elektronických osobních asistentech již přes dvě dekády, přičemž jejich hlavním úkolem je usnadnit zadávání textu na klávesnicích mobilních zařízení. V poslední době se s rozmachem chytrých telefonů objevily systémy predikce textu (a automatické opravy slov, která s ní souvisí) i pro jednoznačné klávesnice typu QWERTY, a to z důvodu zvýšení komfortu psaní. Tyto systémy mají ve většině dvě nevýhody. První z nich je závislost na konkrétním operačním systému, konkrétním zařízení (především v případě starších telefonů) či na konkrétní aplikaci, která zajišťuje zobrazení klávesnice na dotykovém displeji. Takové systémy tudíž nejsou použitelné například pro psaní na stolním počítači na klasické QWERTY klávesnici. Druhou nevýhodou je pak fakt, že systémy musí téměř bez výjimky spoléhat pouze na\td{Jediny, co vim, ze nespoliha na lokalni data, je googlovske rozpoznavani rucne psaneho pisma.. a to je pak nekdy docela blby, kdyz se clovek ocitne na edgi treba} lokálně uložená jazyková data, která tak musí být relativně kompaktní co do datové velikosti a nemusí tedy obsahovat potřebné množství dat, aby uživatel nebyl omezován nedokonalostmi jazykového modelu.
+Různé implementace predikce textu se objevují v mobilních telefonech a elektronických osobních asistentech již přes dvě dekády, přičemž jejich hlavním úkolem je usnadnit zadávání textu na klávesnicích mobilních zařízení. V poslední době se s rozmachem chytrých telefonů objevily systémy predikce textu (a automatické opravy slov, která s ní souvisí) i pro jednoznačné klávesnice typu QWERTY, a to z důvodu zvýšení komfortu psaní. Tyto systémy mají ve většině dvě nevýhody. První z nich je závislost na konkrétním operačním systému, konkrétním zařízení (především v případě starších telefonů) či na konkrétní aplikaci, která zajišťuje zobrazení klávesnice na dotykovém displeji. Takové systémy tudíž nejsou použitelné například pro psaní na stolním počítači na klasické QWERTY klávesnici. \td{nasleduje celkem BS, jak jsem zjistil, bo treba Swype pry ma Living Language a bere data z cloudu.. takze by to chtelo vymyslet nejake realne vyhody naseho systemu.. nejak me nic nenapada xD} Druhou nevýhodou je pak fakt, že systémy musí téměř bez výjimky spoléhat pouze na lokálně uložená jazyková data, která tak musí být relativně kompaktní co do datové velikosti a nemusí tedy obsahovat potřebné množství dat, aby uživatel nebyl omezován nedokonalostmi jazykového modelu.
 
 Protipólem velkého množství aplikací pro predikci textu pro mobilní zařízení je pak téměř prázdná množina takových aplikací pro klasické počítače se standardní klávesnicí. Textové procesory typu LibreOffice Writer\footnote{https://www.libreoffice.org/discover/writer/} mívají vestavěné primitivní způsoby doplňování, které ale čerpají data pouze z textu, který je v danou chvíli v editovaném dokumentu. Textové editory typu Atom\footnote{https://atom.io/} mívají podobnou funkcionalitu, navíc například při editaci programového kódu nabízí relativně komplexní doplňování, ale pouze podle předem připravených šablon.
 
@@ -99,7 +99,7 @@ Důvody, pro které si může uživatel vybrat užívat prediktivní text, se li
 
 Na mobilních zařízeních, která disponují nejednoznačnou klávesnicí (typicky starší mobilní telefony s 12tlačítkovou klávesnicí) je predikce výhodná proto, že umožňuje zadávat text jediným stisknutím kláves, které reprezentují znaky obsažené v psaném slově. Bez predikce by byl uživatel nucen v případě písmene, které na klávese není na první pozici, stisknout tutéž klávesu vícekrát po sobě.\td{detaily v kapitole o ITU klavesnicich, mam to sem nejak napsat?}
 
-Dalším případem jsou mobilní zařízení, která mají dotykový displej, kde je zase problém s přesností, s jakou je uživatel schopen se na klávesy trefit svým prstem nebo stylusem. Tento případ sice spadá do kategorie automatických oprav, ale může být kombinován s prediktivním textem.
+Dalším případem jsou mobilní zařízení, která mají dotykový displej, kde je zase problém s přesností, s jakou je uživatel schopen se na klávesy trefit svým prstem nebo stylusem. Tento případ sice spadá do kategorie automatických oprav, ale může být kombinován s prediktivním textem. % cit. http://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO1&Sect2=HITOFF&d=PALL&p=1&u=%2Fnetahtml%2FPTO%2Fsrchnum.htm&r=1&f=G&l=50&s1=8232973.PN.&OS=PN/8232973&RS=PN/8232973 --background || tahle citace, from now on: applePatent01
 
 Při psaní na jednoznačné fyzické klávesnici (typicky klasická QWERTY klávesnice, jež je pro jednoduchost v této práci považována za reprezentanta všech ostatních lokalizovaných rozložení) obvykle není predikce potřeba, ale například pro uživatele fyzicky postiženého může být výhodné mít k dispozici systém, který mu ušetří stisky kláves nutné k zapsání celého slova.
 
@@ -119,6 +119,42 @@ S tímto souvisí i jedna odpověď od dalšího účastníka studie, která uv�
 
 Z výše uvedeného lze tedy vyvozovat, že automatické doplňování textu na klasickém počítači skutečně nemá význam pouze pro uživatele tělesně či jinak postižené, kteří mohou mít problém se samotným zadáváním textu, ale může posloužit i běžným uživatelům jako nástroj pro kontrolu toho, zda to, co píšou, je správně, k tématu a podobně. V základním rozdílem oproti předchozím případům využití predikce je fakt, že uživatel nemusí přesně vědět, co chce napsat, předtím, než to vidí jako doplnění.
 % cit. autocomplete_as_a_research_tool.pdf
+
+\section{Jak predikce textu funguje}
+
+Prakticky všechny aplikace, které se snaží usnadnit zadávání textu, se snaží o předvídání dalšího slova, jež uživatel může chtít napsat. Existují dva různé přístupy umožňující takového výsledku dosáhnout.
+
+\subsection{Slovníkový model}
+
+Pokud prediktivní systém využívá slovníkového modelu, znamená to, že má v paměti zařízení uložený slovník (seznam slov) společně s jejich frekvencemi v referenčním korpusu, tedy tzv. frekvenční slovník (detaily v kapitole \ref{frecdic}) . % cit. http://lifehacker.com/how-predictive-keyboards-work-and-how-you-can-train-yo-1643795640 -- searchfor:"The single thing that unites these" 
+Implementace frekvenčních slovníků v aplikacích pro predikci textu se pravděpodobně značně liší a vzhledem k tomu, že jde o uzavřené komerční systémy, není možné konkrétní implementace zjistit.
+
+U systémů na mobilních telefonech s ITU klávesnicí výběr kandidátského slova probíhá tak, že systém vytvoří kombinace všech slov, která mohou vzniknout z písmen na stisknutých klávesách a vzniklá slova porovnal se slovníkem. Průnik těchto dvou množin pak byl uživateli nějakým způsobem prezentován. 
+
+Systémy s plnou QWERTY klávesnicí na mobilních zařízeních čelily, jak bylo naznačeno výše, jinému problému. Jelikož je velikost velikost zařízení omezená a klávesy klávesnice jsou tudíž relativně malé, je vysoká pravděpodobnost, že se uživatel dopustí chyby při zadávání vstupu. % cit. (opet) applePatent01 --background
+
+\td{je to patent applu, urcite toho bude existovat vic, tak se pojistuju xD}Jedno z řešení je následující. Po získání vstupu z klávesnice se vytvoří permutace, které jsou pak porovnávány se slovníkem. Permutace jsou v tomto případě řetězce, jež byly vytvořeny tak, že pro každý znak A v původním zadaném řetězci O byl vytvořen nový řetězec P obsahující na pozici původního znaku A znak A nebo znak, který byl na klávesnici původnímu znaku A sousedem. Pro slovo {\it pes} by tak vytvořené permutace při použití klávesnice QWERTY vypadaly takto: % cit. applePatent01 -- searchfor:"Permutations of input characters and neighbor"
+
+{\tt pes, oes, les, ies, kes, prs, pds, pws, pss, per, ped, pew}
+
+Dalším řešením, které pravděpodobně bývá kombinováno s výše uvedenou metodou, je hledání slov ve slovníku, která mají od zadaného slova určitou vzdálenost. Vzdáleností je zde myšlena Levenshteinova vzdálenost, tedy vyjádření míry odlišnosti dvou řetězců minimálním množstvím operací {\it vložit} znak, {\it smazat} znak, {\it prohodit} dva sousední znaky a {\it nahradit} jeden znak jiným, které je nutno provést, aby z prvního řetězce byl vytvořen druhý. % cit. https://en.wikipedia.org/wiki/Levenshtein_distance
+Tato metoda také využívá\td{nejsem si jist, jak podrobne do tohohle chci zabredavat, stejne to mam jen z http://norvig.com/spell-correct.html} frekvenčního slovníku, který navíc kombinuje se statistickým modelem pravděpodobnosti výskytu a pravděpodobnosti souvýskytu. % cit. http://norvig.com/spell-correct.html
+
+\subsubsection{Frekvenční slovníky}\label{frecdic}
+
+\td{tahle sekce se mi tu vubec nelibi, nacpal jsem ji sem jen proto, aby tu bylo neco pro pani docentku Hladkou}
+
+Frekvenční slovník je slovník, který ke každému heslu uvádí hodnoty spojené s frekvencí daného slova ve zdrojovém korpusu. Obvykle to je hodnota absolutní frekvence daného slova a například Frekvenční slovník češtiny %  cit. Čerák et al. 
+uvádí také průměrnou redukovanou frekvenci, což je hodnota, jež vychází z absolutní frekvence, avšak zohledňuje rozložení daného slova v korpusu. Pokud tedy mají dvě slova stejnou frekvenci, avšak první z nich se vyskytuje pouze v malém množství odborných textů, zatímco výskyty druhého jsou rovnoměrně rozloženy přes celý korpus, druhé slovo dostane vyšší číselnou hodnotu ARF než slovo první. Podle hodnoty ARF tak lze vyvodit, že druhé slovo je obecně známější a užívanější širším publikem. %  cit. Frek slovník, Čermák, předmluva 
+V kontextu s predikcí slov to může například znamenat, že je pravděpodobnější, že uživatel chce napsat spíše druhé slovo nežli to první, které je pravděpodobně značně odborné.
+
+Tvorba frekvenčních slovníků byla v dobách před rozvojem počítačů schopných zpracovat velká množství textů poněkud komplikovaná. Vzniklé databáze bylo obtížné aktualizovat, jejich výroba byla náročná a pomalá. Nástup počítačů však většinu těchto problémů odstranil, takže je možné velmi snadno z korpusu vyrobit frekvenční slovník, který bude tak aktuální, jako je samotný korpus. Na rozdíl od ručního zpracování dat navíc počítačové zpracování dovoluje pracovat s mnohem většími korpusy, takže výsledný frekvenční slovník může být i přesnější. Pro srovnání, jeden z prvních frekvenčních slovníků pro angličtinu,\td{jeste by to chtelo nejaky data o soucasnych frekvencnich slovnicich, nebo staci ty priklad o BNC? Prip. kde je vzit? } The Teachers Word Book of 30,000 words, měl 30 tisíc lemmat (z 13 tisíc slovních rodin %  cit. Goulden, Nation and Read, 1990 
+) a byl vyroben z ručně psaného korpusu, který obsahoval 18 milionů slov. %  cit. http://www.lextutor.ca/research/nation_waring_97.html 
+Naproti tomu Britský národní korpus (BNC) má 112 milionů tokenů a webový korpus enTenTen (2013) má tokenů téměř 23 miliard. %  cit. sketch engine 
+
+\subsection{Statistický model}
+
+\todo[inline]{Nejak mi porad prijde, ze o tom nic nevim... pls help xD}
 
 \section{Měření účinnosti zadávání textu}
 
@@ -192,40 +228,7 @@ Při vyhodnocování rychlosti psaní je důležité zohlednit také chyby ve v�
 
 Metoda KSPC může být použita k vyčíslení chybovosti tak, že porovná počet znaků zadaných a počet znaků ve výsledném řetězci. Jednou z nevýhod je fakt, že žádným způsobem nerozlišuje chybné znaky od správných, takže vyčísluje pouze množství oprav. % gradu04481.pdf ch 1.1.4 about error rates
 
-Dalším způsobem, jak změřit chybovost, s jakou uživatel text zadal, je vyhodnocení Levenshteinovy vzdálenosti originálního a přepsaného řetězce, tedy nejmenšího počtu editací výsledného řetězce, kterými jej lze převést do podoby originálního řetězce. K dispozici jsou operace smazání znaku, vložení znaku a náhrady znaku jednoho za jiný. % cit https://en.wikipedia.org/wiki/Levenshtein_distance & gradu04481.pdf ch 1.1.4
-
-\section{Technický bláboly okolo predikce}
-
-Problematika predikce textu je intenzivně zkoumána od dob, kdy se rozšířily mobilní telefony s podporou zadávání textu. Jelikož velikost zařízení od začátku nedovolovala osazení plné QWERTY klávesnice, objevovaly se její náhrady, které jsou podrobněji popsány v dalších kapitolách této práce. Jakkoliv se mohla jejich implementace odlišovat, měly obvykle společnou jednu vlastnost, a to nejednoznačnost. Nejrozšířenější se stala klávesnice typu\td{ITU klavesnici mam popsanou nize, mam to nejak linkovat?} ITU, která se udržela dodnes. Tento typ klávesnice sdružuje písmena po třech až čtyřech na jednu klávesu, přičemž ze skupiny se pak vybírá v základním režimu pomocí opakovaných stisků kláves (multitap). Vzhledem k velmi zásadním omezením rychlosti, které tento způsob zadávaní implikuje, byly vyvinuty různé technologie, které se snažily o zrychlení zadávání tak, aby KSPC bylo rovno jedné nebo ideálně menší jedné.
-
-Aby bylo dosaženo KSPC rovného jedné, stačí technologie typu T9, která vyhledává ve slovníku možné kombinacee písmen ze stisknutých kláves a nalezené pak předkládá uživateli. V případě, že existuje ve slovníku pouze jedno slovo, které odpovídá kombinaci písmen ze stisknutých kláves, je dosaženo KSPC rovného jedné. Pokud však takových slov ve slovníku existuje více, je nutno provést výběr a jeho potvrzení, což zvyšuje KSPC nad jedna.
-
-Pro dosažení hodnot KSPC nižších než jedna je už nutné implementovat predikci textu. To znamená, že aplikace musí uhádnout psané slovo ještě dříve, než uživatel napíše všechna písmena daného slova. K tomu, aby mohla účinně předvídat, které slovo uživatel píše, potřebuje kvalitní jazykový model. Jazykový model může být buď slovník nebo statistický model. 
-
-\subsection{Slovníkový model}
-
-Pokud systém používá slovníkovou metodu, potřebuje mít k dispozici relativně rozsáhlý frekvenční slovník slovních tvarů a jejich frekvence. Ke slovníku slovních tvarů se obvykle přidává ještě frekvenční slovník n-gramů, který zajišťuje účinnější predikce díky zohlednění kontextu. Pokud například tedy implementace využívá slovníku bi-gramů, je pak teoreticky aplikace, která je na ní postavena, schopna předvídat nejen doplnění slova, která uživatel zrovna píše, ale i celá slova, která by mohl chtít napsat po dokončení předchozího slova.
-
-Frekvenční slovník je slovník, který ke každému heslu uvádí hodnoty spojené s frekvencí daného slova ve zdrojovém korpusu. Obvykle to je hodnota absolutní frekvence daného slova a například Frekvenční slovník češtiny %  cit. Čerák et al. 
-uvádí také průměrnou redukovanou frekvenci, což je hodnota, jež vychází z absolutní frekvence, avšak zohledňuje rozložení daného slova v korpusu. Pokud tedy mají dvě slova stejnou frekvenci, avšak první z nich se vyskytuje pouze v malém množství odborných textů, zatímco výskyty druhého jsou rovnoměrně rozloženy přes celý korpus, druhé slovo dostane vyšší číselnou hodnotu ARF než slovo první. Podle hodnoty ARF tak lze vyvodit, že druhé slovo je obecně známější a užívanější širším publikem. %  cit. Frek slovník, Čermák, předmluva 
-V kontextu s predikcí slov to může například znamenat, že je pravděpodobnější, že uživatel chce napsat spíše druhé slovo nežli to první, které je pravděpodobně značně odborné.
-
-Tvorba frekvenčních slovníků byla v dobách před rozvojem počítačů schopných zpracovat velká množství textů poněkud komplikovaná. Vzniklé databáze bylo obtížné aktualizovat, jejich výroba byla náročná a pomalá. Nástup počítačů však většinu těchto problémů odstranil, takže je možné velmi snadno z korpusu vyrobit frekvenční slovník, který bude tak aktuální, jako je samotný korpus. Na rozdíl od ručního zpracování dat navíc počítačové zpracování dovoluje pracovat s mnohem většími korpusy, takže výsledný frekvenční slovník může být i přesnější. Pro srovnání, jeden z prvních frekvenčních slovníků pro angličtinu,\td{jeste by to chtelo nejaky data o soucasnych frekvencnich slovnicich, nebo staci ty priklad o BNC? Prip. kde je vzit? } The Teachers Word Book of 30,000 words, měl 30 tisíc lemmat (z 13 tisíc slovních rodin %  cit. Goulden, Nation and Read, 1990 
-) a byl vyroben z ručně psaného korpusu, který obsahoval 18 milionů slov. %  cit. http://www.lextutor.ca/research/nation_waring_97.html 
-Naproti tomu Britský národní korpus (BNC) má 112 milionů tokenů a webový korpus enTenTen (2013) má tokenů téměř 23 miliard. %  cit. sketch engine 
-
-\todo[inline]{a sem asi nekam patri, ze se taky data berou z uziv. dat - gmail}
-
-Implementace frekvenčních slovníků v aplikacích pro predikci textu se pravděpodobně značně liší a vzhledem k tomu, že jde o uzavřené komerční systémy, není možné konkrétní implementace zjistit.
-
-\subsection{Statistický model}
-
-\todo[inline]{A tady si budu muset jeste neco vymyslet... a nejdriv si to nastudovat}
-
-% Odlišný způsob, jak uchovávat data o jazyce, je využívat statistického modelu, který obsahuje data o n-gramech a jejich frekvencích, neboli pravděpodobnostech. Takový model pak negeneruje predikce z předem daného seznamu slov, ale ze seznamu n-gramů. Jeho výhodou je vyšší flexibilita, protože nemusí vůbec znát výsledné slovo na to, aby například správně desambiguoval pravděpodobně zamýšlený význam klávesy na nejednoznačné klávesnici. Vzhledem k tomu, že statistický model může být relativně úsporný co se datové náročnosti týče, 
-
-% Nevýhodou je, že systém, který využívá statistický model s n-gramy obsahujícími jen kupříkladu dvojice písmen, může předpovídat před
-
+Dalším způsobem, jak změřit chybovost, s jakou uživatel text zadal, je vyhodnocení \td{uz to tam jednou mam, mam to vysvetlovat znovu?}Levenshteinovy vzdálenosti originálního a přepsaného řetězce. % cit gradu04481.pdf ch 1.1.4
 
 \section{Historie predikce textu}
 
