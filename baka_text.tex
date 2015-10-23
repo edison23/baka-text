@@ -6,6 +6,7 @@
 \usepackage{url}
 \usepackage{fontspec}
 \usepackage{lmodern}
+\usepackage{csquotes}
 \usepackage{graphicx}
 \usepackage[rgb]{xcolor}
 \graphicspath{ {../img/} }
@@ -14,26 +15,29 @@
 \usepackage{xltxtra}
 \usepackage{todonotes}
 \usepackage{epstopdf}
+% \usepackage[sorting=nyt,style=apa]{biblatex}
 
 \newcommand{\td}[2][]{
 	{\todo[size=\footnotesize]{#2}}
 }
 
 \setmainlanguage{czech}
+\setmainfont{CMU Serif Roman}
 
-%\usepackage{e-tex}
-%\usepackage{etoolbox}
-%\usepackage{keyval}
-%\usepackage{ifthen}
-%\usepackage[czech]{babel}
-%\usepackage[backend=biber]{biblatex}
-%\usepackage{biblatex}
-%\usepackage{polyglossia}
-%\usepackage[autostyle]{csquotes}
-%\setmainlanguage{english}
-%\usepackage{microtype}
-%\usepackage[authordate15, backend=biber]{biblatex-chicago}
-%\addbibresource{bibl.bib}
+% \usepackage[english,czech]{babel} % main language of the document must be last
+\usepackage[
+   backend=biber
+  ,style=iso-authoryear
+  ,sortlocale=cs_CZ
+  ,autocite=footnote
+  ,maxnames=2
+  ,minnames=1
+  ,spacecolon=true
+  ]
+  {biblatex}
+% \usepackage[backend=biber, style=authoryear, sortlocale=cs_CZ, minnames=1, maxnames=2]{biblatex}
+
+\addbibresource{bibliografie.bib}
 
 
 
@@ -77,18 +81,21 @@ Ačkoliv je praktická část této práce zaměřena na predikci textu a oprava
 
 Systémy pro predikci textu určené k tvorbě volného textu jsou obvykle, jak bude zřejmé z dalšího popisu jednotlivých aplikací, založeny na více či méně rozsáhlém lokálně uloženém korpusu slov či slovních spojení, ze kterého vybírají možná doplnění. Tyto systémy zpravidla umožňují uživateli přidávat manuálně slova, která napsal a nejsou v základním korpusu, což slouží jako základní uživatelské přizpůsobení. Lokální korpus má ovšem tu nevýhodu, že jeho velikost je značně limitována možnostmi zařízení, tj. jeho paměťovou a výpočetní kapacitou. To je problém především pro jazyky s rozvinutou flexí, jako je čeština, které potřebují na rozdíl analytických jazyků, např. angličtiny, poněkud větší množství tvarů jednotlivých slov. 
 
-Rozdílnost angličtiny a češtiny v ohledu množství slovních tvarů připadajících na jedno lemma lze porovnat například na dvou velkých korpusech, enTenTen13 a czTenTen12. Jde o rozsáhlé korpusy vytvořené z textů získaných na Internetu, které byly vyčištěny a zbaveny duplikátů nástrojem Onion\footnote{\url{http://corpus.tools/wiki/Onion}}. Anglický korpus enTenTen13 obsahuje 39 452 714 slov a 37 366 565 lemmat (základních slovních tvarů). Naproti tomu český korpus czTenTen12 obsahuje slov 18 725 879 a lemmat pouze 13 976 481.\td{doplnit to info z majky o teoretickem pomeru?} V češtině tedy podle výše uvedených dat připadá na jedno lemma 1,339 slovního tvaru, naproti tomu v angličtině na jedno lemma připadá pouze 1,052 slovního tvaru. Je tedy vidět, že slovník pro češtinu by v ideálním případě měl být minimálně 1,27× větší než slovník o stejném množství základních tvarů pro angličtinu.
+Rozdílnost angličtiny a češtiny v ohledu množství slovních tvarů připadajících na jedno lemma lze porovnat například na dvou velkých korpusech, enTenTen13 a czTenTen12. Jde o rozsáhlé korpusy vytvořené z textů získaných na Internetu, které byly vyčištěny a zbaveny duplikátů nástrojem Onion\footnote{\url{http://corpus.tools/wiki/Onion}}. Anglický korpus enTenTen13 obsahuje 39 452 714 slov a 37 366 565 lemmat (základních slovních tvarů)\parencite{czTenTen12_info}. Naproti tomu český korpus czTenTen12 obsahuje slov 18 725 879 a lemmat pouze 13 976 481 \parencite{enTenTen13_info}.\td{doplnit to info z majky o teoretickem pomeru?} V češtině tedy podle výše uvedených dat připadá na jedno lemma 1,339 slovního tvaru, naproti tomu v angličtině na jedno lemma připadá pouze 1,052 slovního tvaru. Je tedy vidět, že slovník pro češtinu by v ideálním případě měl být minimálně 1,27× větší než slovník o stejném množství základních tvarů pro angličtinu.
 % cit.: https://ske.fi.muni.cz/bonito/run.cgi/corp_info?corpname=preloaded/cztenten12_8
+	% Done
 % cit.: https://ske.fi.muni.cz/bonito/run.cgi/corp_info?corpname=preloaded/ententen13
+	% Done
 
 Tento fakt komplikuje implementaci slovníkových jazykových  modelů do aplikací pro predikci českého textu, protože je nutno uchovávat větší množství slovních tvarů než pro angličtinu. Stejně tak je výrazně větší potřeba\td{ tady by se hodilo neco ocitovat, akorat ze ja jsem si to vymyslel.. nejaky napad?} zohledňovat kontext, aby byly slovní tvary vybírány správně.
 
 \section{Klíčové vlastnosti systému pro predikci textu}
 
-Navzdory velmi odlišným způsobům použití systémů pro doplňování textů jsou některé jejich klíčové vlastnosti pro většinu implementací společné. Studie, které zkoumaly efektivitu těchto systémů, obecně docházejí ke podobným závěrům co se požadavků na tyto systémy týče. Ať jde o vyhledávač typu Google\footnote{\url{https://www.google.com}} nebo Yahoo\footnote{\url{https://www.yahoo.com}}, o našeptávač e-mailových adres v e-mailovém klientu nebo o predikci volného textu v textovém editoru, aby uživatel měl při užívání aplikace pocit, že mu doplňování textu skutečně pomáhá spíše než překáží, je klíčových několik vlastností.  Primární je rychlost, s níž aplikace možná doplnění uživateli zobrazuje. Nandi a Jagadish uvádí, že by odezva neměla převyšovat 100 ms \cite{Nandi2007}. Tento faktor je rozhodující pro to, zda si uživatel zvolí nabídnutá doplnění použít, nebo raději napíše zbytek textu sám. V případě implementace predikce textu do editoru, kde uživatel zadává volný text, jímž si je relativně jist, je tato vlastnost pro uživatelovo rozhodnutí patrně klíčová. Naproti tomu ve vyhledávání lze očekávat, že uživatel bude ochoten počkat delší chvíli na zobrazení doplnění. S tímto souvisí i další vlastnost, kterou uvádí\td{da se tenhle zpusob citace pouzivat, kdyz pak budu citovat normalne treba ciselne?} Ward a kol. v publikaci Autocomplete as a Research Tool: A Study on Providing Search Suggestions -- umožnění uživateli pohodlně nabízené predikce ignorovat. Rozhodne-li se totiž, že např. bude rychlejší text manuálně napsat a predikce nepoužít, je žádoucí, aby mu grafické zpracování nabídky žádným způsobem neztěžovalo takto učinit. Z tohoto důvodu je ve většině systémů nabídka předvídaných výrazů zobrazována pod textovým polem (např. automatické doplňování ve vyhledávači Google). 
+Navzdory velmi odlišným způsobům použití systémů pro doplňování textů jsou některé jejich klíčové vlastnosti pro většinu implementací společné. Studie, které zkoumaly efektivitu těchto systémů, obecně docházejí ke podobným závěrům co se požadavků na tyto systémy týče. Ať jde o vyhledávač typu Google\footnote{\url{https://www.google.com}} nebo Yahoo\footnote{\url{https://www.yahoo.com}}, o našeptávač e-mailových adres v e-mailovém klientu nebo o predikci volného textu v textovém editoru, aby uživatel měl při užívání aplikace pocit, že mu doplňování textu skutečně pomáhá spíše než překáží, je klíčových několik vlastností.  Primární je rychlost, s níž aplikace možná doplnění uživateli zobrazuje. Nandi a Jagadish uvádí, že by odezva neměla převyšovat 100 ms \\cite{Nandi2007}. Tento faktor je rozhodující pro to, zda si uživatel zvolí nabídnutá doplnění použít, nebo raději napíše zbytek textu sám. V případě implementace predikce textu do editoru, kde uživatel zadává volný text, jímž si je relativně jist, je tato vlastnost pro uživatelovo rozhodnutí patrně klíčová. Naproti tomu ve vyhledávání lze očekávat, že uživatel bude ochoten počkat delší chvíli na zobrazení doplnění. S tímto souvisí i další vlastnost -- umožnění uživateli pohodlně nabízené predikce ignorovat. \parencite{ward2012autocomplete} Rozhodne-li se totiž, že např. bude rychlejší text manuálně napsat a predikce nepoužít, je žádoucí, aby mu grafické zpracování nabídky žádným způsobem neztěžovalo takto učinit. Z tohoto důvodu je ve většině systémů nabídka předvídaných výrazů zobrazována pod textovým polem (např. automatické doplňování ve vyhledávači Google \parencite{google2015}). 
 % https://support.google.com/websearch/answer/106230?hl=cs&vid=1-635809595515389355-3739668669
+% Done
 
-Zobrazení nabídky v textových editorech, kde se nejedná o jednořádkové pole s očekávaným vstupem pouze několika jednotlivých slov, je předmětem několika studií, z nichž např. jedna navrhuje zobrazovat nabídku na spodní části obrazovky, aby uživatel nebyl nucen přesouvat pozornost příliš daleko od klávesnice. % ocitovat
+Zobrazení nabídky v textových editorech, kde se nejedná o jednořádkové pole s očekávaným vstupem pouze několika jednotlivých slov, je předmětem několika studií, z nichž např. jedna navrhuje zobrazovat nabídku na spodní části obrazovky, aby uživatel nebyl nucen přesouvat \td{ocitovat}pozornost příliš daleko od klávesnice. % ocitovat
 Lze ale polemizovat nad tím, jak je tato argumentace validní pro uživatele bez motorického nebo jiného postižení, jelikož tací většinou při psaní na klávesnici nehledí. Textové editory pro psaní programového kódu tento problém většinou řeší zobrazováním nabízených doplnění v menu nad nebo pod kursorem (tedy zhruba podobně jako jednořádková vyhledávací a jiná pole). Podobně to řeší i kancelářský balík LibreOffice, který zobrazuje po napsání prvních tří písmen slova jednu predikci nad kursorem. Výběr predikce se odvíjí od frekvence, přičemž velký důraz je kladen na délku nabízeného slova (obrázek \ref{fig:LOpredict} na straně \pageref{fig:LOpredict}). Tento systém uživateli umožňuje udržovat pozornost na relativně malé oblasti obrazovky, čímž se zvyšuje pravděpodobnost, že se rozhodne doplnění použít. 
 
 \begin{figure}[h]
@@ -108,7 +115,8 @@ Důvody, pro které si může uživatel vybrat užívat prediktivní text, se li
 
 Na mobilních zařízeních, která disponují nejednoznačnou klávesnicí (typicky starší mobilní telefony s 12tlačítkovou klávesnicí) je predikce výhodná proto, že umožňuje zadávat text jediným stisknutím kláves, které reprezentují znaky obsažené v psaném slově. Bez predikce by byl uživatel nucen v případě písmene, které na klávese není na první pozici, stisknout tutéž klávesu vícekrát po sobě\footnote{Více o klávesnicích ITU v kapitole \ref{itu-kb}.}.
 
-Dalším případem jsou mobilní zařízení, která mají dotykový displej, kde je zase problém s přesností, s jakou je uživatel schopen se na klávesy trefit svým prstem nebo stylusem. Tento případ sice spadá do kategorie automatických oprav, ale může být kombinován s prediktivním textem. % cit. http://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO1&Sect2=HITOFF&d=PALL&p=1&u=%2Fnetahtml%2FPTO%2Fsrchnum.htm&r=1&f=G&l=50&s1=8232973.PN.&OS=PN/8232973&RS=PN/8232973 --background || tahle citace, from now on: applePatent01
+Dalším případem jsou mobilní zařízení, která mají dotykový displej, kde je zase problém s přesností, s jakou je uživatel schopen se na klávesy trefit svým prstem nebo stylusem. Tento případ sice spadá do kategorie automatických oprav, ale může být kombinován s prediktivním textem \parencite{kocienda2012method}. % cit. http://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO1&Sect2=HITOFF&d=PALL&p=1&u=%2Fnetahtml%2FPTO%2Fsrchnum.htm&r=1&f=G&l=50&s1=8232973.PN.&OS=PN/8232973&RS=PN/8232973 --background || tahle citace, from now on: applePatent01
+	% Done
 
 Při psaní na jednoznačné fyzické klávesnici (typicky klasická QWERTY klávesnice, jež je pro jednoduchost v této práci považována za reprezentanta všech ostatních lokalizovaných rozložení) obvykle není predikce potřeba, ale například pro uživatele fyzicky postiženého může být výhodné mít k dispozici systém, který mu ušetří stisky kláves nutné k zapsání celého slova.
 
@@ -116,9 +124,9 @@ Při psaní na jednoznačné fyzické klávesnici (typicky klasická QWERTY klá
 
 Vedle původního určení predikce textu, kterým je zrychlit zadávání textu a tím komunikaci na rozhraní člověk--počítač, může pro běžného uživatele automatické doplňování textu plnit ještě několik dalších funkcí.
 
-Takovým případem může být doplňování ve vstupním poli vyhledávače typu Google, případně jeho obdoby v nějaké menší síti, například univerzitní knihovně.
+Takovým případem může být doplňování ve vstupním poli vyhledávače typu Google, případně jeho obdoby v nějaké menší síti, například univerzitní knihovně. \parencite{google2015}
 
-Ward et al. (Autocomplete as a Research Tool) ve své studii uvádí, že studenti, na kterých testoval automatické doplňování ve vyhledávání v rámci informačního systému knihovny, poukázali v následném dotazníku na několik dalších funkcí, které pro ně predikce plnila. 
+Ward et al. ve své studii Autocomplete as a Research Tool uvádí, že studenti, na kterých testoval automatické doplňování ve vyhledávání v rámci informačního systému knihovny, poukázali v následném dotazníku na několik dalších funkcí, které pro ně predikce plnila.
 
 Na otázku, jak by svým přátelům vysvětlil, k čemu je našeptávač dobrý, odpověděl jeden student, že rozhodně jako asistence v pravopisu. Studenti totiž často nemají z ústních zadání v hodinách úplně přesnou představu, jak se např. jméno autora, jehož díla jim jejich vyučující doporučil jako zdroj informací k práci, přesně píše. Autoři studie ze záznamů hledání vyvodili, že někteří studenti si ani nemuseli být vědomi faktu, že začátek jména autora zadali špatně, protože predikce jim nabídla rovnou správnou verzi a oni ji vybrali, aniž by přemýšleli, v čem se nabídka liší od jejich vstupu. 
 
@@ -126,8 +134,9 @@ Mezi další výhody, které studenti uvedli ve zmíněné studii, patřilo nap�
 
 S tímto souvisí i jedna odpověď od dalšího účastníka studie, která uvádí, že našeptávač pro ně fungoval jako nástroj pro dotvoření myšlenky, jako brainstorming od počítače. 
 
-Z výše uvedeného lze tedy vyvozovat, že automatické doplňování textu na klasickém počítači skutečně nemá význam pouze pro uživatele tělesně či jinak postižené, kteří mohou mít problém se samotným zadáváním textu, ale může posloužit i běžným uživatelům jako nástroj pro kontrolu toho, zda to, co píšou, je správně, k tématu a podobně. V základním rozdílem oproti předchozím případům využití predikce je fakt, že uživatel nemusí přesně vědět, co chce napsat, předtím, než to vidí jako doplnění.
+Z výše uvedeného lze tedy vyvozovat, že automatické doplňování textu na klasickém počítači skutečně nemá význam pouze pro uživatele tělesně či jinak postižené, kteří mohou mít problém se samotným zadáváním textu, ale může posloužit i běžným uživatelům jako nástroj pro kontrolu toho, zda to, co píšou, je správně, k tématu a podobně. V základním rozdílem oproti předchozím případům využití predikce je fakt, že uživatel nemusí přesně vědět, co chce napsat, předtím, než to vidí jako doplnění. \parencite{ward2012autocomplete}
 % cit. autocomplete_as_a_research_tool.pdf
+	% Done
 
 \section{Jak predikce textu funguje}
 
@@ -135,35 +144,40 @@ Prakticky všechny aplikace, které se snaží usnadnit zadávání textu, se sn
 
 \subsection{Slovníkový model}
 
-Pokud prediktivní systém využívá slovníkového modelu, znamená to, že má v paměti zařízení uložený slovník (seznam slov) společně s jejich frekvencemi v referenčním korpusu, tedy tzv. frekvenční slovník (detaily v kapitole \ref{frecdic}) . % cit. http://lifehacker.com/how-predictive-keyboards-work-and-how-you-can-train-yo-1643795640 -- searchfor:"The single thing that unites these" 
-Implementace frekvenčních slovníků v aplikacích pro predikci textu se pravděpodobně značně liší a vzhledem k tomu, že jde o uzavřené komerční systémy, není možné konkrétní implementace zjistit.
+Pokud prediktivní systém využívá slovníkového modelu, znamená to, že má v paměti zařízení uložený slovník (seznam slov) společně s jejich frekvencemi v referenčním korpusu, tedy tzv. frekvenční slovník (detaily v kapitole \ref{frecdic}). % cit. http://lifehacker.com/how-predictive-keyboards-work-and-how-you-can-train-yo-1643795640 -- searchfor:"The single thing that unites these" 
+	% Done
+Implementace frekvenčních slovníků v aplikacích pro predikci textu se pravděpodobně značně liší a vzhledem k tomu, že jde o uzavřené komerční systémy, není možné konkrétní implementace zjistit. \parencite{alanhenry2014}
 
 U systémů na mobilních telefonech s ITU klávesnicí výběr kandidátského slova probíhá tak, že systém vytvoří kombinace všech slov, která mohou vzniknout z písmen na stisknutých klávesách a vzniklá slova porovnal se slovníkem. Průnik těchto dvou množin pak byl uživateli nějakým způsobem prezentován. 
 
-Systémy s plnou QWERTY klávesnicí na mobilních zařízeních čelily, jak bylo naznačeno výše, jinému problému. Jelikož je velikost velikost zařízení omezená a klávesy klávesnice jsou tudíž relativně malé, je vysoká pravděpodobnost, že se uživatel dopustí chyby při zadávání vstupu. % cit. (opet) applePatent01 --background
+Systémy s plnou QWERTY klávesnicí na mobilních zařízeních čelily, jak bylo naznačeno výše, jinému problému. Jelikož je velikost velikost zařízení omezená a klávesy klávesnice jsou tudíž relativně malé, je vysoká pravděpodobnost, že se uživatel dopustí chyby při zadávání vstupu. \parencite{kocienda2012method} % cit. (opet) applePatent01 --background
+	% Done
 
-\td{je to patent applu, urcite toho bude existovat vic, tak se pojistuju xD}Jedno z řešení je následující. Po získání vstupu z klávesnice se vytvoří permutace, které jsou pak porovnávány se slovníkem. Permutace jsou v tomto případě řetězce, jež byly vytvořeny tak, že pro každý znak A v původním zadaném řetězci O byl vytvořen nový řetězec P obsahující na pozici původního znaku A znak A nebo znak, který byl na klávesnici původnímu znaku A sousedem. Pro slovo {\it pes} by tak vytvořené permutace při použití klávesnice QWERTY vypadaly takto: % cit. applePatent01 -- searchfor:"Permutations of input characters and neighbor"
+\td{je to patent applu, urcite toho bude existovat vic, tak se pojistuju xD}Jedno z řešení je následující. Po získání vstupu z klávesnice se vytvoří permutace, které jsou pak porovnávány se slovníkem. Permutace jsou v tomto případě řetězce, jež byly vytvořeny tak, že pro každý znak A v původním zadaném řetězci O byl vytvořen nový řetězec P obsahující na pozici původního znaku A znak A nebo znak, který byl na klávesnici původnímu znaku A sousedem. \parencite{kocienda2012method} Pro slovo {\it pes} by tak vytvořené permutace při použití klávesnice QWERTY vypadaly takto: % cit. applePatent01 -- searchfor:"Permutations of input characters and neighbor"
+	% Done
 
 {\tt pes, oes, les, ies, kes, prs, pds, pws, pss, per, ped, pew}
 
-Dalším řešením, které pravděpodobně bývá kombinováno s výše uvedenou metodou, je hledání slov ve slovníku, která mají od zadaného slova určitou editační vzdálenost. Editační vzdálenost je Levenshteinova vzdálenost, tedy vyjádření míry odlišnosti dvou řetězců minimálním množstvím operací {\it vložit} znak, {\it smazat} znak, {\it prohodit} dva sousední znaky a {\it nahradit} jeden znak jiným, které je nutno provést, aby z prvního řetězce byl vytvořen druhý. % cit. https://en.wikipedia.org/wiki/Levenshtein_distance
-Tato metoda také využívá\td{nejsem si jist, jak podrobne do tohohle chci zabredavat, stejne to mam jen z http://norvig.com/spell-correct.html} frekvenčního slovníku, který navíc kombinuje se statistickým modelem pravděpodobnosti výskytu a pravděpodobnosti souvýskytu. % cit. http://norvig.com/spell-correct.html
+Dalším řešením, které pravděpodobně bývá kombinováno s výše uvedenou metodou, je hledání slov ve slovníku, která mají od zadaného slova určitou editační vzdálenost. Editační vzdálenost je Levenshteinova vzdálenost, tedy vyjádření míry odlišnosti dvou řetězců minimálním množstvím operací {\it vložit} znak, {\it smazat} znak, {\it prohodit} dva sousední znaky a {\it nahradit} jeden znak jiným, které je nutno provést, aby z prvního řetězce byl vytvořen druhý. \parencite{levenshtein-en1966} \nocite{levenshtein1965}  % cit. https://en.wikipedia.org/wiki/Levenshtein_distance
+	% Done
+Tato metoda také využívá frekvenčního slovníku, který navíc kombinuje se statistickým modelem pravděpodobnosti výskytu a pravděpodobnosti souvýskytu. \parencite{peternorvig} % cit. http://norvig.com/spell-correct.html
+	% Done
 
 \subsubsection{Frekvenční slovníky}\label{frecdic}
 
 Frekvenční slovník je slovník, který ke každému heslu uvádí hodnoty spojené s frekvencí daného slova ve zdrojovém korpusu. Obvykle to je hodnota absolutní frekvence daného slova a například Frekvenční slovník češtiny %  cit. Čerák et al. 
-uvádí také průměrnou redukovanou frekvenci, což je hodnota, jež vychází z absolutní frekvence, avšak zohledňuje rozložení daného slova v korpusu. Pokud tedy mají dvě slova stejnou frekvenci, avšak první z nich se vyskytuje pouze v malém množství odborných textů, zatímco výskyty druhého jsou rovnoměrně rozloženy přes celý korpus, druhé slovo dostane vyšší číselnou hodnotu ARF než slovo první. Podle hodnoty ARF tak lze vyvodit, že druhé slovo je obecně známější a užívanější širším publikem. %  cit. Frek slovník, Čermák, předmluva 
-% cit. https://debtest.fi.muni.cz:8020/czechency?action=getdoc&amp;tr=preview2&amp;id=FREKVEN%C4%8CN%C3%8D%20SLOVN%C3%8DK
+uvádí také průměrnou redukovanou frekvenci, což je hodnota, jež vychází z absolutní frekvence, avšak zohledňuje rozložení daného slova v korpusu. Pokud tedy mají dvě slova stejnou frekvenci, avšak první z nich se vyskytuje pouze v malém množství odborných textů, zatímco výskyty druhého jsou rovnoměrně rozloženy přes celý korpus, druhé slovo dostane vyšší číselnou hodnotu ARF než slovo první. Podle hodnoty ARF tak lze vyvodit, že druhé slovo je obecně známější a užívanější širším publikem. \cite{vcermak2004frekvenvcni} %  cit. Frek slovník, Čermák, předmluva % Done
+% cit. https://debtest.fi.muni.cz:8020/czechency?action=getdoc&amp;tr=preview2&amp;id=FREKVEN%C4%8CN%C3%8D%20SLOVN%C3%8DK  % Not Done
 V kontextu s predikcí slov to může například znamenat, že je pravděpodobnější, že uživatel chce napsat spíše druhé slovo nežli to první, které je pravděpodobně značně odborné.
 
 
-Tvorba frekvenčních slovníků byla v dobách před rozvojem počítačů schopných zpracovat velká množství textů poněkud komplikovaná. Vzniklé databáze bylo obtížné aktualizovat, jejich výroba byla náročná a pomalá. Nástup počítačů však většinu těchto problémů odstranil, takže je možné velmi snadno z korpusu vyrobit frekvenční slovník, který bude tak aktuální, jako je samotný korpus. Na rozdíl od ručního zpracování dat navíc počítačové zpracování dovoluje pracovat s mnohem většími korpusy, takže výsledný frekvenční slovník může být i přesnější. Pro srovnání, jeden z prvních frekvenčních slovníků pro angličtinu,\td{jeste by to chtelo nejaky data o soucasnych frekvencnich slovnicich, nebo staci ty priklad o BNC? Prip. kde je vzit? } The Teachers Word Book of 30,000 words, měl 30 tisíc lemmat (z 13 tisíc slovních rodin %  cit. Goulden, Nation and Read, 1990 
-% Thorndike, Edward L. 1874-1949. The Teacher's Word Book of 30,000 Words. New York: Teachers College, Columbia University, 1944. -- http://catalog.hathitrust.org/Record/000987642/Home
-) a byl vyroben z ručně psaného korpusu, který obsahoval 18 milionů slov. %  cit. http://www.lextutor.ca/research/nation_waring_97.html 
-Naproti tomu moderní frekvenční slovník A Frequency Dictionary of Contemporary American English z roku 2010 byl vytvořen z korpusu současné americké angličtiny, The Corpus of Contemporary American English (COCA), který obsahuje přes 400 milionů slov. Samotný slovník pak sestává z 5000 nejfrekventovanějších slov. Nutno podotknout, že slovník je určen především uživatelům, kteří nejsou rodilí mluvčí a anglicky se učí, což je pravděpodobně důvod, proč obsahuje pouze 5000 nejčastějších slov.\td{muzu takhle? nebo to mam vynechat tu domnenku?}
-% A Frequency Dictionary Of American English, 2010
+Tvorba frekvenčních slovníků byla v dobách před rozvojem počítačů schopných zpracovat velká množství textů poněkud komplikovaná. Vzniklé databáze bylo obtížné aktualizovat, jejich výroba byla náročná a pomalá. Nástup počítačů však většinu těchto problémů odstranil, takže je možné velmi snadno z korpusu vyrobit frekvenční slovník, který bude tak aktuální, jako je samotný korpus. Na rozdíl od ručního zpracování dat navíc počítačové zpracování dovoluje pracovat s mnohem většími korpusy, takže výsledný frekvenční slovník může být i přesnější. Pro srovnání, jeden z prvních frekvenčních slovníků pro angličtinu,\td{jeste by to chtelo nejaky data o soucasnych frekvencnich slovnicich, nebo staci ty priklad o BNC? Prip. kde je vzit? } The Teachers Word Book of 30,000 words, měl 30 tisíc lemmat (z 13 tisíc slovních rodin \parencite{lorge1944teacher} %  cit. Goulden, Nation and Read, 1990  % Done
+% Thorndike, Edward L. 1874-1949. The Teacher's Word Book of 30,000 Words. New York: Teachers College, Columbia University, 1944. -- http://catalog.hathitrust.org/Record/000987642/Home  % Done
+) a byl vyroben z ručně psaného korpusu, který obsahoval 18 milionů slov. \parencite{nation1997vocabulary} %  cit. http://www.lextutor.ca/research/nation_waring_97.html  % Done
+Naproti tomu moderní frekvenční slovník současné americké angličtiny \parencite{davies2013frequency} byl vytvořen z korpusu současné americké angličtiny, The Corpus of Contemporary American English (COCA), který obsahuje přes 400 milionů slov. Samotný slovník pak sestává z 5000 nejfrekventovanějších slov. Nutno podotknout, že slovník je určen především uživatelům, kteří nejsou rodilí mluvčí a anglicky se učí, což je pravděpodobně důvod, proč obsahuje pouze 5000 nejčastějších slov.
+% A Frequency Dictionary Of American English, 2010 % Done
 
-Na druhou stranu Alderson ve své publikaci Judging the Frequency of English Words, že ani velké korpusy nemusí být dostačující pro adekvátní zhodnocení frekvenčního rozložení slov v jazyce tak, jak jej vnímají mluvčí daného jazyka. Vychází z výsledků výzkumů zaměřujících se na porovnání hodnocení frekventovanosti určitých slov v jazyce jeho zkušenými uživateli s daty získanými z korpusu. Tyto hodnoty se totiž podle citovaných průzkumů značně rozchází a je tedy otázkou, zda z toho vyplývá, že ani zkušení mluvčí nedokážou správně posoudit pravděpodobnost výskytu daného slova, či že data získaná z korpusů nereprezentují zkušenosti mluvčích s jazykem dostatečně přesně.\td{ani nevim, jestli jsem to vubec interpretoval smysluplne a spravne}
+Na druhou stranu \parencite{alderson2007judging} tvrdí, že ani velké korpusy nemusí být dostačující pro adekvátní zhodnocení frekvenčního rozložení slov v jazyce tak, jak jej vnímají mluvčí daného jazyka. Vychází z výsledků výzkumů zaměřujících se na porovnání hodnocení frekventovanosti určitých slov v jazyce jeho zkušenými uživateli s daty získanými z korpusu. Tyto hodnoty se totiž podle citovaných průzkumů značně rozchází a je tedy otázkou, zda z toho vyplývá, že ani zkušení mluvčí nedokážou správně posoudit pravděpodobnost výskytu daného slova, či že data získaná z korpusů nereprezentují zkušenosti mluvčích s jazykem dostatečně přesně. \td{ani nevim, jestli jsem to vubec interpretoval smysluplne a spravne}
 % http://applij.oxfordjournals.org.ezproxy.muni.cz/content/28/3/383.full
 
 \subsection{Statistický model}
@@ -249,7 +263,7 @@ Dalším způsobem, jak změřit chybovost, s jakou uživatel text zadal, je vyh
 
 \subsection{Klávesnice ITU}\label{itu-kb}
 
-Klávesnice ITU je textová klávesnice na tónovém telefonu, která má na jednu klávesu přiřazeno více písmen. V průběhu vývoje se vyskytovalo několik různých způsobů, jak byla písmena na klávesnici rozřazena, avšak rozdělení písmen podle mezinárodního standardu ITU E.161/ISO 9995-8 \cite{mfmtlqoxL48pMk3T} je následující: % cit norma ITU E.161/ISO 9995-8
+Klávesnice ITU je textová klávesnice na tónovém telefonu, která má na jednu klávesu přiřazeno více písmen. V průběhu vývoje se vyskytovalo několik různých způsobů, jak byla písmena na klávesnici rozřazena, avšak rozdělení písmen podle mezinárodního standardu ITU E.161/ISO 9995-8 \\cite{mfmtlqoxL48pMk3T} je následující: % cit norma ITU E.161/ISO 9995-8
 
 \begin{figure}[h]
 	\centering
@@ -267,27 +281,27 @@ Na těchto klávesnicích musí uživatel stisknout klávesu s požadovaným pí
 \]
 kde {\tt N} značí klávesu {\tt NEXT} a {\tt S} zadání mezery na konci slova.
 
-Tento systém zadávání se nazývá multitap. Při psaní tímto systémem může KSPC dosahovat hodnot přes 2 \cite{dXVv6nPb2KifFXYv}, protože většina kláves musí být stisknuta vícekrát než jednou. 
+Tento systém zadávání se nazývá multitap. Při psaní tímto systémem může KSPC dosahovat hodnot přes 2 \\cite{dXVv6nPb2KifFXYv}, protože většina kláves musí být stisknuta vícekrát než jednou. 
 
 Aby šlo zadávání u klávesnic, které mají méně kláves než je písmen v abecedě, zbavit tohoto problému, bylo nutné nějakým způsobem disambiguovat vstup vzniklý tak, že uživatel vždy stiskne klávesu, na níž se vyskytuje potřebné písmeno, jen jednou. Termín predikce textu je v tomto případě poněkud nepřesný, ale je použitelný, protože systém na základě nejednoznačného vstupu předvídá, odhaduje, co uživatel chtěl napsat.
 
 \subsubsection{První prediktivní text pro neslyšící}
 
-Prvním takovým systémem predikce textu je vynález určený pro lidi s částečně nebo zcela poškozeným slyšením. Tento systém, navržený v roce 1985, si kladl za cíl umožnit neslyšícím telefonní komunikaci, a to za přijatelnou pořizovací cenu (na rozdíl od předchozích existujících řešení) a s tím, že speciální přístroj bude potřebovat pouze neslyšící strana. \cite{Feinson1988}
+Prvním takovým systémem predikce textu je vynález určený pro lidi s částečně nebo zcela poškozeným slyšením. Tento systém, navržený v roce 1985, si kladl za cíl umožnit neslyšícím telefonní komunikaci, a to za přijatelnou pořizovací cenu (na rozdíl od předchozích existujících řešení) a s tím, že speciální přístroj bude potřebovat pouze neslyšící strana. \\cite{Feinson1988}
 
 Podle citovaného návrhu se zpráva neslyšící straně předává tak, že protistrana na svém přístroji stiskne pro každé písmeno ve zprávě klávesu, na níž se písmeno vyskytuje (pouze jednou), tyto stisky se převedou na tón o odpovídající frekvenci (podobně jako u tónové volby) a tento tón se přenese po telefonní lince neslyšící straně. Tam je sekvence tónů převedena pomocí přístroje vybaveného mikroprocesorem na sekvenci skupin znaků, které odpovídají daným klávesám, a provede se prohledání slovníku lokálně uloženého v přístroji. Nalezená shoda je pak uživateli zobrazena na obrazovce telefonního přístroje.
 
 \subsubsection{T9}\label{t9}
 
-Společně s větším rozvojem mobilních telefonů s klasickými 12klávesovými klávesnicemi se stal všeobecně známým pojmem pro prediktivní text systém T9, akronym pro Text on 9 keys, vyvinutý společností Tegic Communications \cite{Edq6tEyjOSzk54RQ} patentovaný ve Spojených státech \cite{Grover1998}. Systém T9 umožňuje uživateli zadávat text stiskem každé klávesy pouze jednou, nikoliv několikrát, jako je tomu u klasického zadávání způsobem multitap. Systém potom vyhledává ve slovníku záznamy korespondující se sekvencí stisknutých kláves, tzn. slova, která obsahují písmena ze stisknutých kláves. Pokud sekvenci stisknutých kláves odpovídá více slov, je uživateli prezentován seznam těchto slov seřazený podle frekvence výskytu. % http://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO1&Sect2=HITOFF&d=PALL&p=1&u=%2Fnetahtml%2FPTO%2Fsrchnum.htm&r=1&f=G&l=50&s1=6011554.PN.&OS=PN/6011554&RS=PN/6011554
+Společně s větším rozvojem mobilních telefonů s klasickými 12klávesovými klávesnicemi se stal všeobecně známým pojmem pro prediktivní text systém T9, akronym pro Text on 9 keys, vyvinutý společností Tegic Communications \\cite{Edq6tEyjOSzk54RQ} patentovaný ve Spojených státech \\cite{Grover1998}. Systém T9 umožňuje uživateli zadávat text stiskem každé klávesy pouze jednou, nikoliv několikrát, jako je tomu u klasického zadávání způsobem multitap. Systém potom vyhledává ve slovníku záznamy korespondující se sekvencí stisknutých kláves, tzn. slova, která obsahují písmena ze stisknutých kláves. Pokud sekvenci stisknutých kláves odpovídá více slov, je uživateli prezentován seznam těchto slov seřazený podle frekvence výskytu. % http://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO1&Sect2=HITOFF&d=PALL&p=1&u=%2Fnetahtml%2FPTO%2Fsrchnum.htm&r=1&f=G&l=50&s1=6011554.PN.&OS=PN/6011554&RS=PN/6011554
 
-Taková slova, která se zapisují stiskem stejných kláves, se nazývají textonyma \cite{ZORN2007} a jsou jimi v angličtině např. slova „book“ a „cool“. Zatímco obvykle tento jev pouze snižuje efektivitu zápisu pomocí T9, v roce 2010 záměna dvou textonym v textové zprávě vedla ve Spojených státech k vraždě. \cite{bjjL0GPb5QxyO1A8} 
+Taková slova, která se zapisují stiskem stejných kláves, se nazývají textonyma \\cite{ZORN2007} a jsou jimi v angličtině např. slova „book“ a „cool“. Zatímco obvykle tento jev pouze snižuje efektivitu zápisu pomocí T9, v roce 2010 záměna dvou textonym v textové zprávě vedla ve Spojených státech k vraždě. \\cite{bjjL0GPb5QxyO1A8} 
 
 Pokud chce navíc uživatel přidat do databáze známých slov další slovo, které v ní ještě není, může tak učinit pomocí klasického zadávání multitap. Nová slova se pak ukládají do uživatelské databáze (UDB). % http://www.nuance.com/for-business/by-product/t9/index.htm
 
-Jednou z výhod systému T9 je z hlediska úspory úhozů schopnost automatického doplňování textu po zadání prvních několika písmen ze slova. Systém po napsání prvního písmene obvykle začne nabízet nejfrekventovanější slova začínající na dané písmeno a nabídku upravuje podle dalších stisknutých kláves. Některé implementace se také jsou schopny naučit nejpoužívanější dvojice slov a po napsání prvního slova z některé z dvojic nabídne systém automaticky další slovo, které uživatel může přijmout stiskem předdefinovaného tlačítka. \cite{hrzQ70bvKjUBgVml}
+Jednou z výhod systému T9 je z hlediska úspory úhozů schopnost automatického doplňování textu po zadání prvních několika písmen ze slova. Systém po napsání prvního písmene obvykle začne nabízet nejfrekventovanější slova začínající na dané písmeno a nabídku upravuje podle dalších stisknutých kláves. Některé implementace se také jsou schopny naučit nejpoužívanější dvojice slov a po napsání prvního slova z některé z dvojic nabídne systém automaticky další slovo, které uživatel může přijmout stiskem předdefinovaného tlačítka. \\cite{hrzQ70bvKjUBgVml}
 
-Další funkcí, která je pro uživatelské pohodlí důležitá, je schopnost rozpoznat a opravit překlepy. T9 toto činí tak, že se dívá i na přilehlé klávesy, tzn. pokud uživatel chce napsat slovo „testing“, které lze zapsat klávesami {\tt 8378464}, ale stiskne místo toho sekvenci kláves {\tt 8278464}, systém T9 mu stejně nabídne vedle slova „tasting“ i slova „testing“ a „tapping“ \cite{hrzQ70bvKjUBgVml}. \td{koukam, ze tady mam citovanou Wiki.. jenze Wiki samotna to ocitovany nema (na druhou stranu mam pocit, ze to je pravda, co se tam pise) - co s tim?}
+Další funkcí, která je pro uživatelské pohodlí důležitá, je schopnost rozpoznat a opravit překlepy. T9 toto činí tak, že se dívá i na přilehlé klávesy, tzn. pokud uživatel chce napsat slovo „testing“, které lze zapsat klávesami {\tt 8378464}, ale stiskne místo toho sekvenci kláves {\tt 8278464}, systém T9 mu stejně nabídne vedle slova „tasting“ i slova „testing“ a „tapping“ \\cite{hrzQ70bvKjUBgVml}. \td{koukam, ze tady mam citovanou Wiki.. jenze Wiki samotna to ocitovany nema (na druhou stranu mam pocit, ze to je pravda, co se tam pise) - co s tim?}
 
 \subsubsection{iTap}
 
@@ -306,13 +320,13 @@ LetterWise je systém prediktivního psaní vyvinutý a patentovaný firmou Eato
 
 Prvním z nich jsou nízké paměťové nároky. Jazykový model zabírá v zařízení typicky 2--10 kB pro každý jazyk a pro běh potřebuje LetterWise operační paměť o kapacitě v řádu stovek bytů. % https://web.archive.org/web/20120212172428/http://www.eatoni.com/wiki/index.php/FAQ:For_Manufacturers
 
-Druhým, pro uživatele výrazně citelnějším důvodem, je možnost relativně jednoduše zapisovat i neslovníková slova. Pokud se uživatel pokouší totiž zadat slovo, které by sice ve slovníku neexistovalo, ale má skladbu hlásek odpovídající jazyku, jehož databázi prefixů používá, je pravděpodobné, že systém vybere správné písmeno. Další vlastností implicitně vyplývající z faktu, že systém nepoužívá slovník, je, že se uživatel nikdy nemusí uchylovat k zápisu slov klasickým způsobem (tedy že stiskne klávesu 3 dvakrát, chce-li zadat písmeno E). Při zápisu slov, jejichž posloupnost písmen se nepodobá jazyku databáze, musí uživatel pouze v případě špatného odhadu následujícího písmena stisknout klávesu pro volbu dalšího písmene. Tento systém tedy uživatele nenutí v případě zjištění, že jím požadované slovo není ve slovníku, celé slovo smazat a zadat jej klasickým způsobem. \cite{MacKenzie2001} \cite{Ghayoomi2009}
+Druhým, pro uživatele výrazně citelnějším důvodem, je možnost relativně jednoduše zapisovat i neslovníková slova. Pokud se uživatel pokouší totiž zadat slovo, které by sice ve slovníku neexistovalo, ale má skladbu hlásek odpovídající jazyku, jehož databázi prefixů používá, je pravděpodobné, že systém vybere správné písmeno. Další vlastností implicitně vyplývající z faktu, že systém nepoužívá slovník, je, že se uživatel nikdy nemusí uchylovat k zápisu slov klasickým způsobem (tedy že stiskne klávesu 3 dvakrát, chce-li zadat písmeno E). Při zápisu slov, jejichž posloupnost písmen se nepodobá jazyku databáze, musí uživatel pouze v případě špatného odhadu následujícího písmena stisknout klávesu pro volbu dalšího písmene. Tento systém tedy uživatele nenutí v případě zjištění, že jím požadované slovo není ve slovníku, celé slovo smazat a zadat jej klasickým způsobem. \cite{MacKenzie2001} \\cite{Ghayoomi2009}
 
 \subsubsection{WordWise}
 
 Firma Eatoni Ergonomics vedle systému LetterWise vyvinula ještě jeden méně známý systém -- WordWise. Ten je na rozdíl od systému LetterWise založený na doplňování slov ze slovníku, v čemž je podobnější systému T9. Liší se od něj ale tím, že se vrací k systému LetterWise, pokud se uživatel pokusí zadat slovo, které nemá WordWise ve slovníku. U něj, jak je uvedeno výše, záleží počet nutných stisků kláves na podobnosti slova s právě používaným jazykovým modelem.
 
-Modifikací tohoto systému je také systém WordWise Shift, který využívá jednu klávesu na telefonu, které není přiřazeno žádné písmeno, jako klávesu Shift, a na každé klávese se skupinou písmen je vybráno jedno písmeno, které lze napsat pouze se stiskem klávesy Shift a dané klávesy. Toto má podle výrobce za cíl minimalizovat problémy s predikcí slov, která sdílejí stejnou kombinaci kláves. Společnost Eatoni na svých stránkách uvádí, že uživatel při používání tohoto systému nemusí vůbec sledovat display svého zařízení, a přesto bude může jím napsaný text být zcela správně, protože chyba v predikcích slov nastává jednou za 440 slov. \cite{Ward2012}
+Modifikací tohoto systému je také systém WordWise Shift, který využívá jednu klávesu na telefonu, které není přiřazeno žádné písmeno, jako klávesu Shift, a na každé klávese se skupinou písmen je vybráno jedno písmeno, které lze napsat pouze se stiskem klávesy Shift a dané klávesy. Toto má podle výrobce za cíl minimalizovat problémy s predikcí slov, která sdílejí stejnou kombinaci kláves. Společnost Eatoni na svých stránkách uvádí, že uživatel při používání tohoto systému nemusí vůbec sledovat display svého zařízení, a přesto bude může jím napsaný text být zcela správně, protože chyba v predikcích slov nastává jednou za 440 slov. \\cite{Ward2012}
 
 Paměťová náročnost jazykového modelu pro angličtinu je v aplikaci WordWise zhruba 75 kB. % https://web.archive.org/web/20120212172428/http://www.eatoni.com/wiki/index.php/FAQ:For_Manufacturers
 
@@ -565,12 +579,14 @@ Co se problémů týče, hlavním z nich je fakt, že momentální implementace 
 	\centering
 	\includegraphics[width=0.5\textwidth]{daria}
 \end{figure}
-\section*{Zdroje}
 
+% \begin{thebibliography}{1}
 
-%\nocite{*}
-%\printbibliography
-\bibliographystyle{ieeetr}
-\bibliography{bibl}
+% \bibitem{MacKenzie2001}
+% MACKENZIE, I.S. LetterWise: Prefix-based disambiguation for mobile text input. \textit{UIST (User Interface Software and Technology): Proceedings of the ACM Symposium} [online]. 2001, 111 - 120 [cit. 2015-10-22]. 
+
+% \end{thebibliography}
+
+\printbibliography[title={Seznam literatury}]
 
 \end{document}
