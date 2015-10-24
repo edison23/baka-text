@@ -60,7 +60,7 @@ Protipólem velkého množství aplikací pro predikci textu pro mobilní zaří
 
 Cílem této práce je tedy vytvořit implementaci systému predikce textu, která bude čerpat data z velkého korpusu textů, a jednak bude jednak nezávislá na platformě. Vzhledem k tomu, že korpusová data není možné uchovávat na straně klienta, bylo logickým krokem zvolit model klienta a serveru, který bude zajišťovat generování predikcí. Tento systém na serveru již v době tvorby této práce existoval, což umožnilo soustředit se především na vývoj uživatelského prostředí. 
 
-Pro zajištění co nejvyšší kompatibility s různými systémy byla zvolena forma zásuvného modulu do webového HTML editoru CKEditor\footnote{\url{http://ckeditor.com/}}. Použitými technologiemi tedy byl především JavaScript pro programovou logiku, AJAX pro komunikaci se serverem a HTML a CSS pro uživatelské rozhraní.
+Pro zajištění co nejvyšší kompatibility s různými systémy byla zvolena forma zásuvného modulu do webového HTML editoru CKEditor\footnote{\url{http://ckeditor.com/}}. Použitými technologiemi tedy byl především JavaScript pro programovou logiku, Ajax pro komunikaci se serverem a HTML a CSS pro uživatelské rozhraní.
 
 \newpage
 
@@ -303,7 +303,8 @@ Taková slova, která se zapisují stiskem stejných kláves, se nazývají text
 
 Podle citovaného návrhu se zpráva neslyšící straně předává tak, že protistrana na svém přístroji stiskne pro každé písmeno ve zprávě klávesu, na níž se písmeno vyskytuje (pouze jednou), tyto stisky se převedou na tón o odpovídající frekvenci (podobně jako u tónové volby) a tento tón se přenese po telefonní lince neslyšící straně. Tam je sekvence tónů převedena pomocí přístroje vybaveného mikroprocesorem na sekvenci skupin znaků, které odpovídají daným klávesám, a provede se prohledání slovníku lokálně uloženého v přístroji. Nalezená shoda je pak uživateli zobrazena na obrazovce telefonního přístroje.
 
-\paragraph{T9}\label{t9} -- akronym pro {\it Text on 9 keys} -- je systém, který se společně s větším rozvojem mobilních telefonů s klasickými 12klávesovými klávesnicemi se stal všeobecně známým pojmem pro prediktivní text. Byl vyvinut společností Tegic Communications \parencite{nuancecommunications2007}, patentovaný ve Spojených státech \parencite{grover1998reduced}. 
+\paragraph{T9}\label{t9}
+ -- akronym pro {\it Text on 9 keys} -- je systém, který se společně s větším rozvojem mobilních telefonů s klasickými 12klávesovými klávesnicemi se stal všeobecně známým pojmem pro prediktivní text. Byl vyvinut společností Tegic Communications \parencite{nuancecommunications2007}, patentovaný ve Spojených státech \parencite{grover1998reduced}. 
 
 Systém T9 umožňuje uživateli rozšiřovat vestavěný slovník tak, že uživatel nové slovo zadá klasickým způsobem multitap a nové slovo se pak uloží do uživatelské databáze (UDB). \parencite{t9about} % http://www.nuance.com/for-business/by-product/t9/index.htm
 Problém nastává ve chvíli, kdy uživatel zjistí, že slovo není ve slovníku, až poté, co zadá příslušnou sekvenci kláves, která by k onomu slovu měla vést. V tu chvíli totiž musí smazat zadaný řetězec, který je buď nesmyslný, nebo to není požadované slovo, a zadat slovo znova pomocí multitapu.
@@ -311,29 +312,28 @@ Problém nastává ve chvíli, kdy uživatel zjistí, že slovo není ve slovní
 Celkově je však T9 velmi jednoduchá na pochopení a použití a pro její nezávislost na kontextu u ní lze očekávat vždy stejný výstup po stisknutí určité sekvence kláves, takže se zkušený uživatel nemusí při psaní dívat na klávesnici. \parencite{davidmackay}
 
 \paragraph{iTap}
-
 je systém konkurenční k systému T9 vyvinutý firmou Motorola. Přestože oba systémy využívají slovníkového modelu, iTap je na rozdíl od T9 kontextově závislý a jeho slovník obsahuje kromě jednotlivých slov i běžně užívané fráze. 
 
 \parencite{davidmackay} dále uvádí, že ve srovnání se systémem iTap je systém T9 pro uživatele výhodnější v tom smyslu, že nejsou nuceni činit rozhodnutí ohledně toho, zda v určitém momentu zvolit nabízenou predikci, či pokračovat v manuálním psaní. Pro nezkušené uživatele navíc může u systému iTap být demotivující, když jim predikce nabídne slova, které nemínili napsat. Systém iTap je také celkově mírně náročnější na ovládání.
-% http://www.inference.phy.cam.ac.uk/itprnn/itap/
+% http://www.inference.phy.cam.ac.uk/itprnn/itap/ % Done
 
 \subsubsection{Prefixová disambiguace}
 
-\subsubsection{LetterWise}
+\paragraph{LetterWise}
 
-LetterWise je systém prediktivního psaní vyvinutý a patentovaný firmou Eatoni Ergonomics. Jeho distinktivním rysem oproti ostatním systémům pro psaní na klávesnicích typu ITU je fakt, že nepracuje se slovníkem, ale s databází pravděpodobností prefixů pro každý používaný jazyk. Které písmeno ze stisknuté klávesy zvolit tedy systém vybírá porovnáním pravděpodobností, s jakými mohou písmena z dané klávesy následovat po předcházejících již zadaných písmenech. V angličtině je například nepoměrně pravděpodobnější, že po sekvenci písmen T a H bude následovat při stisku klávesy 3 písmeno E, nikoliv D či F. Prediktivní systém LetterWise má tedy v paměti zařízení uloženy pouze tyto pravděpodobnosti, nikoliv celá slova. \parencite{MacKenzie2001} To jej činí zajímavým oproti ostatním slovníkovým systémům ze dvou důvodů.
+je systém prediktivního psaní vyvinutý a patentovaný firmou Eatoni Ergonomics. Tento systém nepracuje se slovníkem, ale s databází pravděpodobností prefixů pro každý používaný jazyk. Které písmeno ze stisknuté klávesy zvolit tedy systém vybírá porovnáním pravděpodobností, s jakými mohou písmena z dané klávesy následovat po předcházejících již zadaných písmenech. V angličtině je například nepoměrně pravděpodobnější, že po sekvenci písmen T a H bude následovat při stisku klávesy 3 písmeno E, nikoliv D či F. Prediktivní systém LetterWise má tedy v paměti zařízení uloženy pouze tyto pravděpodobnosti, nikoliv celá slova. \parencite{MacKenzie2001} To jej činí zajímavým oproti ostatním slovníkovým systémům ze dvou důvodů.
 
 Prvním z nich jsou nízké paměťové nároky. Jazykový model zabírá v zařízení typicky 2--10 kB pro každý jazyk a pro běh potřebuje LetterWise operační paměť o kapacitě v řádu stovek bytů. \parencite{eatoniergonomics2012} % https://web.archive.org/web/20120212172428/http://www.eatoni.com/wiki/index.php/FAQ:For_Manufacturers
 
 Druhým, pro uživatele výrazně citelnějším důvodem, je možnost relativně jednoduše zapisovat i neslovníková slova. Pokud se uživatel pokouší totiž zadat slovo, které by sice ve slovníku neexistovalo, ale má skladbu hlásek odpovídající jazyku, jehož databázi prefixů používá, je pravděpodobné, že systém vybere správné písmeno. Další vlastností implicitně vyplývající z faktu, že systém nepoužívá slovník, je, že se uživatel nikdy nemusí uchylovat k zápisu slov klasickým způsobem (tedy že stiskne klávesu 3 dvakrát, chce-li zadat písmeno E). Při zápisu slov, jejichž posloupnost písmen se nepodobá jazyku databáze, musí uživatel pouze v případě špatného odhadu následujícího písmena stisknout klávesu pro volbu dalšího písmene. Tento systém tedy uživatele nenutí v případě zjištění, že jím požadované slovo není ve slovníku, celé slovo smazat a zadat jej klasickým způsobem. \parencite{MacKenzie2001} \parencite[5234]{ghayoomi2009overview}
 
-\subsubsection{WordWise}
+\paragraph{WordWise}
 
-Firma Eatoni Ergonomics vedle systému LetterWise vyvinula ještě jeden méně známý systém -- WordWise. Ten je na rozdíl od systému LetterWise založený na doplňování slov ze slovníku, v čemž je podobnější systému T9. Liší se od něj ale tím, že se vrací k systému LetterWise, pokud se uživatel pokusí zadat slovo, které nemá WordWise ve slovníku. U něj, jak je uvedeno výše, záleží počet nutných stisků kláves na podobnosti slova s právě používaným jazykovým modelem.
+je méně známý systém od firmy Eatoni Ergonomics podobný systému LetterWise. WordWise je však na rozdíl od systému LetterWise založený na doplňování slov ze slovníku, v čemž je podobnější systému T9. Od toho se ale liší tím, že se vrací k systému LetterWise, pokud se uživatel pokusí zadat slovo, které nemá WordWise ve slovníku. U něj, jak je uvedeno výše, záleží počet nutných stisků kláves na podobnosti slova s právě používaným jazykovým modelem. \parencite{eatoniergonomics2012}
 
-Modifikací tohoto systému je také systém WordWise Shift, který využívá jednu klávesu na telefonu, které není přiřazeno žádné písmeno, jako klávesu Shift, a na každé klávese se skupinou písmen je vybráno jedno písmeno, které lze napsat pouze se stiskem klávesy Shift a dané klávesy. Toto má podle výrobce za cíl minimalizovat problémy s predikcí slov, která sdílejí stejnou kombinaci kláves. Společnost Eatoni na svých stránkách uvádí, že uživatel při používání tohoto systému nemusí vůbec sledovat display svého zařízení, a přesto bude může jím napsaný text být zcela správně, protože chyba v predikcích slov nastává jednou za 440 slov. \\cite{Ward2012}
+Modifikací tohoto systému je také systém WordWise Shift, který využívá jednu klávesu na telefonu, které není přiřazeno žádné písmeno, jako klávesu Shift, a na každé klávese se skupinou písmen je vybráno jedno písmeno, které lze napsat pouze se stiskem klávesy Shift a dané klávesy. Toto má podle výrobce za cíl minimalizovat problémy s predikcí slov, která sdílejí stejnou kombinaci kláves. Společnost Eatoni na svých stránkách uvádí, že uživatel při používání tohoto systému nemusí vůbec sledovat display svého zařízení, a přesto bude může jím napsaný text být zcela správně, protože chyba v predikcích slov nastává jednou za 440 slov. \parencite{eatoniergonomics2012}
 
-Paměťová náročnost jazykového modelu pro angličtinu je v aplikaci WordWise zhruba 75 kB. % https://web.archive.org/web/20120212172428/http://www.eatoni.com/wiki/index.php/FAQ:For_Manufacturers
+Paměťová náročnost jazykového modelu pro angličtinu je v aplikaci WordWise zhruba 75 kB. \parencite{eatoniergonomics2012} % https://web.archive.org/web/20120212172428/http://www.eatoni.com/wiki/index.php/FAQ:For_Manufacturers % Done
 
 \subsection{QWERTY klávesnice na chytrých telefonech}
 
@@ -343,7 +343,7 @@ Pokud by se účinnost takové klávesnice jako metody vstupu textu porovnávala
 
 \subsubsection{Barevné zvýrazňování kláves}
 
-Jedním z navrhovaných způsobů, jak pomoci uživatelům snížit množství překlepů při psaní na softwarových QWERTY klávesnicích, bylo bareveně odlišovat nejpravděpodobnější následující klávesy. % http://web.ist.utl.pt/~daniel.j.goncalves/research/paelife\_textentry/paelife\_textentry.html
+Jedním z navrhovaných způsobů, jak pomoci uživatelům snížit množství překlepů při psaní na softwarových QWERTY klávesnicích, bylo bareveně odlišovat nejpravděpodobnější následující klávesy. \parencite{danielgoncalves} % http://web.ist.utl.pt/~daniel.j.goncalves/research/paelife\_textentry/paelife\_textentry.html
 Tento způsob byl navržen především pro starší uživatele, kteří jednak nemusejí být seznámeni s rozložením QWERTY klávesnice, a jednak nemají takovou přesnost motoriky a rychlost reakcí, jako uživatelé mladí. 
 
 \begin{figure}[ht]
@@ -355,13 +355,11 @@ Tento způsob byl navržen především pro starší uživatele, kteří jednak 
 
 Klávesy byly odlišeny různými odstíny šedivé barvy, a to lineárně podle toho, jak pravděpodobné bylo dané písmeno v souvislosti s předchozím zadaným znakem. Vedle barevného odlišení pozadí klávesy byl ještě zvětšen popisek klávesy (obrázek \ref{fig:qwerty-color} na straně \pageref{fig:qwerty-color}). 
 
-\todo[inline]{nejaka cisla z toho clanku }
-
-Výsledky studie, která byla provedena na 15 ženách a 5 mužích, ovšem předpoklad, že zvýrazňování kláves starším uživatelům pomůže, popřely. Ukázalo se, že snaží-li se klávesnice vizuálně nějakým způsobem odlišit některé prvky a přitáhnout k nim pozornost uživatele, působí to na něj spíše rušivě a výrazně to snižuje rychlost zadávání textu.
+Výsledky studie, která byla provedena na 15 ženách a 5 mužích, ovšem předpoklad, že zvýrazňování kláves starším uživatelům pomůže, popřely. Ukázalo se, že snaží-li se klávesnice vizuálně nějakým způsobem odlišit některé prvky a přitáhnout k nim pozornost uživatele, působí to na něj spíše rušivě a výrazně to snižuje rychlost zadávání textu. Jeden uživatel dokonce napsal místo slova, které zamýšlel, slovo, které mu nabízela predikce. Funkčnost systému zvýrazňování navíc byla omezena tím, že starší uživatelé dělali v textu hodně chyb a systém pak nebyl schopen správně rozpoznat daná slova.\td{cisla z clanku nebudou, protoze jim actually nerozumim xD http://goo.gl/1G8wGB (mam na mysli ty typu "(F(2,30)=3.84, p< 0.033)")}
 
 \subsubsection{Predikce celých slov}
 
-Druhým navrhovaným způsobem ve výše zmíněné studii byla metoda, kterou používá v současné době většina klávesnic na chytrých telefonech.\td{citace? je to takovy obecne znamy fakt, prijde mi} 
+Druhým navrhovaným způsobem ve výše zmíněné studii byla metoda, kterou používá v současné době většina klávesnic na chytrých telefonech.
 
 Jde o systém, kde po zadání znaku či znaků je ze slovníku známých slov vybráno několik slov, která jsou v souvislosti s již zadanými znaky nejpravděpodobnějšími řetězci, jež uživatel chce zadat (obrázek \ref{fig:qwerty-predict} na straně \pageref{fig:qwerty-predict}). Tento seznam je obvykle nabízen ve formě horizontálního seznamu nad klávesnicí a uživatel může ušetřit několik stisků kláves tak, že vybere požadované slovo ještě před tím, než jej celé dopíše (za předpokladu, že jej systém našel ve svém slovníku a správně navrhl). 
 
@@ -372,29 +370,29 @@ Jde o systém, kde po zadání znaku či znaků je ze slovníku známých slov v
 	\label{fig:qwerty-predict}
 \end{figure}
 
-Oproti zvýrazňování jednotlivých nejpravděpodobnějších kláves má tento systém minimálně dvě výhody. Jednak nevyžaduje, aby si uživatel nestínil svými prsty, kterými píše, výhled na klávesnici, a jednak uživateli zobrazuje celá slova, ne pouze další znak z nich. % cit Neveřilová Ulipová, pg 14
+Oproti zvýrazňování jednotlivých nejpravděpodobnějších kláves má tento systém minimálně dvě výhody. Jednak nevyžaduje, aby si uživatel nestínil svými prsty, kterými píše, výhled na klávesnici, a jednak uživateli zobrazuje celá slova, ne pouze další znak z nich.
 
-Nevýhodou této metody na druhou stranu je fakt, že je na uživatele kladena vyšší kognitivní zátěž v tom smyslu, že je nucen procházet zrakem seznam navrhovaných slov a přemýšlet, zda je mezi nimi i to, které zamýšlel napsat. Z tohoto důvodu je nutné délku seznamu návrhů omezit na optimum - některé práce uvádí, že ve své implementaci používají 6 návrhů.
+Nevýhodou této metody na druhou stranu je fakt, že je na uživatele kladena vyšší kognitivní zátěž v tom smyslu, že je nucen procházet zrakem seznam navrhovaných slov a přemýšlet, zda je mezi nimi i to, které zamýšlel napsat. Z tohoto důvodu je nutné délku seznamu návrhů omezit na optimum. Například \parencite{neverilovaulipova2014} ve své implementaci používají šest návrhů a implementace popisovaná v praktické části této práce používá pět návrhů.
 
 \subsubsection{Swype}
 
-Další systém zadávání textu, který je poněkud odlišný od všech dosud zmíněných, používají mj. aplikace Swype, Fleksy, oficiální klávesnice od Google, etc. Jde o systém původně vyvinutý firmou Swype Inc., nyní vlastněný a vyvíjený firmou Nuance Communications, určený výhradně pro dotyková zařízení. Uživatel v něm nezadává text ťukáním na jednotlivé klávesy, ale přejíždí prstem či stylusem po klávesnici od prvního písmena zadávaného slova k poslednímu tak, aby na cestě přejel pokud možno přes všechna písmena obsažená ve slově. % http://www.cnet.com/news/move-over-t9-here-comes-swype/ a http://www.swype.com/product-features/android/features.html
+Další systém zadávání textu, který je poněkud odlišný od všech dosud zmíněných, používají mj. aplikace Swype\footnote{\url{http://www.swype.com/}}, Fleksy\footnote{\url{https://fleksy.com/}}, oficiální klávesnice od Google, etc. Jde o systém původně vyvinutý firmou Swype Inc. určený výhradně pro dotyková zařízení. Uživatel v něm nezadává text ťukáním na jednotlivé klávesy, ale přejíždí prstem či stylusem po klávesnici od prvního písmena zadávaného slova k poslednímu tak, aby na cestě přejel pokud možno přes všechna písmena obsažená ve slově. \parencite{swypeabout} % http://www.swype.com/product-features/android/features.html
 % http://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO1&Sect2=HITOFF&d=PALL&p=1&u=%2Fnetahtml%2FPTO%2Fsrchnum.htm&r=1&f=G&l=50&s1=7,098,896.PN.&OS=PN/7,098,896&RS=PN/7,098,896
 
-Swype se skládá ze tří základních částí -- analyzátoru trasy dotyku, systému na vyhledávání slov v databázi výrazů a uživatelského prostředí. V raných verzích databáze obsahovala\td{damn.. tady mi zase utekla citace nekam do haje} 65 000 výrazů.
+Swype se skládá ze tří základních částí -- analyzátoru trasy dotyku, systému na vyhledávání slov v databázi výrazů a uživatelského prostředí. \parencite{kushler2006system} V raných verzích databáze obsahovala 65 000 výrazů. \parencite{rafeneedleman2008} % % http://www.cnet.com/news/move-over-t9-here-comes-swype/ % Done
 
-Nutno podotknout, že firma Nuance, jež systém Swype vyvíjí, nezahrnuje do své klávesnice pouze tento systém zadávání, ale i klasickou metodu zadávání s nabídkou predikcí v horizontálním seznamu. Navzdory faktu, že hlavním důvodem popularity klávesnicové aplikace Swype je systém zadávání Swype, i klasická klávesnice v této aplikaci kombinuje různé technologie na zlepšení uživatelského komfortu. Mezi ně patří například schopnost rozšiřovat virtuální (nikoliv vizuální) velikost klávesy podle toho, jaké klávesy předcházely. Pokud uživatel tedy např. často tapne na klávesu N, smaže zadaný znak N a tapne na klávesu B a pokračuje v psaní, pak se to klávesnice naučí a příště, pokud je tapnutí ne zcela jednoznačné, vybere pravděpodobnější klávesu, v tomto příkladu tedy B. % http://www.swype.com/product-features/android/features.html 
+Nutno podotknout, že firma Nuance, jež systém Swype v současnosti vyvíjí, nezahrnuje do své klávesnice pouze tento systém zadávání, ale i klasickou metodu zadávání s nabídkou predikcí v horizontálním seznamu. Navzdory faktu, že hlavním důvodem popularity klávesnicové aplikace Swype je systém zadávání Swype, i klasická klávesnice v této aplikaci kombinuje různé technologie na zlepšení uživatelského komfortu. Mezi ně patří například schopnost rozšiřovat virtuální (nikoliv vizuální) velikost klávesy podle toho, jaké klávesy předcházely. Pokud uživatel tedy např. často tapne na klávesu N, smaže zadaný znak N a tapne na klávesu B a pokračuje v psaní, pak se to klávesnice naučí a příště, pokud je tapnutí ne zcela jednoznačné, vybere pravděpodobnější klávesu, v tomto příkladu tedy B. \parencite{swypeabout} % http://www.swype.com/product-features/android/features.html 
 
 % http://www.nuance.com/ucmprod/groups/corporatecomms/@web-enus/documents/webasset/nc\_024737.pdf
 
-Swype také používá Andvance Language Model (AML), „pokročilý jazykový model“, který pracuje s bigramy a trigramy vytvořenými mimo jiné na základě textů, které už uživatel zadal. To aplikaci umožňuje účinněji disambiguovat slova, která vychází jako možná řešení uživatelova vstupu či předvídat další slovo, které by mohlo přijít po již napsaném. Oficiální dokumentace uvádí, že díky AML aplikace dokáže na základě kontextu správně rozlišit slova, která mají stejnou trasu tahu, tedy např. „put“, „pit“ a „pot“.
+Swype také používá Andvance Language Model (AML), „pokročilý jazykový model“, který pracuje s bigramy a trigramy vytvořenými mimo jiné na základě textů, které už uživatel zadal. To aplikaci umožňuje účinněji disambiguovat slova, která vychází jako možná řešení uživatelova vstupu či předvídat další slovo, které by mohlo přijít po již napsaném. Oficiální dokumentace uvádí, že díky AML aplikace dokáže na základě kontextu správně rozlišit slova, která mají stejnou trasu tahu, tedy např. „put“, „pit“ a „pot“. \parencite{swypehowto}
 % http://www.nuance.com/ucmprod/groups/corporatecomms/@web-enus/documents/webasset/nc\_024737.pdf
 
 \subsubsection{Predikce na fyzických QWERTY klávesnicích}
 
 Jak bylo naznačeno v kapitolách výše, většina implementací predikce textu, automatického doplňování textu a automatických oprav založených na predikci textu je určena pro zařízení buď s nejednoznačnou klávesnicí, kde má predikce eliminovat nutnost opakovaných stisků stejné klávesy, nebo pro zařízení s dotykovou obrazovkou a softwarovou klávesnicí, na nichž si systémy kladou za cíl zvýšit rychlost a snížit chybovost zadávání textu. 
 
-Existují ale případy, kdy je predikce textu vhodná i pro použití s klávesnicemi fyzickými. Lze usuzovat, že se tyto případy nebudou týkat uživatelů, kteří nemají fyzický nebo mentální handicap a jsou na fyzickou QWERTY klávesnici zvyklí, ale spíš uživatelů, kteří z nějakého důvodu nemohou zadávat text normální rychlostí. Takoví uživatelé pravděpodobně trpí nějakým typem omezení motoriky rukou či nemocemi typu dyslexie. Pro ně může predikce textu mít smysl v tom, že nemusí zadávat celá slova, ale stačí zadat jeho menší část a poté vybrat požadované slovo z nabídky předvídaných slov. To pro ně patrně bude jednodušší, než muset zadávat celá slova, ať už z důvodu neschopnosti dostatečně rychlého psaní, či problémům se správným psaním. % cit. http://www.penfriend.biz/benefits.html
+Existují ale případy, kdy je predikce textu vhodná i pro použití s klávesnicemi fyzickými. Lze usuzovat, že se tyto případy nebudou týkat uživatelů, kteří nemají fyzický nebo mentální handicap a jsou na fyzickou QWERTY klávesnici zvyklí, ale spíš uživatelů, kteří z nějakého důvodu nemohou zadávat text normální rychlostí. Takoví uživatelé pravděpodobně trpí nemocemi, jako jsou například dyslexie mozková obrna. \parencite[1--2]{philgadomski} Pro ně může predikce textu mít smysl v tom, že nemusí zadávat celá slova, ale stačí zadat jeho menší část a poté vybrat požadované slovo z nabídky předvídaných slov. To pro ně patrně bude jednodušší, než muset zadávat celá slova, ať už z důvodu neschopnosti dostatečně rychlého psaní, či problémům se správným psaním. \parencite{penfriend2014} % cit. http://www.penfriend.biz/benefits.html
 % cit. (uvod) http://www.ece.gatech.edu/academic/courses/ece4007/09fall/ece4007l01/ws1/trp2.pdf
 Taková predikce textu může napomoci např. lepší sociální interakci těchto uživatelů, protože rychlost komunikace může být značnou překážkou v účinné výměně informací s protistranou, která takovým handicapem netrpí, a nemá tudíž například trpělivost čekat na odpověď v chatu nadstandardní dobu. %  nejaky citace? jako nekde jsem neco podobneho cetl, ale buh vi kde..   
 
@@ -416,13 +414,13 @@ Zde popisovaná aplikace je závislá na serverovém skriptu, který tvoří tak
 
 V této práci je tedy backendem skript naprogramovaný v dynamickém programovacím jazyce Python, který s webovou aplikací komunikuje pomocí protokolu CGI. 
 
-Jako zdrojová data pro skript produkující doplnění slouží předem vygenerované n-gramy o délce\td{proc jich je tolik, kdyz to stejne funguje jenom s bigramama? } 3 až 12 tokenů. Tyto n-gramy pochází z nejrozsáhlejšího českého korpusu czTenTen, který je kolekcí textů z různých webových zdrojů. Texty v korpusu neprošly korekturami, takže nemusí nutně obsahovat pouze spisovnou češtinu, což může být závažným problémem, pokud by aplikace pro predikci textu měla být využíváná pro kontrolu správnosti psaní. Vzhledem k tomu, že to ale není primární cíl a ani to přímo nesouvisí s cílem praktické části této práce, nebyl na tuto skutečnost během vzniku zde popisované aplikace brán zřetel. Nicméně v případě, že by byl zájem aplikaci užívat za takovým účelem, stačí vyměnit korpus, z něhož se generují predikce, za takový, který bude vyhovovat potřebám užití.
+Jako zdrojová data pro skript produkující doplnění slouží předem vygenerované n-gramy o délce\td{proc jich je tolik, kdyz to stejne funguje jenom s bigramama? } 3 až 12 tokenů. Tyto n-gramy pochází z nejrozsáhlejšího českého korpusu czTenTen, který je kolekcí textů z různých webových zdrojů. \parencite{czTenTen12_info} Texty v korpusu neprošly korekturami, takže nemusí nutně obsahovat pouze spisovnou češtinu, což může být závažným problémem, pokud by aplikace pro predikci textu měla být využíváná pro kontrolu správnosti psaní. Vzhledem k tomu, že to ale není primární cíl a ani to přímo nesouvisí s cílem praktické části této práce, nebyl na tuto skutečnost během vzniku zde popisované aplikace brán zřetel. Nicméně v případě, že by byl zájem aplikaci užívat za takovým účelem, stačí vyměnit korpus, z něhož se generují predikce, za takový, který bude vyhovovat potřebám užití.
 
-% cit. https://ske.fi.muni.cz/auth/corpora/
+% cit. https://ske.fi.muni.cz/auth/corpora/ % Done
 
-Vygenerované n-gramy jsou vyfiltrovány podle různých kritérií s cílem vytvořit databázi n-gramů, která bude mít přijatelné pokrytí textů korpusu se zachováním rozumné datové velikosti databáze.
+Vygenerované n-gramy jsou vyfiltrovány podle různých kritérií s cílem vytvořit databázi n-gramů, která bude mít přijatelné pokrytí textů korpusu se zachováním rozumné datové velikosti databáze. \parencite[13]{neverilovaulipova2014}
 
-% konec parafraze clanku neverilova+ulipova::ch3.1, to se asi cituje jinak, ze?}
+% konec parafraze clanku neverilova+ulipova::ch3.1 % Done
 
 \todo[inline, color=red]{tady jeste popsat neco o tech FSA + prostor pro popis, jak se ty n-gramy vazi (ani o jednom nejak nic moc nevim.. too techy for me ww) }
 
@@ -444,24 +442,24 @@ Frontend, neboli část aplikace, se kterou interaguje uživatel, byla v této p
 
 CKEditor je open source aplikace, což znamená, že jeho zdrojový kód je veřejně přístupný a každý jej může libovolně používat, modifikovat a distribuovat za dodržení jistých podmínek. 
 
-Výhodou CKEditoru je jeho modularita, která spočívá v možnosti rozšiřovat jej pomocí zásuvných modulů. Tvorba zásuvných modulů není vyhrazena pouze pro vybrané autory, ale  díky otevřenosti kódu editoru se jí může zabývat takřka kdokoliv. Proto je CKEditor vhodným výběrem pro účely této práce. %  cit. http://ckeditor.com/about 
+Výhodou CKEditoru je jeho modularita, která spočívá v možnosti rozšiřovat jej pomocí zásuvných modulů. Tvorba zásuvných modulů není vyhrazena pouze pro vybrané autory, ale  díky otevřenosti kódu editoru se jí může zabývat takřka kdokoliv. \parencite{cksource2015} Proto je CKEditor vhodným výběrem pro účely této práce. %  cit. http://ckeditor.com/about 
 
 \section{Návrh}\label{navrh}
 
-Jelikož uživatelské rozhraní zde popisované aplikace je určeno pro použití ve webovém prohlížeči, byly při vývoji využity výhradně webové technologie, tedy JavaScript v kombinaci s knihovnou AJAX (asynchronní JavaScript a XML (Extensible Markup Language)), značkovací jazyk HTML a CSS (kaskádové styly -- Cascading Style Sheets). 
+Jelikož uživatelské rozhraní zde popisované aplikace je určeno pro použití ve webovém prohlížeči, byly při vývoji využity výhradně webové technologie, tedy JavaScript v kombinaci s knihovnou Ajax (asynchronní JavaScript a XML (Extensible Markup Language)), značkovací jazyk HTML a CSS (kaskádové styly -- Cascading Style Sheets). 
 
 \subsection{JavaScript}
 
-JavaScript je dynamický, interpretovaný, objektově orientovaný programovací jazyk široce využívaný pro vývoj webových aplikací. Z hlediska komunikačního modelu klient-server se jedná o jazyk pro skriptování na straně klienta, takže se používá pro programování uživatelského rozhraní webových stránek. % cit. https://developer.mozilla.org/en-US/docs/Web/JavaScript/About_JavaScript 
+JavaScript je dynamický, interpretovaný, objektově orientovaný programovací jazyk široce využívaný pro vývoj webových aplikací. Z hlediska komunikačního modelu klient-server se jedná o jazyk pro skriptování na straně klienta, takže se používá pro programování uživatelského rozhraní webových stránek. \parencite[2--4]{flanagan2006javascript} % cit. https://developer.mozilla.org/en-US/docs/Web/JavaScript/About_JavaScript 
 
 
-Jeho vývoj, který probíhá od roku 1995 dodnes, začal ve společnosti Netscape Communications Corporation. V roce 1997 se JavaScript stal průmyslovým standardem poté, co společnost Ecma International vydala první standardizovanou verzi JavaScriptu pojmenovanou ECMAScript. %  cit. https://en.wikipedia.org/wiki/JavaScript --vytahat primarni zdroje 
+Jeho vývoj, který probíhá od roku 1995 dodnes, začal ve společnosti Netscape Communications Corporation. V roce 1997 se JavaScript stal průmyslovým standardem poté, co společnost Ecma International vydala první standardizovanou verzi JavaScriptu pojmenovanou ECMAScript. \parencite{brendaneich2011} %  cit. https://en.wikipedia.org/wiki/JavaScript --vytahat primarni zdroje 
 
 Ve zde popisovaném zásuvném modulu slouží JavaScript k obstarání hlavní logiky rozhraní, tedy extrakci textových dat editoru a jejich zpracování do formy vhodné k odeslání serverovému skriptu, sledování aktivity uživatele a případné zajištění, že data budou odeslána. Po přijetí odpovědi serveru zpracovává JavaScript přijatý text, zajišťuje uživateli nabídku doplnění a jejich případně vložení na správné místo v editoru. 
 
-\subsection{AJAX}
+\subsection{Ajax}
 
-AJAX, neboli Asynchronous JavaScript and XML, je souhrnné označení webových technologií, které se používají pro komunikaci webových aplikací se serverem. Hlavním využítím AJAXu bývají právě aplikace, které potřebují komunikovat se vzdáleným serverem bez nutnosti načítat celou webovou stránku znova. 
+Ajax, neboli Asynchronous JavaScript and XML, je souhrnné označení webových technologií, které se používají pro komunikaci webových aplikací se serverem. Hlavním využítím Ajaxu bývají právě aplikace, které potřebují komunikovat se vzdáleným serverem bez nutnosti načítat celou webovou stránku znova. \parencite{garrett2005ajax}
 
 Asynchronní výměna dat se serverem probíhá pomocí aplikačního rozhraní XMLHttpRequest (XHR), které skriptovacím jazykům na straně klienta, jako je například JavaScript, umožňuje odesílat data na vzdálený server. Po přijetí odpovědi se pak stará od dodání dat zpět do skriptu.
 
@@ -482,14 +480,14 @@ Druhá forma prostého textu se využívá v odpovědích serveru. Skript na po�
 
 \subsection{jQuery}
 
-jQuery je knihovna navržená pro usnadnění programovaní v jazyce JavaScript. Zaměřuje se především na zjednodušení zpracování prvků v HTML dokumentu, práce s událostmi (např. stisk klávesy) a komunikace mezi klientem a serverem pomocí AJAXu.
-% https://jquery.com/https://jquery.com/ 
+jQuery\footnote{\url{https://jquery.com/}} je knihovna navržená pro usnadnění programovaní v jazyce JavaScript. Zaměřuje se především na zjednodušení zpracování prvků v HTML dokumentu, práce s událostmi (např. stisk klávesy) a komunikace mezi klientem a serverem pomocí Ajaxu.
+% https://jquery.com/ 
 
 \subsection{HTML}
 
-HTML, neboli HyperText Markup Language, je standardní značkovací jazyk velice podobný jazyku XML široce používaný pro tvorbu webových stránek pro webové prohlížeče, jako je kupříkladu Mozilla Firefox\footnote{\url{https://www.mozilla.org/en-US/firefox/desktop/}} či \footnote{\url{https://www.google.com/chrome/}}Google Chrome. Webové prohlížeče jsou schopny HTML zpracovat a zobrazit uživateli výslednou stránku, která obsahuje vizuální prvky a textové formátování. 
+HTML, neboli HyperText Markup Language, je standardní značkovací jazyk velice podobný jazyku XML široce používaný pro tvorbu webových stránek pro webové prohlížeče, jako je kupříkladu Mozilla Firefox\footnote{\url{https://www.mozilla.org/en-US/firefox/desktop/}} či \footnote{\url{https://www.google.com/chrome/}}Google Chrome. Webové prohlížeče jsou schopny HTML zpracovat a zobrazit uživateli výslednou stránku, která obsahuje vizuální prvky a textové formátování. \parencite[19--22]{raggett1999html}
 
-Standard HTML vychází ze obecného značkovacího jazyka SGML (Standard Generalized Markup Language), který je založen na dvou principech, a to že by značkovací jazyk měl být deklarativní, tedy popisovat strukturu a další atributy, spíše než definovat způsob, jakým je dokument zpracováván, a že by definice v dokumentu měly být jednoznačné a pevně definované, aby byl dokument zpracovatelný stejně jako například programový kód. %  cit. https://en.wikipedia.org/wiki/Standard_Generalized_Markup_Language --vytahat primarni zdroje, budou-li 
+Standard HTML vychází ze obecného značkovacího jazyka SGML (Standard Generalized Markup Language), který je založen na dvou principech, a to že by značkovací jazyk měl být deklarativní, tedy popisovat strukturu a další atributy, spíše než definovat způsob, jakým je dokument zpracováván, a že by definice v dokumentu měly být jednoznačné a pevně definované, aby byl dokument zpracovatelný stejně jako například programový kód. \parencite{rubinsky1990sgml} %  cit. https://en.wikipedia.org/wiki/Standard_Generalized_Markup_Language --vytahat primarni zdroje, budou-li 
 
 
 HTML popisuje strukturu stránky po sémantické stránce, stejně jako definuje (částečně či úplně) její vzhled. Rozdíl mezi sémantickou informací a informací pouze o tom, jak by měla prezentace vypadat, lze ilustrovat na dvojici značek, jejichž výsledná prezentace je zpravidla identická, a to {\tt <strong>} a {\tt <b>}. Značka {\tt <strong>} webovému prohlížeči říká, že text uvnitř této značky je důležitější než okolní text a měl by podle toho také být naformátován (tedy zpravidla tučným řezem písma), zatímco značka {\tt <b>} pouze indikuje, že by text v ní uzavřený měl být naformátován tučně. %  cit. https://en.wikipedia.org/wiki/HTML --primarni zdroje?? 
@@ -499,7 +497,7 @@ Zde popisovaná aplikace využívá HTML relativně málo, protože se jedná o 
 
 \subsection{CSS}
 
-Druhou technologií, která je relativně málo využita, ale pro koncového uživatele je zásadní z hlediska uživatelské přívětivosti rozhraní, jsou kaskádové styly (CSS). CSS je také jednou ze základních technologií používaných pro webové prezentace a zajišťuje definice vizuálního vzhledu stránek napsaných ve značkovacím jazyce.
+Druhou technologií, která je relativně málo využita, ale pro koncového uživatele je zásadní z hlediska uživatelské přívětivosti rozhraní, jsou kaskádové styly (CSS). CSS je také jednou ze základních technologií používaných pro webové prezentace a zajišťuje definice vizuálního vzhledu stránek napsaných ve značkovacím jazyce. \parencite{meyer2004cascading}
 
 Hlavním smyslem CSS je oddělení obsahu webové stránky od její vizuální prezentace. To je důležité především pro snazší udržování stránky a větší flexibilitě. Použití CSS navíc umožňuje zobrazit jednu stránku různými způsoby, jedním z nichž může být například možnost zobrazení pro barvoslepé uživatele.
 
@@ -523,13 +521,13 @@ Prvním krokem je rozdělení obsahu editoru na jednotlivá slova. To zajišťuj
 
 Poté, co má skript k dispozici slova z aktuálního (posledního) řádku v editoru, se v případě, že současné slovo u kurzoru má délku alespoň tři znaky, zjišťuje pomocí funkce {\tt findLastSimiliarWord()}, zda se v editoru už nevyskytuje slovo, které začíná na řetězec shodný se současným slovem a má délku alespoň pět znaků. Pokud ano, přidá se do seznamu predikcí, který později bude uživateli nabídnut. Tento krok se provádí proto, že lze předpokládat, že pokud uživatel napsal jednou nějaké delší slovo a znova začal psát slovo, které začíná stejnými znaky, bude chtít napsat téže slovo. Jde o funkcionalitu podobou té z textového procesoru LibreOffice Writer (obrázek \ref{fig:LOpredict} na straně \pageref{fig:LOpredict}).
 
-Po tomto kroku už přichází na řadu funkce {\tt getSuggestions()}, která provádí AJAXové volání na server za účelem získání predikcí vytvořených z korpusových dat. Funkce {\tt getSuggestions()} přijímá několik hodnot, a to pole se slovy z posledního řádku, počet slov, která mají být odeslána na server a dále callback na funkci {\tt handleSuggestion()}, která zpracovává získaná doplnění.
+Po tomto kroku už přichází na řadu funkce {\tt getSuggestions()}, která provádí Ajaxové volání na server za účelem získání predikcí vytvořených z korpusových dat. Funkce {\tt getSuggestions()} přijímá několik hodnot, a to pole se slovy z posledního řádku, počet slov, která mají být odeslána na server a dále callback na funkci {\tt handleSuggestion()}, která zpracovává získaná doplnění.
 
 Ve funkci {\tt getSuggestions()} pak proběhne připravení řetězce se slovy, která mají být odeslána na server. To znamená, že funkce metodou {\tt slice()} vyřízne z pole posledních N slov, kde N je počet slov odesílaných na server a výsledné pole N prvků spojí do řetězce s tím, že mezi jednotlivé prvky (slova) vloží znak {\tt +} (plus). Znak {\tt +} byl zvolen proto, že slova jsou odesílána, jak již bylo popsáno v kapitole \ref{navrh}, metodou GET, tedy jako parametry adresy URL, a v rámci dat odesílaných metodou GET lze reprezentovat mezeru buď znakem {\tt +} nebo řetězcem {\tt \%20}, přičemž tyto způsoby jsou v praxi rovnocenné.
 
-Nyní funkce čeká předem nastavenou dobu, zda nenastane další aktivita uživatele, a v případě, že nenastane, odešle AJAXový požadavek na server.
+Nyní funkce čeká předem nastavenou dobu, zda nenastane další aktivita uživatele, a v případě, že nenastane, odešle Ajaxový požadavek na server.
 
-V případě, že AJAXové volání na server uspělo (návratový kód {\tt 202 Success}), zavolá se pomocí callbacku, který byl funkci {\tt getSuggestions()} předán dříve, funkce {\tt handleSuggestion()}. Pokud volání z jakéhokoliv důvodu skončilo chybou (příkladem budiž nedostupný server, což způsobí, že volání skončí návratovým kódem {\tt 404 Not Found}), vypíše se chyba do konsole a z hlediska uživatele se nic nestane. 
+V případě, že Ajaxové volání na server uspělo (návratový kód {\tt 202 Success}), zavolá se pomocí callbacku, který byl funkci {\tt getSuggestions()} předán dříve, funkce {\tt handleSuggestion()}. Pokud volání z jakéhokoliv důvodu skončilo chybou (příkladem budiž nedostupný server, což způsobí, že volání skončí návratovým kódem {\tt 404 Not Found}), vypíše se chyba do konsole a z hlediska uživatele se nic nestane. 
 
 Funkce {\tt handleSuggestion()} přijímá jako argumenty mj. současné slovo pod kursorem, jeho případné doplnění z existujícího textu v editoru a odpověď serveru. Odpověď serveru je řetězec znaků, který obsahuje slova oddělená od sebe znakem mezery. Funkce odpověď rozdělí na jednotlivá slova a vyřadí slova kratší než 3 znaky včetně (z důvodů uvedených v kapitole \ref{ui}). Pokud byla dříve nalezena predikce z textu, je doplněním ze serveru předřazena, aby uživateli byla prezentována jako první.
 
@@ -591,6 +589,8 @@ Co se problémů týče, hlavním z nich je fakt, že momentální implementace 
 % MACKENZIE, I.S. LetterWise: Prefix-based disambiguation for mobile text input. \textit{UIST (User Interface Software and Technology): Proceedings of the ACM Symposium} [online]. 2001, 111 - 120 [cit. 2015-10-22]. 
 
 % \end{thebibliography}
+
+\newpage
 
 \printbibliography[title={Seznam literatury}]
 
