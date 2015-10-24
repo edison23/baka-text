@@ -10,19 +10,21 @@
 \usepackage{graphicx}
 \usepackage[rgb]{xcolor}
 \graphicspath{ {../img/} }
-\usepackage{polyglossia}
+% \usepackage{polyglossia}
 \usepackage{xunicode}
 \usepackage{xltxtra}
 \usepackage{todonotes}
 \usepackage{epstopdf}
+\usepackage[czech]{babel}
 % \usepackage[sorting=nyt,style=apa]{biblatex}
 
 \newcommand{\td}[2][]{
 	{\todo[size=\footnotesize]{#2}}
 }
 
-\setmainlanguage{czech}
-\setmainfont{CMU Serif Roman}
+
+% \setmainlanguage{czech}
+\setmainfont[Ligatures=TeX]{CMU Serif Roman}
 
 % \usepackage[english,czech]{babel} % main language of the document must be last
 \usepackage[
@@ -32,6 +34,7 @@
   ,autocite=footnote
   ,maxnames=2
   ,minnames=1
+  ,urldate=long
   ,spacecolon=true
   ]
   {biblatex}
@@ -177,8 +180,9 @@ Tvorba frekvenčních slovníků byla v dobách před rozvojem počítačů scho
 Naproti tomu moderní frekvenční slovník současné americké angličtiny \parencite{davies2013frequency} byl vytvořen z korpusu současné americké angličtiny, The Corpus of Contemporary American English (COCA), který obsahuje přes 400 milionů slov. Samotný slovník pak sestává z 5000 nejfrekventovanějších slov. Nutno podotknout, že slovník je určen především uživatelům, kteří nejsou rodilí mluvčí a anglicky se učí, což je pravděpodobně důvod, proč obsahuje pouze 5000 nejčastějších slov.
 % A Frequency Dictionary Of American English, 2010 % Done
 
-Na druhou stranu \parencite{alderson2007judging} tvrdí, že ani velké korpusy nemusí být dostačující pro adekvátní zhodnocení frekvenčního rozložení slov v jazyce tak, jak jej vnímají mluvčí daného jazyka. Vychází z výsledků výzkumů zaměřujících se na porovnání hodnocení frekventovanosti určitých slov v jazyce jeho zkušenými uživateli s daty získanými z korpusu. Tyto hodnoty se totiž podle citovaných průzkumů značně rozchází a je tedy otázkou, zda z toho vyplývá, že ani zkušení mluvčí nedokážou správně posoudit pravděpodobnost výskytu daného slova, či že data získaná z korpusů nereprezentují zkušenosti mluvčích s jazykem dostatečně přesně. \td{ani nevim, jestli jsem to vubec interpretoval smysluplne a spravne}
+\parencite{alderson2007judging} tvrdí, že ani velké korpusy nemusí být dostačující pro adekvátní zhodnocení frekvenčního rozložení slov v jazyce tak, jak jej vnímají mluvčí daného jazyka. Vychází z výsledků výzkumů zaměřujících se na porovnání hodnocení frekventovanosti určitých slov v jazyce jeho zkušenými uživateli s daty získanými z korpusu. Tyto hodnoty se totiž podle citovaných průzkumů značně rozchází a je tedy otázkou, zda z toho vyplývá, že ani zkušení mluvčí nedokážou správně posoudit pravděpodobnost výskytu daného slova, či že data získaná z korpusů nereprezentují zkušenosti mluvčích s jazykem dostatečně přesně. \td{ani nevim, jestli jsem to vubec interpretoval smysluplne a spravne}
 % http://applij.oxfordjournals.org.ezproxy.muni.cz/content/28/3/383.full
+	% Done
 
 \subsection{Statistický model}
 
@@ -188,7 +192,8 @@ Na druhou stranu \parencite{alderson2007judging} tvrdí, že ani velké korpusy 
 
 Vstupní metody mívají zpravidla dva cíle, jichž se snaží jejich vývojáři dosáhnout. Jedním z nich je omezení počtu nutných úhozů při zadávání textu, druhým pak je rychlost samotného zadávání. Omezování počtu nutných úhozů je aktuální u nejednoznačných klávesnic, které zpomalují zadávání textu především nutností stisknout jednu klávesu vícekrát pro zadání některých znaků. Tento problém u jednoznačných QWERTY klávesnic není tak podstatný, takže už spíše záleží na rychlosti zadávání.
 
-Měřit rychlost zadávání textu pak lze několika odlišnými způsoby. Uživatelé, na kterých se testuje, mohou buď psát text předem nepřipravený, tedy ho mohou komponovat sami, nebo ho mohou opisovat, tedy kopírovat. Kopírování se obecně považuje za lepší, protože eliminuje zpoždění nutné k samotnému vymyšlení psaného textu. % cit. gradu04481.pdf ch 1.1 text entry evaluations & Arif ch 2 - text entry perf. metrics
+Měřit rychlost zadávání textu pak lze několika odlišnými způsoby. Uživatelé, na kterých se testuje, mohou buď psát text předem nepřipravený, tedy ho mohou komponovat sami, nebo ho mohou opisovat, tedy kopírovat. Kopírování se obecně považuje za lepší, protože eliminuje zpoždění nutné k samotnému vymyšlení psaného textu. \parencite[2]{tarvainen2010beginner} % cit. gradu04481.pdf ch 1.1 text entry evaluations & Arif ch 2 - text entry perf. metrics
+	% Done
 
 \subsection{KSPC}
 
@@ -196,7 +201,8 @@ Metoda měření počtu úhozů na znak, neboli KSPC\footnote{Přestože název 
 
 \subsubsection{Primitivní výpočet KSPC}
 
-Naivní přístup k výpočtu KSPC je takový, že se spočítá počet písmen ve slově (i s mezerou za slovem) a počet úhozů, kterými se na dané klávesnici slovo zadá. Nutno počítat i se stisky speciální klávesy {\tt NEXT}, kterou je nutno použít v případě, že se dvě po sobě jdoucí písmena nachází na stejné klávese. % cit Silfverberg, M., MacKenzie, I. S., and Korhonen, P. Predicting text entry speed on mobile phones, Proc. CHI 2000. New York: ACM (2000) 9-16.
+Naivní přístup k výpočtu KSPC je takový, že se spočítá počet písmen ve slově (i s mezerou za slovem) a počet úhozů, kterými se na dané klávesnici slovo zadá. Nutno počítat i se stisky speciální klávesy {\tt NEXT}, kterou je nutno použít v případě, že se dvě po sobě jdoucí písmena nachází na stejné klávese. \parencite[10]{silfverberg2000predicting} % cit Silfverberg, M., MacKenzie, I. S., and Korhonen, P. Predicting text entry speed on mobile phones, Proc. CHI 2000. New York: ACM (2000) 9-16.
+	% Done
 Pro metodu multitap na standardní ITU klávesnici by to pro slovo "kniha" byla následující sekvence kláves:
 
 \[
@@ -218,11 +224,11 @@ a KSPC tedy vyjde:
 	\frac{5}{5} = 1,000.
 \]
 
-Z toho vyplývá, že je nutno provést výpočet tak, aby výsledná hodnota byla průměrná pro daný jazyk. Takový výpočet má dvě prerekvizity. První z nich je jednoznačný popis postupu, kterým lze dojít k zadání jednotlivých znaků, druhou pak jazykový model. Ten je nutný proto, aby výsledné KSPC bylo nezávislé na konkrétním textu v daném jazyce (tedy aby pro daný jazyk bylo průměrné).
+Z toho vyplývá, že je nutno provést výpočet tak, aby výsledná hodnota byla průměrná pro daný jazyk. Takový výpočet má dvě prerekvizity. První z nich je jednoznačný popis postupu, kterým lze dojít k zadání jednotlivých znaků, druhou pak jazykový model. Ten je nutný proto, aby výsledné KSPC bylo nezávislé na konkrétním textu v daném jazyce (tedy aby pro daný jazyk bylo průměrné). \parencite[196]{mackenzie2002kspc}
 
 \subsubsection{Jazykový model}
 
-Jazykovým modelem je v tomto případě korpus a jeho omezené formy. Tyto formy se liší podle toho, jaká metoda zadávání je testována. Pokud například jde o metodu, která vybírá znaky nezávisle na kontextu (na okolních znacích), stačí mít informace o frekvenčním rozložení jednotlivých písmen v korpusu. Pokud by byl výběr znaku závislý na kontextu jednoho písmene, byl by jazykový model frekvenční slovník bi-gramů. Pro vyhodnocení metod, které využívají k odhadu dalšího písmene kontext celých slov, se použije korpus zredukovaný na unikátní slova a jejich frekvence. % cit. MacKenzie ch 4.3
+Jazykovým modelem je v tomto případě korpus a jeho omezené formy. Tyto formy se liší podle toho, jaká metoda zadávání je testována. Pokud například jde o metodu, která vybírá znaky nezávisle na kontextu (na okolních znacích), stačí mít informace o frekvenčním rozložení jednotlivých písmen v korpusu. Pokud by byl výběr znaku závislý na kontextu jednoho písmene, byl by jazykový model frekvenční slovník bi-gramů. Pro vyhodnocení metod, které využívají k odhadu dalšího písmene kontext celých slov, se použije korpus zredukovaný na unikátní slova a jejich frekvence.  \parencite[197]{mackenzie2002kspc} % cit. MacKenzie ch 4.3 % Done
 
 \subsubsection{Obecný výpočet KSPC}
 
@@ -231,25 +237,25 @@ Při výpočtu průměrného KSPC pro daný jazyk a metodu se pak postupuje podl
 \[
 	KSPC = \frac{\sum{ (K_c \times F_c) }}{\sum{ (C_c \times F_c) }},
 \]
-kde $K_c$ je počet úhozů nutný pro zadání znaku, $C_c$ je velikost znaku a $F_c$ je frekvence daného znaku v korpusu. Pokud se tedy tento vzorec aplikuje na situaci, kdy metoda zadávání textu vybírá písmeno bez ohledu na kontext, platí, že $C_c$ = 1, pokud se vybírá v závislosti na jednom předešlém znaku, je $C_c$ = 2. Pokud metoda zohledňuje celá slova, počítá se s průměrnou délkou slov v daném jazyce. Ta se počítá jako vážený průměr počtu znaků ve slovech daného jazyka, který pro BNC vychází na 4,59 znaku; pro srovnání, [Arif ch 2 - text entry perf. metrics] počítá při svých výpočtech s 5 úhozy na slovo, což se považuje za obecný standard. % cit. gradu04481.pdf ch. 1.1.1 WPM & Arif ch 2 - text entry perf. metrics - WPM
+kde $K_c$ je počet úhozů nutný pro zadání znaku, $C_c$ je velikost znaku a $F_c$ je frekvence daného znaku v korpusu. Pokud se tedy tento vzorec aplikuje na situaci, kdy metoda zadávání textu vybírá písmeno bez ohledu na kontext, platí, že $C_c$ = 1, pokud se vybírá v závislosti na jednom předešlém znaku, je $C_c$ = 2. Pokud metoda zohledňuje celá slova, počítá se s průměrnou délkou slov v daném jazyce. Ta se počítá jako vážený průměr počtu znaků ve slovech daného jazyka, který pro BNC vychází na 4,59 znaku; pro srovnání, \parencite[2]{arif2009analysis} počítá při svých výpočtech s 5 úhozy na slovo, což se považuje za obecný standard. \parencite[3]{tarvainen2010beginner} % cit. gradu04481.pdf ch. 1.1.1 WPM & Arif ch 2 - text entry perf. metrics - WPM 
+	% Done (both)
 
 \subsubsection{Obecné dělení metod zadávání dle KSPC}
 
 Metody zadávání textu lze podle KSPC rozdělit do tří kategorií: ty, pro které je KSPC větší než 1 (např. původní metoda multitap), ty, pro které je rovno 1 (např. QWERTY klávesnice) a nakonec ty, jejichž KSPC dosahuje hodnot nižších než 1 (např. QWERTY klávesnice kombinovaná s predikcí). % cit. MacKenzie KSPC ch. 2 a MacKenzie KSPC ch. 6
 
-Jako základ pro porovnání jednotlivých metod podle KSPC je vhodná standardní klávesnice QWERTY. % Arif - introduction
+Jako základ pro porovnání jednotlivých metod podle KSPC je vhodná standardní klávesnice QWERTY. \parencite{arif2009analysis} % Arif - introduction
 Uvažují-li se pouze malá písmena anglické abecedy, platí pro ni, že KSPC = 1, tedy na jeden znak připadá jeden úhoz, protože pro každý znak má dedikovanou právě jednu klávesu.
 
 \subsection{WPM}
 
-Počet slov za minutu (WPM, Words per minute) je běžně užívaná metrika pro vyhodnocení rychlosti psaní, která se vyskytuje už od roku 1905. % cit. gradu04481 ch. 1.1.1
-Tato metoda nezohledňuje počet úhozů, který během měření byl proveden, pouze výslednou délku přepsaného řetězce. Vzorec pro výpočet WPM tak, jak jej uvádí [Wobbrock, 2007] % cit. gradu04481 ch 1.1.1
-je následovný:
+Počet slov za minutu (WPM, Words per minute) je běžně užívaná metrika pro vyhodnocení rychlosti psaní. \parencite{tarvainen2010beginner} % cit. gradu04481 ch. 1.1.1
+Tato metoda nezohledňuje počet úhozů, který během měření byl proveden, pouze výslednou délku přepsaného řetězce. Vzorec pro výpočet WPM \parencite[48]{wobbrockjacobo.2007}:
 
 \[
 	WPM = \frac{T - 1}{S} \times 60 \times \frac{1}{5},
 \]
-kde $T$ je délka přepsaného řetězce, $S$ počet sekund od prvního úhozu do posledního úhozu. Konstanta $60$ reprezentuje počet sekund za minutu a $1/5$ počet znaků na slovo. Odečtení konstanty $1$ z počtu znaků ve výsledném řetězci je důležité proto, že většina systémů začíná počítat čas ve chvíli zadání prvního znaku. %cit gradu04481 ch. 1.1.1
+kde $T$ je délka přepsaného řetězce, $S$ počet sekund od prvního úhozu do posledního úhozu. Konstanta $60$ reprezentuje počet sekund za minutu a $1/5$ počet znaků na slovo. Aby byla metoda univerzální, počítá se slovo jako pět znaků nezávisle na tom, kolik znaků slova ve výsledném řetězci skutečně mají. Tato standardizace se vyskutuje už od roku 1905. \parencite{yamada1980historical} Odečtení konstanty $1$ z počtu znaků ve výsledném řetězci je důležité proto, že většina systémů začíná počítat čas ve chvíli zadání prvního znaku. \parencite[49]{wobbrockjacobo.2007}
 
 \subsection{Vyhodnocování chyb}
 
@@ -257,13 +263,13 @@ Při vyhodnocování rychlosti psaní je důležité zohlednit také chyby ve v�
 
 Metoda KSPC může být použita k vyčíslení chybovosti tak, že porovná počet znaků zadaných a počet znaků ve výsledném řetězci. Jednou z nevýhod je fakt, že žádným způsobem nerozlišuje chybné znaky od správných, takže vyčísluje pouze množství oprav. % gradu04481.pdf ch 1.1.4 about error rates
 
-Dalším způsobem, jak změřit chybovost, s jakou uživatel text zadal, je vyhodnocení Levenshteinovy vzdálenosti originálního a přepsaného řetězce. % cit gradu04481.pdf ch 1.1.4
+Dalším způsobem, jak změřit chybovost, s jakou uživatel text zadal, je vyhodnocení Levenshteinovy vzdálenosti originálního a přepsaného řetězce. \parencite{soukoreff2001measuring} % cit gradu04481.pdf ch 1.1.4
 
 \section{Rozšířené metody zadávání textu}
 
 \subsection{Klávesnice ITU}\label{itu-kb}
 
-Klávesnice ITU je textová klávesnice na tónovém telefonu, která má na jednu klávesu přiřazeno více písmen. V průběhu vývoje se vyskytovalo několik různých způsobů, jak byla písmena na klávesnici rozřazena, avšak rozdělení písmen podle mezinárodního standardu ITU E.161/ISO 9995-8 \\cite{mfmtlqoxL48pMk3T} je následující: % cit norma ITU E.161/ISO 9995-8
+Klávesnice ITU je textová klávesnice na tónovém telefonu, která má na jednu klávesu přiřazeno více písmen. V průběhu vývoje se vyskytovalo několik různých způsobů, jak byla písmena na klávesnici rozřazena, avšak rozdělení písmen podle mezinárodního standardu \td{nejsem schopen to v tom dokumentu najit - http://www.itu.int/rec/T-REC-E.161/en}ITU E.161/ISO 9995-8 je následující: % cit norma ITU E.161/ISO 9995-8 \cite{mfmtlqoxL48pMk3T}
 
 \begin{figure}[h]
 	\centering
@@ -281,46 +287,45 @@ Na těchto klávesnicích musí uživatel stisknout klávesu s požadovaným pí
 \]
 kde {\tt N} značí klávesu {\tt NEXT} a {\tt S} zadání mezery na konci slova.
 
-Tento systém zadávání se nazývá multitap. Při psaní tímto systémem může KSPC dosahovat hodnot přes 2 \\cite{dXVv6nPb2KifFXYv}, protože většina kláves musí být stisknuta vícekrát než jednou. 
+Tento systém zadávání se nazývá multitap. Při psaní tímto systémem může KSPC dosahovat hodnot přes 2, protože většina kláves musí být stisknuta vícekrát než jednou. \parencite[202]{mackenzie2002kspc}
 
-Aby šlo zadávání u klávesnic, které mají méně kláves než je písmen v abecedě, zbavit tohoto problému, bylo nutné nějakým způsobem disambiguovat vstup vzniklý tak, že uživatel vždy stiskne klávesu, na níž se vyskytuje potřebné písmeno, jen jednou. Termín predikce textu je v tomto případě poněkud nepřesný, ale je použitelný, protože systém na základě nejednoznačného vstupu předvídá, odhaduje, co uživatel chtěl napsat.
+Aby šlo zadávání u klávesnic, které mají méně kláves než je písmen v abecedě, zbavit tohoto problému, bylo nutné nějakým způsobem disambiguovat vstup vzniklý tak, že uživatel vždy stiskne klávesu, na níž se vyskytuje potřebné písmeno, jen jednou. Termín predikce textu je v tomto případě poněkud nepřesný, ale je použitelný, protože systém na základě nejednoznačného vstupu předvídá, odhaduje, co uživatel chtěl napsat. Toto odhadování může být prováděno dvěma způsoby -- na základě slovníku a na základě prefixů.
 
-\subsubsection{První prediktivní text pro neslyšící}
+\subsubsection{Slovníková disambiguace}
 
-Prvním takovým systémem predikce textu je vynález určený pro lidi s částečně nebo zcela poškozeným slyšením. Tento systém, navržený v roce 1985, si kladl za cíl umožnit neslyšícím telefonní komunikaci, a to za přijatelnou pořizovací cenu (na rozdíl od předchozích existujících řešení) a s tím, že speciální přístroj bude potřebovat pouze neslyšící strana. \\cite{Feinson1988}
+Slovníková disambiguace umožňuje uživateli zadávat text stiskem každé klávesy s požadovaným písmenem pouze jednou. Systém potom vyhledává ve slovníku záznamy korespondující se sekvencí stisknutých kláves, tzn. slova, která obsahují písmena ze stisknutých kláves. Pokud sekvenci stisknutých kláves odpovídá více slov, je uživateli prezentován seznam těchto slov seřazený podle frekvence výskytu. % http://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO1&Sect2=HITOFF&d=PALL&p=1&u=%2Fnetahtml%2FPTO%2Fsrchnum.htm&r=1&f=G&l=50&s1=6011554.PN.&OS=PN/6011554&RS=PN/6011554
+
+Tento způsob disambiguace samozřejmě není dokonalý, protože mnoho různých slov sdílí stejné kombinace kláves. Tato situace je obvykle řešena prezentací seznamu možných slov uživateli, který musí pomocí speciálních kláves požadované slovo vybrat. \parencite{MacKenzie2001} Například kombinace kláves {\tt 7725} má v češtině možné min. tři interpretace: {\it prak, pral, psal}.
+
+Taková slova, která se zapisují stiskem stejných kláves, se nazývají textonyma \parencite{ericzorn2007} a jsou jimi v angličtině např. slova „book“ a „cool“. Zatímco obvykle tento jev pouze snižuje efektivitu zápisu pomocí T9, v roce 2010 záměna dvou textonym v textové zprávě vedla ve Spojených státech k vraždě. \parencite{t9kill}
+
+\paragraph{První disambiguační systém} byl určen pro lidi s částečně nebo zcela poškozeným slyšením. Tento systém, navržený v roce 1985, si kladl za cíl umožnit neslyšícím telefonní komunikaci, a to za přijatelnou pořizovací cenu (na rozdíl od předchozích existujících řešení) a s tím, že speciální přístroj bude potřebovat pouze neslyšící strana. \parencite{feinson1988interpretive}
 
 Podle citovaného návrhu se zpráva neslyšící straně předává tak, že protistrana na svém přístroji stiskne pro každé písmeno ve zprávě klávesu, na níž se písmeno vyskytuje (pouze jednou), tyto stisky se převedou na tón o odpovídající frekvenci (podobně jako u tónové volby) a tento tón se přenese po telefonní lince neslyšící straně. Tam je sekvence tónů převedena pomocí přístroje vybaveného mikroprocesorem na sekvenci skupin znaků, které odpovídají daným klávesám, a provede se prohledání slovníku lokálně uloženého v přístroji. Nalezená shoda je pak uživateli zobrazena na obrazovce telefonního přístroje.
 
-\subsubsection{T9}\label{t9}
+\paragraph{T9}\label{t9} -- akronym pro {\it Text on 9 keys} -- je systém, který se společně s větším rozvojem mobilních telefonů s klasickými 12klávesovými klávesnicemi se stal všeobecně známým pojmem pro prediktivní text. Byl vyvinut společností Tegic Communications \parencite{nuancecommunications2007}, patentovaný ve Spojených státech \parencite{grover1998reduced}. 
 
-Společně s větším rozvojem mobilních telefonů s klasickými 12klávesovými klávesnicemi se stal všeobecně známým pojmem pro prediktivní text systém T9, akronym pro Text on 9 keys, vyvinutý společností Tegic Communications \\cite{Edq6tEyjOSzk54RQ} patentovaný ve Spojených státech \\cite{Grover1998}. Systém T9 umožňuje uživateli zadávat text stiskem každé klávesy pouze jednou, nikoliv několikrát, jako je tomu u klasického zadávání způsobem multitap. Systém potom vyhledává ve slovníku záznamy korespondující se sekvencí stisknutých kláves, tzn. slova, která obsahují písmena ze stisknutých kláves. Pokud sekvenci stisknutých kláves odpovídá více slov, je uživateli prezentován seznam těchto slov seřazený podle frekvence výskytu. % http://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO1&Sect2=HITOFF&d=PALL&p=1&u=%2Fnetahtml%2FPTO%2Fsrchnum.htm&r=1&f=G&l=50&s1=6011554.PN.&OS=PN/6011554&RS=PN/6011554
+Systém T9 umožňuje uživateli rozšiřovat vestavěný slovník tak, že uživatel nové slovo zadá klasickým způsobem multitap a nové slovo se pak uloží do uživatelské databáze (UDB). \parencite{t9about} % http://www.nuance.com/for-business/by-product/t9/index.htm
+Problém nastává ve chvíli, kdy uživatel zjistí, že slovo není ve slovníku, až poté, co zadá příslušnou sekvenci kláves, která by k onomu slovu měla vést. V tu chvíli totiž musí smazat zadaný řetězec, který je buď nesmyslný, nebo to není požadované slovo, a zadat slovo znova pomocí multitapu.
 
-Taková slova, která se zapisují stiskem stejných kláves, se nazývají textonyma \\cite{ZORN2007} a jsou jimi v angličtině např. slova „book“ a „cool“. Zatímco obvykle tento jev pouze snižuje efektivitu zápisu pomocí T9, v roce 2010 záměna dvou textonym v textové zprávě vedla ve Spojených státech k vraždě. \\cite{bjjL0GPb5QxyO1A8} 
+Celkově je však T9 velmi jednoduchá na pochopení a použití a pro její nezávislost na kontextu u ní lze očekávat vždy stejný výstup po stisknutí určité sekvence kláves, takže se zkušený uživatel nemusí při psaní dívat na klávesnici. \parencite{davidmackay}
 
-Pokud chce navíc uživatel přidat do databáze známých slov další slovo, které v ní ještě není, může tak učinit pomocí klasického zadávání multitap. Nová slova se pak ukládají do uživatelské databáze (UDB). % http://www.nuance.com/for-business/by-product/t9/index.htm
+\paragraph{iTap}
 
-Jednou z výhod systému T9 je z hlediska úspory úhozů schopnost automatického doplňování textu po zadání prvních několika písmen ze slova. Systém po napsání prvního písmene obvykle začne nabízet nejfrekventovanější slova začínající na dané písmeno a nabídku upravuje podle dalších stisknutých kláves. Některé implementace se také jsou schopny naučit nejpoužívanější dvojice slov a po napsání prvního slova z některé z dvojic nabídne systém automaticky další slovo, které uživatel může přijmout stiskem předdefinovaného tlačítka. \\cite{hrzQ70bvKjUBgVml}
+je systém konkurenční k systému T9 vyvinutý firmou Motorola. Přestože oba systémy využívají slovníkového modelu, iTap je na rozdíl od T9 kontextově závislý a jeho slovník obsahuje kromě jednotlivých slov i běžně užívané fráze. 
 
-Další funkcí, která je pro uživatelské pohodlí důležitá, je schopnost rozpoznat a opravit překlepy. T9 toto činí tak, že se dívá i na přilehlé klávesy, tzn. pokud uživatel chce napsat slovo „testing“, které lze zapsat klávesami {\tt 8378464}, ale stiskne místo toho sekvenci kláves {\tt 8278464}, systém T9 mu stejně nabídne vedle slova „tasting“ i slova „testing“ a „tapping“ \\cite{hrzQ70bvKjUBgVml}. \td{koukam, ze tady mam citovanou Wiki.. jenze Wiki samotna to ocitovany nema (na druhou stranu mam pocit, ze to je pravda, co se tam pise) - co s tim?}
-
-\subsubsection{iTap}
-
-iTap je systém konkurenční k systému T9 vyvinutý firmou Motorola. Přestože oba systémy plní rámcově stejnou funkci, a to pomoci uživateli při psaní textových zpráv na klávesnicích typu ITU, a oba využívají slovníku pro nabídku doplnění, liší se v přístupu k uživatelskému prostředí. Slovník pro systém iTap obsahuje kromě jednotlivých slov i běžně užívané fráze.
-% chybi citace
-
-Zatímco T9 je (většinově) kontextově nezávislý systém, iTap uživateli nabízí doplnění v závislosti na kontextu. Uživateli pak je prezentována nabídka možných slov, která se v kontextu nachází. 
-%chybi citace, to jsem asi vytahal ze sve pameti.. 
-
-David MacKay ve svém článku uvádí, že ve srovnání se systémem iTap je systém T9 pro uživatele výhodnější v tom smyslu, že nejsou nuceni činit rozhodnutí ohledně toho, zda v určitém momentu zvolit nabízenou predikci, či pokračovat v manuálním psaní. Pro nezkušené uživatele navíc může u systému iTap být demotivující, když jim predikce nabídne slova, které nemínili napsat. Systém iTap je také celkově mírně náročnější na ovládání.
+\parencite{davidmackay} dále uvádí, že ve srovnání se systémem iTap je systém T9 pro uživatele výhodnější v tom smyslu, že nejsou nuceni činit rozhodnutí ohledně toho, zda v určitém momentu zvolit nabízenou predikci, či pokračovat v manuálním psaní. Pro nezkušené uživatele navíc může u systému iTap být demotivující, když jim predikce nabídne slova, které nemínili napsat. Systém iTap je také celkově mírně náročnější na ovládání.
 % http://www.inference.phy.cam.ac.uk/itprnn/itap/
+
+\subsubsection{Prefixová disambiguace}
 
 \subsubsection{LetterWise}
 
-LetterWise je systém prediktivního psaní vyvinutý a patentovaný firmou Eatoni Ergonomics. Jeho distinktivním rysem oproti ostatním systémům pro psaní na klávesnicích typu ITU je fakt, že nepracuje se slovníkem, ale s databází pravděpodobností prefixů pro každý používaný jazyk. Které písmeno ze stisknuté klávesy zvolit tedy systém vybírá porovnáním pravděpodobností, s jakými mohou písmena z dané klávesy následovat po předcházejících již zadaných písmenech. V angličtině je například nepoměrně pravděpodobnější, že po sekvenci písmen T a H bude následovat při stisku klávesy 3 písmeno E, nikoliv D či F. Prediktivní systém LetterWise má tedy v paměti zařízení uloženy pouze tyto pravděpodobnosti, nikoliv celá slova. \cite{MacKenzie2001} To jej činí zajímavým oproti ostatním slovníkovým systémům ze dvou důvodů.
+LetterWise je systém prediktivního psaní vyvinutý a patentovaný firmou Eatoni Ergonomics. Jeho distinktivním rysem oproti ostatním systémům pro psaní na klávesnicích typu ITU je fakt, že nepracuje se slovníkem, ale s databází pravděpodobností prefixů pro každý používaný jazyk. Které písmeno ze stisknuté klávesy zvolit tedy systém vybírá porovnáním pravděpodobností, s jakými mohou písmena z dané klávesy následovat po předcházejících již zadaných písmenech. V angličtině je například nepoměrně pravděpodobnější, že po sekvenci písmen T a H bude následovat při stisku klávesy 3 písmeno E, nikoliv D či F. Prediktivní systém LetterWise má tedy v paměti zařízení uloženy pouze tyto pravděpodobnosti, nikoliv celá slova. \parencite{MacKenzie2001} To jej činí zajímavým oproti ostatním slovníkovým systémům ze dvou důvodů.
 
-Prvním z nich jsou nízké paměťové nároky. Jazykový model zabírá v zařízení typicky 2--10 kB pro každý jazyk a pro běh potřebuje LetterWise operační paměť o kapacitě v řádu stovek bytů. % https://web.archive.org/web/20120212172428/http://www.eatoni.com/wiki/index.php/FAQ:For_Manufacturers
+Prvním z nich jsou nízké paměťové nároky. Jazykový model zabírá v zařízení typicky 2--10 kB pro každý jazyk a pro běh potřebuje LetterWise operační paměť o kapacitě v řádu stovek bytů. \parencite{eatoniergonomics2012} % https://web.archive.org/web/20120212172428/http://www.eatoni.com/wiki/index.php/FAQ:For_Manufacturers
 
-Druhým, pro uživatele výrazně citelnějším důvodem, je možnost relativně jednoduše zapisovat i neslovníková slova. Pokud se uživatel pokouší totiž zadat slovo, které by sice ve slovníku neexistovalo, ale má skladbu hlásek odpovídající jazyku, jehož databázi prefixů používá, je pravděpodobné, že systém vybere správné písmeno. Další vlastností implicitně vyplývající z faktu, že systém nepoužívá slovník, je, že se uživatel nikdy nemusí uchylovat k zápisu slov klasickým způsobem (tedy že stiskne klávesu 3 dvakrát, chce-li zadat písmeno E). Při zápisu slov, jejichž posloupnost písmen se nepodobá jazyku databáze, musí uživatel pouze v případě špatného odhadu následujícího písmena stisknout klávesu pro volbu dalšího písmene. Tento systém tedy uživatele nenutí v případě zjištění, že jím požadované slovo není ve slovníku, celé slovo smazat a zadat jej klasickým způsobem. \cite{MacKenzie2001} \\cite{Ghayoomi2009}
+Druhým, pro uživatele výrazně citelnějším důvodem, je možnost relativně jednoduše zapisovat i neslovníková slova. Pokud se uživatel pokouší totiž zadat slovo, které by sice ve slovníku neexistovalo, ale má skladbu hlásek odpovídající jazyku, jehož databázi prefixů používá, je pravděpodobné, že systém vybere správné písmeno. Další vlastností implicitně vyplývající z faktu, že systém nepoužívá slovník, je, že se uživatel nikdy nemusí uchylovat k zápisu slov klasickým způsobem (tedy že stiskne klávesu 3 dvakrát, chce-li zadat písmeno E). Při zápisu slov, jejichž posloupnost písmen se nepodobá jazyku databáze, musí uživatel pouze v případě špatného odhadu následujícího písmena stisknout klávesu pro volbu dalšího písmene. Tento systém tedy uživatele nenutí v případě zjištění, že jím požadované slovo není ve slovníku, celé slovo smazat a zadat jej klasickým způsobem. \parencite{MacKenzie2001} \parencite[5234]{ghayoomi2009overview}
 
 \subsubsection{WordWise}
 
