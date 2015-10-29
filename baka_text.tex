@@ -70,13 +70,13 @@
 
 	\begin{titlepage}
 		\begin{center}
-			{\Large MASARYKOVA UNIVERZITA}
+			{\Large\uppercase{Masarykova univerzita}}
 
 			\vspace{1em}
 
 			{\Large Filozofická fakulta}
 
-			\vspace{0.7em}
+			\vspace{1em}
 
 			{\large Ústav českého jazyka}
 
@@ -95,8 +95,6 @@
 			\vspace{1.5em}
 
 			Bakalářská diplomová práce
-
-			
 
 			\vfill
 			\vspace{3em}
@@ -173,7 +171,7 @@ Ačkoliv je praktická část této práce zaměřena na predikci textu a~oprava
 
 Systémy pro predikci textu určené k~tvorbě volného textu jsou obvykle, jak bude zřejmé z~dalšího popisu jednotlivých aplikací, založeny na více či méně rozsáhlém lokálně uloženém korpusu slov či slovních spojení, ze kterého vybírají možná doplnění. Tyto systémy zpravidla umožňují uživateli přidávat manuálně slova, která napsal a~nejsou v~základním korpusu, což slouží jako základní uživatelské přizpůsobení. Lokální korpus má ovšem tu nevýhodu, že jeho velikost je značně limitována možnostmi zařízení, tj. jeho paměťovou a~výpočetní kapacitou. To je problém především pro jazyky s~rozvinutou flexí, jako je čeština, které potřebují na rozdíl analytických jazyků, např. angličtiny, poněkud větší množství tvarů jednotlivých slov. 
 
-Rozdílnost angličtiny a~češtiny v~ohledu množství slovních tvarů připadajících na jedno lemma lze porovnat například na dvou velkých korpusech, enTenTen13 a~czTenTen12. Jde o~rozsáhlé korpusy vytvořené z~textů získaných na Internetu, které byly vyčištěny a~zbaveny duplikátů nástrojem Onion\footnote{\url{http://corpus.tools/wiki/Onion}}. Anglický korpus enTenTen13 obsahuje 39~452~714 slov a~37~366~565 lemmat\footnote{základních slovních tvarů} \parencite{czTenTen12_info}. Naproti tomu český korpus czTenTen12 obsahuje slov 18~725~879 a~lemmat pouze 13~976~481 \parencite{enTenTen13_info}. V~češtině tedy podle výše uvedených dat připadá na jedno lemma 1,339 slovního tvaru, naproti tomu v~angličtině na jedno lemma připadá pouze 1,056 slovního tvaru. Je tedy vidět, že slovník pro češtinu by v~ideálním případě měl být minimálně 1,27× větší než slovník o~stejném množství základních tvarů pro angličtinu. To je ve srovnání s údaji v \parencite{nemeth2012word} velice málo. Ten totiž pro uvádí, že pro zachování množství chyb v rozpoznávání řeči je pro němčinu potřeba slovník zhruba 4× větší a pro maďarštinu dokonce 20× větší než pro angličtinu.
+Rozdílnost angličtiny a~češtiny v~ohledu množství slovních tvarů připadajících na jedno lemma lze porovnat například na dvou velkých korpusech, enTenTen13 a~czTenTen12 \parencite{suchomel2012}. Jde o~rozsáhlé korpusy vytvořené z~textů získaných na Internetu, které byly vyčištěny a~zbaveny duplikátů nástrojem Onion\footnote{\url{http://corpus.tools/wiki/Onion}}. Anglický korpus enTenTen13 obsahuje 39~452~714 slov a~37~366~565 lemmat\footnote{základních slovních tvarů} \parencite{czTenTen12_info}. Naproti tomu český korpus czTenTen12 obsahuje slov 18~725~879 a~lemmat pouze 13~976~481 \parencite{enTenTen13_info}. V~češtině tedy podle výše uvedených dat připadá na jedno lemma 1,339 slovního tvaru, naproti tomu v~angličtině na jedno lemma připadá pouze 1,056 slovního tvaru. Je tedy vidět, že slovník pro češtinu by v~ideálním případě měl být minimálně 1,27× větší než slovník o~stejném množství základních tvarů pro angličtinu. To je ve srovnání s údaji v \parencite{nemeth2012word} velice málo. Ten totiž pro uvádí, že pro zachování množství chyb v rozpoznávání řeči je pro němčinu potřeba slovník zhruba 4× větší a pro maďarštinu dokonce 20× větší než pro angličtinu.
 
 Vezmou-li se v potaz teoretická data, vychází poměr slovních tvarů na lemma i pro češtinu výrazně vyšší. Pro účely této práce byla provedena empirická analýza cca 500 nejčastějších slov v češtině pomocí morfologického analyzátoru Majka. Tento experiment ukázal, že čeština je v teoretickém poměru (unikátních) slovních tvarů na lemma skutečně relativně blízko maďarštině s poměrem 17,537. Nutno podotknout, že se jedná o tvary vzniklé nejen skloňováním a časováním, ale i kupříkladu záporkou {\it ne-}, stupňováním adjektiv či jejich kombinacemi.
 
@@ -183,7 +181,7 @@ Tento fakt komplikuje implementaci slovníkových jazykových modelů do aplikac
 
 \chapter{Klíčové vlastnosti systému pro predikci textu}
 
-Navzdory velmi odlišným způsobům použití systémů pro doplňování textů jsou některé jejich klíčové vlastnosti pro většinu implementací společné. Studie, které zkoumaly efektivitu těchto systémů, obecně docházejí ke podobným závěrům co se požadavků na tyto systémy týče. Ať jde o~vyhledávač typu Google\footnote{\url{https://www.google.com}} nebo Yahoo\footnote{\url{https://www.yahoo.com}}, o~našeptávač e-mailových adres v~e-mailovém klientu nebo o~predikci volného textu v~textovém editoru, aby uživatel měl při užívání aplikace pocit, že mu doplňování textu skutečně pomáhá spíše než překáží, je klíčových několik vlastností.  Primární je rychlost, s~níž aplikace možná doplnění uživateli zobrazuje. \parencite{nandi2007assisted} uvádí, že by odezva neměla převyšovat 100 ms. Tento faktor je rozhodující pro to, zda si uživatel zvolí nabídnutá doplnění použít, nebo raději napíše zbytek textu sám. V~případě implementace predikce textu do editoru, kde uživatel zadává volný text, jímž si je relativně jist, je tato vlastnost pro uživatelovo rozhodnutí patrně klíčová. Naproti tomu ve vyhledávání lze očekávat, že uživatel bude ochoten počkat delší chvíli na zobrazení doplnění. S~tímto souvisí i~další vlastnost -- umožnění uživateli pohodlně nabízené predikce ignorovat. \parencite{ward2012autocomplete} Rozhodne-li se totiž, že např. bude rychlejší text manuálně napsat a~predikce nepoužít, je žádoucí, aby mu grafické zpracování nabídky žádným způsobem neztěžovalo takto učinit. Z~tohoto důvodu je ve většině systémů nabídka předvídaných výrazů zobrazována pod textovým polem (např. automatické doplňování ve vyhledávači Google \parencite{google2015}). 
+Navzdory velmi odlišným způsobům použití systémů pro doplňování textů jsou některé jejich klíčové vlastnosti pro většinu implementací společné. Studie, které zkoumaly efektivitu těchto systémů, obecně docházejí ke podobným závěrům co se požadavků na tyto systémy týče. Ať jde o~vyhledávač typu Google\footnote{\url{https://www.google.com}} nebo Yahoo\footnote{\url{https://www.yahoo.com}}, o~našeptávač e-mailových adres v~e-mailovém klientu nebo o~predikci volného textu v~textovém editoru, aby uživatel měl při užívání aplikace pocit, že mu doplňování textu skutečně pomáhá spíše než překáží, je klíčových několik vlastností.  Primární je rychlost, s~níž aplikace možná doplnění uživateli zobrazuje. \parencite{nandi2007assisted} uvádí, že by odezva neměla převyšovat 100 ms. Tento faktor je rozhodující pro to, zda si uživatel zvolí nabídnutá doplnění použít, nebo raději napíše zbytek textu sám. V~případě implementace predikce textu do editoru, kde uživatel zadává volný text, jímž si je relativně jist, je tato vlastnost pro uživatelovo rozhodnutí patrně klíčová. Naproti tomu ve vyhledávání lze očekávat, že uživatel bude ochoten počkat delší chvíli na zobrazení doplnění. S~tímto souvisí i~další vlastnost -- umožnění uživateli pohodlně nabízené predikce ignorovat \parencite{ward2012autocomplete}. Rozhodne-li se totiž, že např. bude rychlejší text manuálně napsat a~predikce nepoužít, je žádoucí, aby mu grafické zpracování nabídky žádným způsobem neztěžovalo takto učinit. Z~tohoto důvodu je ve většině systémů nabídka předvídaných výrazů zobrazována pod textovým polem (např. automatické doplňování ve vyhledávači Google \parencite{google2015}). 
 % https://support.google.com/websearch/answer/106230?hl=cs&vid=1-635809595515389355-3739668669
 % Done
 
@@ -218,7 +216,7 @@ Vedle původního určení predikce textu, kterým je zrychlit zadávání textu
 
 Takovým případem může být doplňování ve vstupním poli vyhledávače typu Google, případně jeho obdoby v~nějaké menší síti, například univerzitní knihovně. \parencite{google2015}
 
-Ward et al. ve své studii Autocomplete as a~Research Tool uvádí, že studenti, na kterých testoval automatické doplňování ve vyhledávání v~rámci informačního systému knihovny, poukázali v~následném dotazníku na několik dalších funkcí, které pro ně predikce plnila.
+\parencite{ward2012autocomplete} uvádí, že studenti, na kterých testoval automatické doplňování ve vyhledávání v~rámci informačního systému knihovny, poukázali v~následném dotazníku na několik dalších funkcí, které pro ně predikce plnila.
 
 Na otázku, jak by svým přátelům vysvětlil, k~čemu je našeptávač dobrý, odpověděl jeden student, že rozhodně jako asistence v~pravopisu. Studenti totiž často nemají z~ústních zadání v~hodinách úplně přesnou představu, jak se např. jméno autora, jehož díla jim jejich vyučující doporučil jako zdroj informací k~práci, přesně píše. Autoři studie ze záznamů hledání vyvodili, že někteří studenti si ani nemuseli být vědomi faktu, že začátek jména autora zadali špatně, protože predikce jim nabídla rovnou správnou verzi a~oni ji vybrali, aniž by přemýšleli, v~čem se nabídka liší od jejich vstupu. 
 
@@ -226,7 +224,7 @@ Mezi další výhody, které studenti uvedli ve zmíněné studii, patřilo nap�
 
 S tímto souvisí i~jedna odpověď od dalšího účastníka studie, která uvádí, že našeptávač pro ně fungoval jako nástroj pro dotvoření myšlenky, jako brainstorming od počítače. 
 
-Z výše uvedeného lze tedy vyvozovat, že automatické doplňování textu na klasickém počítači skutečně nemá význam pouze pro uživatele tělesně či jinak postižené, kteří mohou mít problém se samotným zadáváním textu, ale může posloužit i~běžným uživatelům jako nástroj pro kontrolu toho, zda to, co píšou, je správně, k~tématu a~podobně. V~základním rozdílem oproti předchozím případům využití predikce je fakt, že uživatel nemusí přesně vědět, co chce napsat, předtím, než to vidí jako doplnění. \parencite{ward2012autocomplete}
+Z výše uvedeného lze tedy vyvozovat, že automatické doplňování textu na klasickém počítači skutečně nemá význam pouze pro uživatele tělesně či jinak postižené, kteří mohou mít problém se samotným zadáváním textu, ale může posloužit i~běžným uživatelům jako nástroj pro kontrolu toho, zda to, co píšou, je správně, k~tématu a~podobně. V~základním rozdílem oproti předchozím případům využití predikce je fakt, že uživatel nemusí přesně vědět, co chce napsat, předtím, než to vidí jako doplnění.
 % cit. autocomplete_as_a_research_tool.pdf
 	% Done
 
@@ -236,7 +234,7 @@ Prakticky všechny aplikace, které se snaží usnadnit zadávání textu, se sn
 
 \section{Slovníkový model}
 
-Pokud prediktivní systém využívá slovníkového modelu, znamená to, že má v~paměti zařízení uložený slovník (seznam slov) společně s~jejich frekvencemi v~referenčním korpusu, tedy tzv. frekvenční slovník (detaily v~kapitole \ref{frecdic}). % cit. http://lifehacker.com/how-predictive-keyboards-work-and-how-you-can-train-yo-1643795640 -- searchfor:"The single thing that unites these" 
+Pokud prediktivní systém využívá slovníkového modelu, znamená to, že má v~paměti zařízení uložený slovník (seznam slov) společně s~jejich frekvencemi v~referenčním korpusu, tedy tzv. frekvenční slovník\footnote{Více o frekvenčních slovnících v~kapitole \ref{frecdic}}. % cit. http://lifehacker.com/how-predictive-keyboards-work-and-how-you-can-train-yo-1643795640 -- searchfor:"The single thing that unites these" 
 	% Done
 Implementace frekvenčních slovníků v~aplikacích pro predikci textu se pravděpodobně značně liší a~vzhledem k~tomu, že jde o~uzavřené komerční systémy, není možné konkrétní implementace zjistit. \parencite{alanhenry2014}
 
@@ -250,7 +248,7 @@ Systémy s~plnou QWERTY klávesnicí na mobilních zařízeních čelily, jak by
 
 {\tt pes, oes, les, ies, kes, prs, pds, pws, pss, per, ped, pew}
 
-Dalším řešením, které pravděpodobně bývá kombinováno s~výše uvedenou metodou, je hledání slov ve slovníku, která mají od zadaného slova určitou editační vzdálenost. Editační vzdálenost je Levenshteinova vzdálenost, tedy vyjádření míry odlišnosti dvou řetězců minimálním množstvím operací {\it vložit} znak, {\it smazat} znak, {\it prohodit} dva sousední znaky a~{\it nahradit} jeden znak jiným, které je nutno provést, aby z~prvního řetězce byl vytvořen druhý. \parencite{levenshtein-en1966} \nocite{levenshtein1965}  % cit. https://en.wikipedia.org/wiki/Levenshtein_distance
+Dalším řešením, které pravděpodobně bývá kombinováno s~výše uvedenou metodou, je hledání slov ve slovníku, která mají od zadaného slova určitou editační vzdálenost. Editační vzdálenost je Levenshteinova vzdálenost, tedy vyjádření míry odlišnosti dvou řetězců minimálním množstvím operací {\it vložit} znak, {\it smazat} znak, {\it prohodit} dva sousední znaky a~{\it nahradit} jeden znak jiným, které je nutno provést, aby z~prvního řetězce byl vytvořen druhý \parencite{levenshtein-en1966}. \nocite{levenshtein1965}  % cit. https://en.wikipedia.org/wiki/Levenshtein_distance
 	% Done
 Tato metoda také využívá frekvenčního slovníku, který navíc kombinuje se statistickým modelem pravděpodobnosti výskytu a~pravděpodobnosti souvýskytu. \parencite{peternorvig} % cit. http://norvig.com/spell-correct.html
 	% Done
@@ -258,14 +256,14 @@ Tato metoda také využívá frekvenčního slovníku, který navíc kombinuje s
 \subsection{Frekvenční slovníky}\label{frecdic}
 
 Frekvenční slovník je slovník, který ke každému heslu uvádí hodnoty spojené s~frekvencí daného slova ve zdrojovém korpusu. Obvykle to je hodnota absolutní frekvence daného slova a~například Frekvenční slovník češtiny %  cit. Čerák et al. 
-uvádí také průměrnou redukovanou frekvenci, což je hodnota, jež vychází z~absolutní frekvence, avšak zohledňuje rozložení daného slova v~korpusu. Pokud tedy mají dvě slova stejnou frekvenci, avšak první z~nich se vyskytuje pouze v~malém množství odborných textů, zatímco výskyty druhého jsou rovnoměrně rozloženy přes celý korpus, druhé slovo dostane vyšší číselnou hodnotu ARF než slovo první. Podle hodnoty ARF tak lze vyvodit, že druhé slovo je obecně známější a~užívanější širším publikem. \parencite{vcermak2004frekvenvcni} %  cit. Frek slovník, Čermák, předmluva % Done
+uvádí také průměrnou redukovanou frekvenci, což je hodnota, jež vychází z~absolutní frekvence, avšak zohledňuje rozložení daného slova v~korpusu. Pokud tedy mají dvě slova stejnou frekvenci, avšak první z~nich se vyskytuje pouze v~malém množství odborných textů, zatímco výskyty druhého jsou rovnoměrně rozloženy přes celý korpus, druhé slovo dostane vyšší číselnou hodnotu ARF než slovo první. Podle hodnoty ARF tak lze vyvodit, že druhé slovo je obecně známější a~užívanější širším publikem \parencite{vcermak2004frekvenvcni}. %  cit. Frek slovník, Čermák, předmluva % Done
 % cit. https://debtest.fi.muni.cz:8020/czechency?action=getdoc&amp;tr=preview2&amp;id=FREKVEN%C4%8CN%C3%8D%20SLOVN%C3%8DK  % Not Done
 V~kontextu s~predikcí slov to může například znamenat, že je pravděpodobnější, že uživatel chce napsat spíše druhé slovo nežli to první, které je pravděpodobně značně odborné.
 
 
 Tvorba frekvenčních slovníků byla v~dobách před rozvojem počítačů schopných zpracovat velká množství textů poněkud komplikovaná. Vzniklé databáze bylo obtížné aktualizovat, jejich výroba byla náročná a~pomalá. Nástup počítačů však většinu těchto problémů odstranil, takže je možné velmi snadno z~korpusu vyrobit frekvenční slovník, který bude tak aktuální, jako je samotný korpus. Na rozdíl od ručního zpracování dat navíc počítačové zpracování dovoluje pracovat s~mnohem většími korpusy, takže výsledný frekvenční slovník může být i~přesnější. Pro srovnání, jeden z~prvních frekvenčních slovníků pro angličtinu, {\it The Teachers Word Book of 30~000 words}, měl 30 tisíc lemmat (z 13 tisíc slovních rodin \parencite{lorge1944teacher} %  cit. Goulden, Nation and Read, 1990  % Done
 % Thorndike, Edward L. 1874-1949. The Teacher's Word Book of 30,000 Words. New York: Teachers College, Columbia University, 1944. -- http://catalog.hathitrust.org/Record/000987642/Home  % Done
-) a~byl vyroben z~ručně psaného korpusu, který obsahoval 18 milionů slov. \parencite{nation1997vocabulary} %  cit. http://www.lextutor.ca/research/nation_waring_97.html  % Done
+) a~byl vyroben z~ručně psaného korpusu, který obsahoval 18 milionů slov \parencite{nation1997vocabulary}. %  cit. http://www.lextutor.ca/research/nation_waring_97.html  % Done
 Naproti tomu moderní frekvenční slovník současné americké angličtiny \parencite{davies2013frequency} byl vytvořen z~korpusu současné americké angličtiny, {\it The Corpus of Contemporary American English} (COCA), který obsahuje přes 400 milionů slov. Samotný slovník pak sestává z~5000 nejfrekventovanějších slov. Nutno podotknout, že slovník je určen především uživatelům, kteří nejsou rodilí mluvčí a~anglicky se učí, což je pravděpodobně důvod, proč obsahuje pouze 5000 nejčastějších slov.
 % A~Frequency Dictionary Of American English, 2010 % Done
 
@@ -283,7 +281,7 @@ Vybíraným řetězcem mohou být jednotlivá písmena či celá slova. V~příp
 
 Často se stává, že návrhy učiněné aplikacemi se slovníkovým či statistickým modelem jsou v~daném kontextu nevhodné a~mnohdy i~negramatické. Tento problém se snaží řešit systémy, které kombinují další metody zúžení výběru návrhů. 
 
-Gramatické správnosti lze docílit využitím syntaktické analýzy zadaného řetězce (věty) a~využitím n-gramů slovních druhů vytvořených z~korpusu (jinými slovy databáze pravděpodobností, že slovní druh X~je následován slovním druhem Y). Tento model může dále využívat gramatiky pro generování korektních vět. \parencite[5234-5235]{ghayoomi2009overview}
+Gramatické správnosti lze docílit využitím syntaktické analýzy zadaného řetězce (věty) a~využitím n-gramů slovních druhů vytvořených z~korpusu (jinými slovy databáze pravděpodobností, že slovní druh X~je následován slovním druhem Y). Tento model může dále využívat gramatiky pro generování korektních vět. \parencite[5234--5235]{ghayoomi2009overview}
 
 Aby bylo docíleno kontextové správnosti návrhů, je nutno zapojit do predikce i~sémantickou analýzu. Pro takovou analýzu je možno využít například rozsáhlé sémantické sítě Wordnet\footnote{https://wordnet.princeton.edu/}. \parencite[5235]{ghayoomi2009overview}
 
@@ -308,7 +306,7 @@ Metoda měření počtu úhozů na znak, neboli KSPC\footnote{Přestože název 
 
 \subsection{Primitivní výpočet KSPC}
 
-Naivní přístup k~výpočtu KSPC je takový, že se spočítá počet písmen ve slově (i s~mezerou za slovem) a~počet úhozů, kterými se na dané klávesnici slovo zadá. Nutno počítat i~se stisky speciální klávesy {\tt NEXT}, kterou je nutno použít v~případě, že se dvě po sobě jdoucí písmena nachází na stejné klávese. \parencite[10]{silfverberg2000predicting} % cit Silfverberg, M., MacKenzie, I. S., and Korhonen, P. Predicting text entry speed on mobile phones, Proc. CHI 2000. New York: ACM (2000) 9-16.
+Naivní přístup k~výpočtu KSPC je takový, že se spočítá počet písmen ve slově (i s~mezerou za slovem) a~počet úhozů, kterými se na dané klávesnici slovo zadá. Nutno počítat i~se stisky speciální klávesy {\tt NEXT}, kterou je nutno použít v~případě, že se dvě po sobě jdoucí písmena nachází na stejné klávese \parencite[10]{silfverberg2000predicting}. % cit Silfverberg, M., MacKenzie, I. S., and Korhonen, P. Predicting text entry speed on mobile phones, Proc. CHI 2000. New York: ACM (2000) 9-16.
 	% Done
 Pro metodu multitap na standardní ITU klávesnici by to pro slovo "kniha" byla následující sekvence kláves:
 
@@ -351,18 +349,18 @@ kde $K_c$ je počet úhozů nutný pro zadání znaku, $C_c$ je velikost znaku a
 
 Metody zadávání textu lze podle KSPC rozdělit do tří kategorií: ty, pro které je KSPC větší než 1~(např. původní metoda multitap), ty, pro které je rovno 1~(např. QWERTY klávesnice) a~nakonec ty, jejichž KSPC dosahuje hodnot nižších než 1~(např. QWERTY klávesnice kombinovaná s~predikcí). % cit. MacKenzie KSPC ch. 2~a MacKenzie KSPC ch. 6
 
-Jako základ pro porovnání jednotlivých metod podle KSPC je vhodná standardní klávesnice QWERTY. \parencite{arif2009analysis} % Arif - introduction
+Jako základ pro porovnání jednotlivých metod podle KSPC je vhodná standardní klávesnice QWERTY \parencite{arif2009analysis}. % Arif - introduction
 Uvažují-li se pouze malá písmena anglické abecedy, platí pro ni, že KSPC = 1, tedy na jeden znak připadá jeden úhoz, protože pro každý znak má dedikovanou právě jednu klávesu.
 
 \section{WPM}
 
-Počet slov za minutu (WPM, Words per minute) je běžně užívaná metrika pro vyhodnocení rychlosti psaní. \parencite{tarvainen2010beginner} % cit. gradu04481 ch. 1.1.1
+Počet slov za minutu (WPM, Words per minute) je běžně užívaná metrika pro vyhodnocení rychlosti psaní \parencite{tarvainen2010beginner}. % cit. gradu04481 ch. 1.1.1
 Tato metoda nezohledňuje počet úhozů, který během měření byl proveden, pouze výslednou délku přepsaného řetězce. Vzorec pro výpočet WPM \parencite[48]{wobbrockjacobo.2007}:
 
 \[
 	WPM = \frac{T - 1}{S} \times 60 \times \frac{1}{5},
 \]
-kde $T$ je délka přepsaného řetězce, $S$ počet sekund od prvního úhozu do posledního úhozu. Konstanta $60$ reprezentuje počet sekund za minutu a~$1/5$ počet znaků na slovo. Aby byla metoda univerzální, počítá se slovo jako pět znaků nezávisle na tom, kolik znaků slova ve výsledném řetězci skutečně mají. Tato standardizace se vyskutuje už od roku 1905. \parencite{yamada1980historical} Odečtení konstanty $1$ z~počtu znaků ve výsledném řetězci je důležité proto, že většina systémů začíná počítat čas ve chvíli zadání prvního znaku. \parencite[49]{wobbrockjacobo.2007}
+kde $T$ je délka přepsaného řetězce, $S$ počet sekund od prvního úhozu do posledního úhozu. Konstanta $60$ reprezentuje počet sekund za minutu a~$1/5$ počet znaků na slovo. Aby byla metoda univerzální, počítá se slovo jako pět znaků nezávisle na tom, kolik znaků slova ve výsledném řetězci skutečně mají. Tato standardizace se vyskutuje už od roku 1905 \parencite{yamada1980historical}. Odečtení konstanty $1$ z~počtu znaků ve výsledném řetězci je důležité proto, že většina systémů začíná počítat čas ve chvíli zadání prvního znaku. \parencite[49]{wobbrockjacobo.2007}
 
 \section{Vyhodnocování chyb}
 
@@ -406,7 +404,7 @@ Aby šlo zadávání u~klávesnic, které mají méně kláves než je písmen v
 
 Slovníková disambiguace umožňuje uživateli zadávat text stiskem každé klávesy s~požadovaným písmenem pouze jednou. Systém potom vyhledává ve slovníku záznamy korespondující se sekvencí stisknutých kláves, tzn. slova, která obsahují písmena ze stisknutých kláves. Pokud sekvenci stisknutých kláves odpovídá více slov, je uživateli prezentován seznam těchto slov seřazený podle frekvence výskytu. % http://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO1&Sect2=HITOFF&d=PALL&p=1&u=%2Fnetahtml%2FPTO%2Fsrchnum.htm&r=1&f=G&l=50&s1=6011554.PN.&OS=PN/6011554&RS=PN/6011554
 
-Tento způsob disambiguace samozřejmě není dokonalý, protože mnoho různých slov sdílí stejné kombinace kláves. Tato situace je obvykle řešena prezentací seznamu možných slov uživateli, který musí pomocí speciálních kláves požadované slovo vybrat. \parencite{MacKenzie2001} Například kombinace kláves {\tt 7725} má v~češtině možné min. tři interpretace: {\it prak, pral, psal}.
+Tento způsob disambiguace samozřejmě není dokonalý, protože mnoho různých slov sdílí stejné kombinace kláves. Tato situace je obvykle řešena prezentací seznamu možných slov uživateli, který musí pomocí speciálních kláves požadované slovo vybrat \parencite{MacKenzie2001}. Například kombinace kláves {\tt 7725} má v~češtině možné min. tři interpretace: {\it prak, pral, psal}.
 
 Taková slova, která se zapisují stiskem stejných kláves, se nazývají textonyma \parencite{ericzorn2007} a~jsou jimi v~angličtině např. slova „book“ a~„cool“. Zatímco obvykle tento jev pouze snižuje efektivitu zápisu pomocí T9, v~roce 2010 záměna dvou textonym v~textové zprávě vedla ve Spojených státech k~vraždě. \parencite{t9kill}
 
@@ -417,7 +415,7 @@ Podle citovaného návrhu se zpráva neslyšící straně předává tak, že pr
 \paragraph{T9}\label{t9}
  -- akronym pro {\it Text on 9~keys} -- je systém, který se společně s~větším rozvojem mobilních telefonů s~klasickými 12klávesovými klávesnicemi se stal všeobecně známým pojmem pro prediktivní text. Byl vyvinut společností Tegic Communications \parencite{nuancecommunications2007}, patentovaný ve Spojených státech \parencite{grover1998reduced}. 
 
-Systém T9 umožňuje uživateli rozšiřovat vestavěný slovník tak, že uživatel nové slovo zadá klasickým způsobem multitap a~nové slovo se pak uloží do uživatelské databáze (UDB). \parencite{t9about} % http://www.nuance.com/for-business/by-product/t9/index.htm
+Systém T9 umožňuje uživateli rozšiřovat vestavěný slovník tak, že uživatel nové slovo zadá klasickým způsobem multitap a~nové slovo se pak uloží do uživatelské databáze (UDB) \parencite{t9about}. % http://www.nuance.com/for-business/by-product/t9/index.htm
 Problém nastává ve chvíli, kdy uživatel zjistí, že slovo není ve slovníku, až poté, co zadá příslušnou sekvenci kláves, která by k~onomu slovu měla vést. V~tu chvíli totiž musí smazat zadaný řetězec, který je buď nesmyslný, nebo to není požadované slovo, a~zadat slovo znova pomocí multitapu.
 
 Celkově je však T9 velmi jednoduchá na pochopení a~použití a~pro její nezávislost na kontextu u~ní lze očekávat vždy stejný výstup po stisknutí určité sekvence kláves, takže se zkušený uživatel nemusí při psaní dívat na klávesnici. \parencite{davidmackay}
@@ -454,7 +452,7 @@ Pokud by se účinnost takové klávesnice jako metody vstupu textu porovnávala
 
 \subsection{Barevné zvýrazňování kláves}
 
-Jedním z~navrhovaných způsobů, jak pomoci uživatelům snížit množství překlepů při psaní na softwarových QWERTY klávesnicích, bylo bareveně odlišovat nejpravděpodobnější následující klávesy. \parencite{danielgoncalves} % http://web.ist.utl.pt/~daniel.j.goncalves/research/paelife\_textentry/paelife\_textentry.html
+Jedním z~navrhovaných způsobů, jak pomoci uživatelům snížit množství překlepů při psaní na softwarových QWERTY klávesnicích, bylo bareveně odlišovat nejpravděpodobnější následující klávesy \parencite{danielgoncalves}. % http://web.ist.utl.pt/~daniel.j.goncalves/research/paelife\_textentry/paelife\_textentry.html
 Tento způsob byl navržen především pro starší uživatele, kteří jednak nemusejí být seznámeni s~rozložením QWERTY klávesnice, a~jednak nemají takovou přesnost motoriky a~rychlost reakcí, jako uživatelé mladí. 
 
 \begin{figure}[ht]
@@ -491,7 +489,7 @@ Nevýhodou této metody na druhou stranu je fakt, že je na uživatele kladena v
 Další systém zadávání textu, který je poněkud odlišný od všech dosud zmíněných, používají mj. aplikace Swype\footnote{\url{http://www.swype.com/}}, Fleksy\footnote{\url{https://fleksy.com/}}, oficiální klávesnice od Google, etc. Jde o~systém původně vyvinutý firmou Swype Inc. určený výhradně pro dotyková zařízení. Uživatel v~něm nezadává text ťukáním na jednotlivé klávesy, ale přejíždí prstem či stylusem po klávesnici od prvního písmena zadávaného slova k~poslednímu tak, aby na cestě přejel pokud možno přes všechna písmena obsažená ve slově. \parencite{swypeabout} % http://www.swype.com/product-features/android/features.html
 % http://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO1&Sect2=HITOFF&d=PALL&p=1&u=%2Fnetahtml%2FPTO%2Fsrchnum.htm&r=1&f=G&l=50&s1=7,098,896.PN.&OS=PN/7,098,896&RS=PN/7,098,896
 
-Swype se skládá ze tří základních částí -- analyzátoru trasy dotyku, systému na vyhledávání slov v~databázi výrazů a~uživatelského prostředí. \parencite{kushler2006system} V~raných verzích databáze obsahovala 65 000 výrazů. \parencite{rafeneedleman2008} % % http://www.cnet.com/news/move-over-t9-here-comes-swype/ % Done
+Swype se skládá ze tří základních částí -- analyzátoru trasy dotyku, systému na vyhledávání slov v~databázi výrazů a~uživatelského prostředí \parencite{kushler2006system}. V~raných verzích databáze obsahovala 65 000 výrazů. \parencite{rafeneedleman2008} % % http://www.cnet.com/news/move-over-t9-here-comes-swype/ % Done
 
 Nutno podotknout, že firma Nuance, jež systém Swype v~současnosti vyvíjí, nezahrnuje do své klávesnice pouze tento systém zadávání, ale i~klasickou metodu zadávání s~nabídkou predikcí v~horizontálním seznamu. Navzdory faktu, že hlavním důvodem popularity klávesnicové aplikace Swype je systém zadávání Swype, i~klasická klávesnice v~této aplikaci kombinuje různé technologie na zlepšení uživatelského komfortu. Mezi ně patří například schopnost rozšiřovat virtuální (nikoliv vizuální) velikost klávesy podle toho, jaké klávesy předcházely. Pokud uživatel tedy např. často tapne na klávesu N, smaže zadaný znak N~a tapne na klávesu B~a pokračuje v~psaní, pak se to klávesnice naučí a~příště, pokud je tapnutí ne zcela jednoznačné, vybere pravděpodobnější klávesu, v~tomto příkladu tedy B. \parencite{swypeabout} % http://www.swype.com/product-features/android/features.html 
 
@@ -504,7 +502,7 @@ Swype také používá Andvance Language Model (AML), „pokročilý jazykový m
 
 Jak bylo naznačeno v~kapitolách výše, většina implementací predikce textu, automatického doplňování textu a~automatických oprav založených na predikci textu je určena pro zařízení buď s~nejednoznačnou klávesnicí, kde má predikce eliminovat nutnost opakovaných stisků stejné klávesy, nebo pro zařízení s~dotykovou obrazovkou a~softwarovou klávesnicí, na nichž si systémy kladou za cíl zvýšit rychlost a~snížit chybovost zadávání textu. 
 
-Existují ale případy, kdy je predikce textu vhodná i~pro použití s~klávesnicemi fyzickými. Lze usuzovat, že se tyto případy nebudou týkat uživatelů, kteří nemají fyzický nebo mentální handicap a~jsou na fyzickou QWERTY klávesnici zvyklí, ale spíš uživatelů, kteří z~nějakého důvodu nemohou zadávat text normální rychlostí. Takoví uživatelé pravděpodobně trpí nemocemi, jako jsou například dyslexie mozková obrna. \parencite[1--2]{philgadomski} Pro ně může predikce textu mít smysl v~tom, že nemusí zadávat celá slova, ale stačí zadat jeho menší část a~poté vybrat požadované slovo z~nabídky předvídaných slov. To pro ně patrně bude jednodušší, než muset zadávat celá slova, ať už z~důvodu neschopnosti dostatečně rychlého psaní, či problémům se správným psaním. \parencite{penfriend2014} % cit. http://www.penfriend.biz/benefits.html
+Existují ale případy, kdy je predikce textu vhodná i~pro použití s~klávesnicemi fyzickými. Lze usuzovat, že se tyto případy nebudou týkat uživatelů, kteří nemají fyzický nebo mentální handicap a~jsou na fyzickou QWERTY klávesnici zvyklí, ale spíš uživatelů, kteří z~nějakého důvodu nemohou zadávat text normální rychlostí. Takoví uživatelé pravděpodobně trpí nemocemi, jako jsou například dyslexie mozková obrna \parencite[1--2]{philgadomski}. Pro ně může predikce textu mít smysl v~tom, že nemusí zadávat celá slova, ale stačí zadat jeho menší část a~poté vybrat požadované slovo z~nabídky předvídaných slov. To pro ně patrně bude jednodušší, než muset zadávat celá slova, ať už z~důvodu neschopnosti dostatečně rychlého psaní, či problémům se správným psaním \parencite{penfriend2014}. % cit. http://www.penfriend.biz/benefits.html
 % cit. (uvod) http://www.ece.gatech.edu/academic/courses/ece4007/09fall/ece4007l01/ws1/trp2.pdf
 Taková predikce textu může napomoci např. lepší sociální interakci těchto uživatelů, protože rychlost komunikace může být značnou překážkou v~účinné výměně informací s~protistranou, která takovým handicapem netrpí, a~nemá tudíž například trpělivost čekat na odpověď v~chatu nadstandardní dobu. %  nejaky citace? jako nekde jsem neco podobneho cetl, ale buh vi kde..   
 
@@ -527,7 +525,7 @@ Zde popisovaná aplikace je závislá na serverovém skriptu, který tvoří tak
 V této práci je tedy backendem skript naprogramovaný v~dynamickém programovacím jazyce Python, který s~webovou aplikací komunikuje pomocí protokolu CGI. 
 
 % TODO proc je tech bigramu tolik?
-Jako zdrojová data pro skript produkující doplnění slouží předem vygenerované n-gramy o~délce 3~až 12 tokenů. Tyto n-gramy pochází z~nejrozsáhlejšího českého korpusu czTenTen, který je kolekcí textů z~různých webových zdrojů. \parencite{czTenTen12_info} Texty v~korpusu neprošly korekturami, takže nemusí nutně obsahovat pouze spisovnou češtinu, což může být závažným problémem, pokud by aplikace pro predikci textu měla být využíváná pro kontrolu správnosti psaní. Vzhledem k~tomu, že to ale není primární cíl a~ani to přímo nesouvisí s~cílem praktické části této práce, nebyl na tuto skutečnost během vzniku zde popisované aplikace brán zřetel. Nicméně v~případě, že by byl zájem aplikaci užívat za takovým účelem, stačí vyměnit korpus, z~něhož se generují predikce, za takový, který bude vyhovovat potřebám užití.
+Jako zdrojová data pro skript produkující doplnění slouží předem vygenerované n-gramy o~délce 3~až 12 tokenů. Tyto n-gramy pochází z~nejrozsáhlejšího českého korpusu czTenTen, který je kolekcí textů z~různých webových zdrojů \parencite{czTenTen12_info}. Texty v~korpusu neprošly korekturami, takže nemusí nutně obsahovat pouze spisovnou češtinu, což může být závažným problémem, pokud by aplikace pro predikci textu měla být využíváná pro kontrolu správnosti psaní. Vzhledem k~tomu, že to ale není primární cíl a~ani to přímo nesouvisí s~cílem praktické části této práce, nebyl na tuto skutečnost během vzniku zde popisované aplikace brán zřetel. Nicméně v~případě, že by byl zájem aplikaci užívat za takovým účelem, stačí vyměnit korpus, z~něhož se generují predikce, za takový, který bude vyhovovat potřebám užití.
 
 % cit. https://ske.fi.muni.cz/auth/corpora/ % Done
 
@@ -555,7 +553,7 @@ Frontend, neboli část aplikace, se kterou interaguje uživatel, byla v~této p
 
 CKEditor je open source aplikace, což znamená, že jeho zdrojový kód je veřejně přístupný a~každý jej může libovolně používat, modifikovat a~distribuovat za dodržení jistých podmínek. 
 
-Výhodou CKEditoru je jeho modularita, která spočívá v~možnosti rozšiřovat jej pomocí zásuvných modulů. Tvorba zásuvných modulů není vyhrazena pouze pro vybrané autory, ale  díky otevřenosti kódu editoru se jí může zabývat takřka kdokoliv. \parencite{cksource2015} Proto je CKEditor vhodným výběrem pro účely této práce. %  cit. http://ckeditor.com/about 
+Výhodou CKEditoru je jeho modularita, která spočívá v~možnosti rozšiřovat jej pomocí zásuvných modulů. Tvorba zásuvných modulů není vyhrazena pouze pro vybrané autory, ale  díky otevřenosti kódu editoru se jí může zabývat takřka kdokoliv \parencite{cksource2015}. Proto je CKEditor vhodným výběrem pro účely této práce. %  cit. http://ckeditor.com/about 
 
 \chapter{Návrh}\label{navrh}
 
@@ -713,12 +711,6 @@ V dalším vývoji by bylo vhodné zaměřit se především na problém s tvary
 	\includegraphics[width=0.5\textwidth]{daria}
 \end{figure}
 
-% \begin{thebibliography}{1}
-
-% \bibitem{MacKenzie2001}
-% MACKENZIE, I.S. LetterWise: Prefix-based disambiguation for mobile text input. \textit{UIST (User Interface Software and Technology): Proceedings of the ACM Symposium} [online]. 2001, 111 - 120 [cit. 2015-10-22]. 
-
-% \end{thebibliography}
 
 \newpage
 
