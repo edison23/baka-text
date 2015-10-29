@@ -132,9 +132,21 @@ Na tomto místě bych rád poděkoval Adamu Rambouskovi za veškerou pomoc, trp�
 
 Děkuji také své rodině za morální podporu, Janu Šedovi za cenné rady v oblasti programování v JavaScriptu a Marii Staré za pomoc s jazykovými korekturami.
 
+\clearpage
+
+\section*{Abstrakt}
+
+Tato bakalářská práce shrnuje vývoj systémů predikce textu, porovnává je a popisuje technologie, na nichž jsou tyto systémy postaveny. Dále se práce zabývá metodami hodnocení účinnosti jednotlivých metod zadávání textu především na mobilních zařízeních, stejně jako systémů predikce textu určených pro tyto metody zadávání. Praktická část této práce je zaměřena na vývoj grafického uživatelského rozhraní pro prediktivní zápis textu, které je vhodné pro zařízení bez dotykové obrazovky a s klasickou QWERTY klávesnicí. Toto rozhraní zobrazuje predikce generované serverovou částí aplikace, která využívá jazykový model ve formě n-gramů vytvořených z největšího českého korpusu czTenTen.
+
+\section*{Abstract}
+
+This bachelor thesis summarizes development of text prediction systems, compares these and describes technologies these systems are built upon. Furthermore, the thesis outlines methods of evaluation for text input systems as well as text prediction systems, considering mainly those designed for mobile devices. XY part of this thesis is focused on the development of graphical user interface for predictive text entry that is well suited for devices without touchscreen and with a benefit of a full QWERTY keyboard. This user interface presents a user with predictions produced by the server-side application which uses n-grams generated from the largest Czech corpus, czTenTen, as a language model.
+
+\clearpage
+
 \tableofcontents
 
-\newpage
+\clearpage
 
 
 \section*{Úvod}
@@ -147,8 +159,6 @@ Protipólem velkého množství aplikací pro predikci textu pro mobilní zaří
 Cílem této práce je tedy vytvořit implementaci systému predikce textu, která bude čerpat data z~velkého korpusu textů, a~jednak bude jednak nezávislá na platformě. Vzhledem k~tomu, že korpusová data není možné uchovávat na straně klienta, bylo logickým krokem zvolit model klienta a~serveru, který bude zajišťovat generování predikcí. Tento systém na serveru již v~době tvorby této práce existoval, což umožnilo soustředit se především na vývoj uživatelského prostředí. 
 
 Pro zajištění co nejvyšší kompatibility s~různými systémy byla zvolena forma zásuvného modulu do webového HTML editoru CKEditor\footnote{\url{http://ckeditor.com/}}. Použitými technologiemi tedy byl především JavaScript pro programovou logiku, Ajax pro komunikaci se serverem a~HTML a~CSS pro uživatelské rozhraní.
-
-\newpage
 
 \part{Teoretická část}
 \pagestyle{fancy}
@@ -506,8 +516,6 @@ Existují ale případy, kdy je predikce textu vhodná i~pro použití s~kláves
 % cit. (uvod) http://www.ece.gatech.edu/academic/courses/ece4007/09fall/ece4007l01/ws1/trp2.pdf
 Taková predikce textu může napomoci např. lepší sociální interakci těchto uživatelů, protože rychlost komunikace může být značnou překážkou v~účinné výměně informací s~protistranou, která takovým handicapem netrpí, a~nemá tudíž například trpělivost čekat na odpověď v~chatu nadstandardní dobu. %  nejaky citace? jako nekde jsem neco podobneho cetl, ale buh vi kde..   
 
-\newpage
-
 \part{Praktická část}
 
 Jak bylo naznačeno v~úvodu, cíl této práce leží v~úmyslu pokusit se implementovat tradiční, byť poněkud zjednodušený, model automatického doplňování textu pro uživatele s~fyzickou QWERTY klávesnicí s~tím, že na rozdíl od tradičních systémů popsaných v~práci výše nebude mít tato aplikace lokální slovník nebo databázi n-gramů, ale vešekeré operace produkující možná doplnění budou prováděny na vzdáleném serveru.
@@ -711,8 +719,7 @@ V dalším vývoji by bylo vhodné zaměřit se především na problém s tvary
 	\includegraphics[width=0.5\textwidth]{daria}
 \end{figure}
 
-
-\newpage
+\clearpage
 
 \printbibliography[title={Seznam literatury}]
 
