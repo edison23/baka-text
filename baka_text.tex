@@ -41,6 +41,8 @@
 \setlength\emergencystretch{2em}
 \setlength\headheight{14pt}
 
+\widowpenalty10000
+\clubpenalty10000
 
 \hyphenation{выпа-дений}
 
@@ -343,7 +345,7 @@ kde \exmp{N} je \exmp{NEXT} a~\exmp{S} je znak mezery. KSPC vypočteme jako pom�
 \[
 	\frac{12}{6} = 2,000.
 \]
-Je ovšem zřejmé, že pokud se nyní stejným způsobem provede výpočet pro slovo \exmp{data}, bude sekvence úhozů mnohem jednodušší:
+Je ovšem evidentní, že pokud se nyní stejným způsobem provede výpočet pro slovo \exmp{data}, bude sekvence úhozů mnohem jednodušší:
 
 \[
 	\exmp{data\_: 3282S}
@@ -431,7 +433,7 @@ Slovníková disambiguace umožňuje uživateli zadávat text stiskem každé kl
 
 Tento způsob disambiguace samozřejmě není dokonalý, protože mnoho různých slov sdílí stejné kombinace kláves. V takovém případě pak uživatel musí pomocí speciálních kláves požadované slovo vybrat \parencite{MacKenzie2001}. Například kombinace kláves \exmp{7725} má v~češtině možné min. tři interpretace: \exmp{prak, pral, psal}.
 
-Taková slova, která se zapisují stiskem stejných kláves, se nazývají textonyma \parencite{ericzorn2007} a~jsou jimi v~angličtině např. slova „book“ a~„cool“. Zatímco obvykle tento jev pouze snižuje efektivitu zápisu pomocí T9, v~roce 2010 záměna dvou textonym v~textové zprávě vedla ve Spojených státech k~vraždě. \parencite{t9kill}
+Taková slova, která se zapisují stiskem stejných kláves, se nazývají textonyma \parencite{ericzorn2007} a~jsou jimi v~angličtině např. slova \exmp{book} a~\exmp{cool}. Zatímco obvykle tento jev pouze snižuje efektivitu zápisu pomocí T9, v~roce 2010 záměna dvou textonym v~textové zprávě vedla ve Spojených státech k~vraždě. \parencite{t9kill}
 
 \paragraph{První disambiguační systém} byl určen pro lidi s~částečně nebo zcela poškozeným slyšením. Tento systém, navržený v~roce 1985, si kladl za cíl umožnit neslyšícím telefonní komunikaci, a~to za přijatelnou pořizovací cenu (na rozdíl od předchozích existujících řešení) a~s tím, že speciální přístroj bude potřebovat pouze neslyšící strana. \parencite{feinson1988interpretive}
 
@@ -572,7 +574,7 @@ Díky tomuto jednoduchému konceptu komunikace tedy stačí, aby aplikace, kter�
 
 \section{Frontend}
 
-Frontend, neboli část aplikace, se kterou interaguje uživatel, byla v~této práci pojata jako zásuvný modul do webového editoru CKEditor, což je vizuální editor HTML (HyperText Markup Language), jehož cílem je zjednodušit produkci obsahu pro webové stránky. Editor umožňuje pracovat s~formátováním ve značkovacím jazyce HTML, který se používá pro tvorbu webových stránek a~webového obsahu. Práce s~formátováním je v CKEditoru založena na principu WYSIWYG, což znamená, že uživatel nemusí mít žádné znalosti HTML, protože pro aplikaci formátování lze použít vizuální prvky ve formě tlačítek a~rozbalovacích menu, podobně jako v~klasických kancelářských textových procesorech typu LibreOffice Writer nebo Microsoft Office Word.
+Frontend, neboli část aplikace, se kterou interaguje uživatel, byla v~této práci pojata jako zásuvný modul do webového editoru CKEditor, což je vizuální editor HTML (HyperText Markup Language), jehož cílem je zjednodušit produkci obsahu pro webové stránky. Editor umožňuje pracovat s~formátováním ve značkovacím jazyce HTML, který se používá pro tvorbu webových stránek a~webového obsahu. Práce s~formátováním je v CKEditoru založena na principu WYSIWYG\footnote{what you see is what you get}, což znamená, že uživatel nemusí mít žádné znalosti HTML, protože pro aplikaci formátování lze použít vizuální prvky ve formě tlačítek a~rozbalovacích menu, podobně jako v~klasických kancelářských textových procesorech typu LibreOffice Writer nebo Microsoft Office Word.
 
 CKEditor je open source aplikace, což znamená, že jeho zdrojový kód je veřejně dostupný a~každý jej může libovolně používat, modifikovat a~distribuovat za dodržení jistých podmínek. 
 
@@ -643,7 +645,7 @@ Ve zde popisované aplikaci je tedy CSS využíváno k~definici vizuální preze
 	\centering
 	\includegraphics[width=1.0\textwidth]{autocomplete_floatchart.eps}
 	\caption{Vývojový diagram pluginu}
-	\label{fig:phoneKeyboard}
+	\label{fig:autocomplete_floatchart}
 \end{figure}
 
 \section{Uživatelské rozhraní}\label{ui}
@@ -676,9 +678,9 @@ Poté jsou predikce nabídnuty uživateli.
 
 \section{Zobrazení predikcí}
 
-Nabídka predikcí sestává ze dvou různých částí. První z~nich je predikce (jíž může být celé slovo po mezeře, či část slova doplňující část slova již zadanou v~editoru), která se zobrazuje méně výrazně (šedě) ihned za zadávaným textem v~hlavním editoru (obrázek \ref{fig:nlp-predict} na straně \pageref{fig:nlp-predict}). Takové doplnění lze přijmout pouhým stiskem tabulátoru. Tento způsob zobrazení doplnění je inspirován řešením zobrazování automatického doplňování ve vyhledávači Google, které funguje na podobném principu. 
+Nabídka predikcí sestává ze dvou různých částí. První z~nich je predikce (jíž může být celé slovo po mezeře, či část slova doplňující část již zadanou v~editoru), která se zobrazuje méně výrazně (šedě) ihned za zadávaným textem v~hlavním editoru (obrázek \ref{fig:nlp-predict} na straně \pageref{fig:nlp-predict}). Takové doplnění lze přijmout pouhým stiskem tabulátoru. Tento způsob zobrazení doplnění je inspirován řešením zobrazování automatického doplňování ve vyhledávači Google, které funguje na podobném principu. 
 
-Pro tento způsob zobrazení predikce je využíváno tzv. stínového editoru, který je pomocí CSS umístěn přesně pod hlavní editor, v~němž uživatel zadává text. Do něj se pomocí JavaScriptové funkce {\tt copyContent()} ve zde popisovaném zásuvném modulu kopíruje text z~hlavního editoru. Pro zobrazení predikce je pak využíváno toho, že text zkopírovaný z~hlavního editoru má ve stínovém editoru identické prostorové vlastnosti jako text hlavního editoru a~lze na jeho konec snadno připojit aktuální predikci, která se tak zobrazuje uživateli fontem stínového editoru (ve zde popisované implementaci má stínový editor šedou barvu písma a~hlavní editor černou).
+Pro toto řešení je využíváno tzv. stínového editoru, který je pomocí CSS umístěn přesně pod hlavní editor, v~němž uživatel zadává text. Do něj se pomocí JavaScriptové funkce {\tt copyContent()} ve zde popisovaném zásuvném modulu kopíruje text z~hlavního editoru. Pro zobrazení predikce je pak využíváno toho, že text zkopírovaný z~hlavního editoru má ve stínovém editoru identické prostorové vlastnosti jako text hlavního editoru a~lze na jeho konec snadno připojit aktuální predikci, která se tak zobrazuje uživateli fontem stínového editoru (ve zde popisované implementaci má stínový editor šedou barvu písma a~hlavní editor černou).
 
 \begin{figure}[ht]
 	\centering
@@ -691,35 +693,37 @@ Pro tento způsob zobrazení predikce je využíváno tzv. stínového editoru, 
 
 Vzhledem k~tomu, že predikce nejsou vždy dokonalé nebo není možné jednoznačně rozhodnout, které slovo uživatel zamýšlí napsat, ukázalo se být nutným zobrazovat i~alternativní predikce. 
 
-Tyto alternativní predikce jsou prezentovány pod pozicí kursoru ve formě seznamu. Pokud chce uživatel vyžít některou predikci zobrazenou v~seznamu, stačí mu opětovně stisknout klávesu tabulátor, pomocí níž lze v~seznamu jednosměrně cyklovat mezi položkami. Aktuální položka se pak zároveň kopíruje do hlavního editoru, takže po dosažení požadované predikce uživatel stiskne klávesu mezerník a~může pokračovat v~psaní. Tato metoda volby byla navržena především s~ohledem na původní cíl aplikace, tedy usnadnit psaní uživatelům, kteří z~mají z~nějakého důvodu problém zadávat text na klávesnici QWERTY. Cílem tedy není zrychlení psaní, jako tomu bývá u~implementací prediktivního textu například pro dotyková zařízení, ale co nejvíce snížit množství stisků různých kláves pro volby predikce.
+Tyto alternativní predikce jsou prezentovány pod pozicí kursoru ve formě seznamu. Pokud chce uživatel využít některou predikci zobrazenou v~seznamu, stačí mu opětovně stisknout klávesu tabulátor, pomocí níž lze v~seznamu jednosměrně cyklovat mezi položkami. Aktuální položka se pak zároveň kopíruje do hlavního editoru, takže po dosažení požadované predikce uživatel vloží mezeru a~může pokračovat v~psaní. Tato metoda volby byla navržena především s~ohledem na původní cíl aplikace, tedy usnadnit psaní uživatelům, kteří z~mají z~nějakého důvodu problém zadávat text na klávesnici QWERTY. Cílem tedy není zrychlení psaní, jako tomu bývá u~implementací prediktivního textu například pro dotyková zařízení, ale co nejvíce snížit množství stisků různých kláves pro volby predikce.
 
-Nabídka alternativních predikcí je zobrazována vždy pod kursorem, aby uživatel nebyl nucen dělit svou pozornost na různá místa obrazovky. O~zobrazení nabídky v~místě kursoru se stará funkce {\tt show\-Alternatives()}, která je závislá na funkci {\tt get\-Selection\-Coords()}. Z~pohledu problematiky implementace je zajímavá především funkce {\tt get\-Selection\-Coords()}, která pomocí zjišťování pozice aktuálního výběru textu získává pixelovou pozici kursoru, jež je nutná pro správné zobrazení alternativ. Implementace výběrů je velmi závislá na konkrétním prohlížeči, avšak lze obecně říci, že aktuální výběr vždy končí v~místě, kde je právě umístěn kursor. S~ohledem na tuto skutečnost a~na to, že API (application program interface) moderních prohlížečů umožňuje získat pixelové pozice začátku a~konce výběru, lze pak pixelovou pozici konce aktuálního výběru považovat za pixelovou pozici kursoru, na níž se má zobrazit nabídka alternativních doplnění. 
+Nabídka alternativních predikcí je zobrazována vždy pod kursorem, aby uživatel nebyl nucen dělit svou pozornost na různá místa obrazovky. O~zobrazení nabídky v~místě kursoru se stará funkce {\tt show\-Alternatives()}, která je závislá na funkci {\tt get\-Selection\-Coords()}. Z~pohledu problematiky implementace je zajímavá především funkce {\tt get\-Selection\-Coords()}, která pomocí zjišťování pozice aktuálního výběru\footnote{Více o výběrech v kapitole \ref{vybery}} textu získává absolutní pozici kursoru na obrazovce, jež je nutná pro správné zobrazení alternativ. Implementace výběrů se může lišit podle konkrétního prohlížeče, avšak lze obecně říci, že aktuální výběr vždy končí v~místě, kde je právě umístěn kursor. S~ohledem na tuto skutečnost a~na to, že API (application program interface) moderních prohlížečů umožňují získat pozice začátku a~konce výběru, lze pak pozici konce aktuálního výběru považovat za pozici kursoru, na níž se má zobrazit nabídka alternativních doplnění. 
 
 \section{Vkládání predikcí}
 
 Poté, co si uživatel vybere predikci tím, že stiskne klávesu tabulátor, zbývá ji vložit na správné místo, tedy na pozici kursoru.
 
-V případě vkládání celého slova, nikoliv doplnění zbytku již zadaného slova, je vložení predikce relativně triviální. Jde pouze o~připojení dané predikce za pozici kursoru, přidání mezery a~přesun kursoru za ni. Jak bylo naznačeno výše, pokud se uživatel rozhodne cyklovat v~seznamu alternativních predikcí, vkládají se tyto do hlavního editoru automaticky pomocí funkce {\tt printCompletions()}. Chce-li využít první predikce, použije se při stisku klávesy tabulátor stejná funkce, {\tt printCompletions()}. 
+V případě vkládání celého slova, nikoliv doplnění zbytku již zadaného slova, je vložení predikce relativně triviální. Jde pouze o~připojení dané predikce za pozici kursoru, přidání mezery a~přesun kursoru za ni. Jak bylo naznačeno výše, pokud se uživatel rozhodne cyklovat v~seznamu alternativních predikcí, vkládají se tyto do hlavního editoru automaticky pomocí funkce {\tt printCompletions()}. Chce-li uživatel využít první predikce, použije se při stisku klávesy tabulátor stejná funkce, {\tt printCompletions()}. 
 
-Ovšem v~případě doplňování pouhé části slova jde vzhledem k~tomu, že serverový skript ve všech případech vrací celá slova, o~úkon, který obsahuje zásah do již existujícího textu v~hlavním editoru. Pokud tedy uživatel napíše jako poslední slovo řetězec „p“ a~předcházející slovo je „vážený“, navrácená slova jsou „paciente“, „pane“, etc. Je tedy zřejmé, že nelze zvolenou predikci (např. „paciente“) vložit přímo za existující text, ale je nutné nejdříve začátek slova, pro který je predikce určena, smazat, a~pak až predikci vložit. Tento problém je řešen ve funkci {\tt insertCompletion()} smazáním již napsané části slova z~predikce, jejíž zbytek je pak vložen za napsaný text. Do hlavního editoru se tedy nevkládá celá predikce „paciente“, nýbrž pouze její zbývající část po odtržení již napsané části, tedy například „aciente“.
+Ovšem v~případě doplňování pouhé části slova jde vzhledem k~tomu, že serverový skript ve všech případech vrací celá slova, o~úkon, který představuje zásah do již existujícího textu v~hlavním editoru. Pokud tedy uživatel napíše jako poslední slovo řetězec \exmp{p} a~předcházející slovo je \exmp{vážený}, navrácená slova jsou \exmp{paciente}, \exmp{pane}, etc. Je tedy zřejmé, že nelze zvolenou predikci vložit přímo za existující text, ale je nutné nějakým způsobem zabránit duplikaci částí slov. Tento problém je řešen ve funkci {\tt insertCompletion()} smazáním již napsané části slova z~predikce, jejíž zbytek je pak vložen za napsaný text. Do hlavního editoru se tedy nevkládá celá predikce \exmp{paciente}, nýbrž pouze její zbývající část po odtržení již napsané části, tedy například \exmp{aciente}.
 
-Úplně poslední úkon, který se provádí, je přesunutí kursoru na korektní pozici poté, co byla predikce vložena do hlavního editoru. Je zřejmé, že kursor nemůže zůstat na původním místě, na němž byl před vložením predikce, protože pak by uživatel buď psal další text před vloženou predikci, nebo by musel manuálně přejít na konec vkládaného textu. 
+Úplně poslední úkon, který se provádí, je přesunutí kursoru na korektní pozici poté, co byla predikce vložena do hlavního editoru. Je evidentní, že kursor nemůže zůstat na původním místě, na němž byl před vložením predikce, protože pak by uživatel buď psal další text před vloženou predikci, nebo by musel manuálně přejít na konec vkládaného textu. 
 
-Manipulace s~kursorem v~textu se v~prohlížečích provádí pomocí výběrů. Výběr je objekt, který reprezentuje text označený v~textovém poli, přičemž může být mít i~nulovou délku, což je klasická situace, kdy není označen žádný text. Výběr má různé vlastnosti včetně pozice, s~nimiž lze manipulovat. % https://developer.mozilla.org/en-US/docs/Web/API/Selection
+\subsubsection{Výběry}\label{vybery}
 
-Přesun kursoru je tedy řešitelný přemístěním výběru v~textu o~délku predikce dále, ale v~praxi se ukazuje, že existuje nezanedbatelné množství případů, kdy výběr není korektně umístěn, a~tudíž výsledná pozice kursoru nemusí být správná. Z~toho pramení i~nedokonalosti v~implementaci popsané v~kapitole \ref{vyhodnoceni}.
+Manipulace s~kursorem v~textu se v~prohlížečích provádí pomocí výběrů. Výběr je objekt, který reprezentuje text označený v~textovém poli, přičemž může mít i~nulovou délku v případě, že není označen žádný text. Výběr má různé vlastnosti včetně pozice, s~nimiž lze manipulovat \parencite{mdn2015selections}. Pozice výběru pak může být vyjádřena dvěma způsoby, a to jako absolutní pozicí na obrazovce, tedy pixelovými souřadnicemi, nebo jako pozice v textu, tedy počet znaků relativní k určitému místu v textu. % https://developer.mozilla.org/en-US/docs/Web/API/Selection
+
+Přesun kursoru je tedy řešitelný přemístěním výběru v~textu o~délku predikce dále, ale v~praxi se ukazuje, že existuje nezanedbatelné množství případů, kdy zjišťování pozice výběru v textu není přesné, a~tudíž výsledná pozice kursoru nemusí být správná. Z~toho pramení i~nedokonalosti v~implementaci popsané v~kapitole \ref{vyhodnoceni}.
 
 \chapter{Vyhodnocení}\label{vyhodnoceni}
 
-Vzhledem k~tomu, že se zásuvný modul zatím nedočkal nasazení v~reálných situacích, nelze jeho skutečný přínos hodnotit. Z~testování během vývoje samotného pluginu lze ale potvrdit, že jeho použití šetří počet úhozů nutný k~napsání textu. 
+Z~testování během vývoje zásuvného modulu, který je předmětem této práce, lze potvrdit, že jeho použití šetří počet úhozů nutný k~napsání textu, takže cíl práce byl splněn. Vzhledem k~tomu, že se zásuvný modul ale zatím nedočkal nasazení v~reálných situacích, nelze jeho skutečný přínos uživatelům hodnotit.
 
-Množství ušetřených úhozů pak značně závisí na povaze textu, který uživatel píše. V~rámci vývoje bylo provedeno krátké manuální testování na odlišných textech, které ukázalo, že kvalita predikcí je velmi závislá podobnosti zdrojového korpusu a~psaného textu. Vzhledem k~tomu, že při testování byly použity n-gramy z~korpusu czTenTen12, nejlepších výsledků dosahovala predikce na textech z~zpravodajských serverů, kde bylo dosaženo KSPC 0,4. Naopak v~případě, že text obsahoval například osobní jména, byla účinnost predikce výrazně omezena. Nejhoršího výsledku bylo dosaženo na textu mírně technického rázu, a~to KSPC 0,69. Do úhozů byly počítány všechny klávesy.
+Množství ušetřených úhozů pak značně závisí na povaze textu, který uživatel píše. V~rámci vývoje bylo provedeno krátké manuální testování na odlišných textech, které ukázalo, že kvalita predikcí je velmi závislá na podobnosti zdrojového korpusu a~psaného textu. Vzhledem k~tomu, že při testování byly použity n-gramy z~korpusu czTenTen12, nejlepších výsledků dosahoval systém na textech ze zpravodajských serverů, kde bylo dosaženo KSPC cca 0,4. Naopak v~případě, že text obsahoval například osobní jména, byla účinnost predikce výrazně omezena. Nejhoršího výsledku bylo dosaženo na textu mírně technického rázu, a~to KSPC cca 0,7. Do úhozů byly počítány všechny klávesy.
 
 Nutno podotknout, že se v~predikcích mnohdy vyskytovalo správné slovo, ale bylo ve špatném tvaru. Je tedy zřejmé, že by predikci značně vylepšila syntaktická analýza, případně kdyby doplňování probíhalo po částech, tedy nejdříve kmen slova a~poté jeho koncovka.
 
 Další problémy, které potenciální uživatel zaznamená, jsou technické nedostatky frontendu. Hlavním z~nich je ten, že implementace momentálně neumožňuje práci vprostřed těla textu, ale pouze na jeho konci. Není tak možné mít text, do jehož části chce uživatel napsat odstavec s~využitím predikce. Zde je tedy značný prostor pro zlepšení.
 
-Technický příbuzný problém je pak problematická podpora formátovaného textu. Umístění predikcí a~pozice kursoru mohou být při výskytu formátovaného textu v~editoru nepřesné. To je vzhledem k~faktu, že CKEditor je WYSIWYG editor, viděno jako další nedokonalost, kterou je před reálným nasazením nutno vyřešit.
+Technicky příbuzný problém je pak omezená podpora formátovaného textu. Umístění predikcí a~pozice kursoru mohou být při výskytu formátovaného textu v~editoru nepřesné. To je vzhledem k~faktu, že CKEditor je editor typu WYSIWYG, další limitace, kterou je před reálným nasazením nutno vyřešit.
 
 Celkově ale je implementace frontendu pro psaní s~výrazně sníženým průměrným množstvím úhozů na znak použitelná již nyní.
 
@@ -727,14 +731,9 @@ Celkově ale je implementace frontendu pro psaní s~výrazně sníženým prům�
 
 \chapter*{Závěr}
 
-Cíl práce, tedy vyvinout aplikaci, která by umožňovala zadávání textu bez nutnosti stisku všech kláves korespondujících s~písmeny ve slovech zadávaného textu, byl splněn. Pokud uživatel chce zadat text, jehož slova existují v~korpusu, z~něhož jsou vybírány predikce, má možnost z~těchto predikcí vybrat vhodně ty, které odpovídají jeho záměru, a~snížit tak KSPC na hodnotu menší než jedna. Vzhledem k~velikosti korpusu, z~něhož jsou predikce vybírány, je rozumné předkládat, že takového výsledku lze dosáhnout téměř s~libovolným textem v~českém jazyce. Současná implementace navíc umožňuje snížit počet stisknutých kláves na počet znaků v~textu také tím, že mezi predikce zařazuje již zadaná delší slova. Tato funkcionalita může být užitečná například pro uživatele, kteří zadávají text s~větším množstvím dlouhých odborných termínů (dobrým příkladem budiž lékařské texty).
+Cíl práce, tedy vyvinout aplikaci, která by umožňovala zadávání textu bez nutnosti stisku všech kláves korespondujících s~písmeny ve slovech zadávaného textu, byl splněn. Pokud uživatel chce zadat text, jehož slova existují v~korpusu, z~něhož jsou vybírány predikce, má možnost z~těchto predikcí vybrat vhodně ty, které odpovídají jeho záměru, a~snížit tak KSPC na hodnotu menší než jedna. Vzhledem k~velikosti korpusu, z~něhož jsou predikce vybírány, je rozumné předkládat, že takového výsledku lze dosáhnout téměř s~libovolným textem v~českém jazyce, což prokázaly i krátké testy. Současná implementace navíc umožňuje snížit počet stisknutých kláves na počet znaků v~textu také tím, že mezi predikce zařazuje již zadaná delší slova. Tato funkcionalita může být užitečná například pro uživatele, kteří zadávají text s~větším množstvím dlouhých odborných termínů (dobrým příkladem budiž lékařské texty).
 
 V dalším vývoji by bylo vhodné zaměřit se především na problém s~tvary slov, jehož řešením může být buď syntaktická analýza nebo nabízení predikcí po částech, tedy oddělit kmen a~koncovku. Tímto krokem by bylo možné dále snížit hodnotu KSPC a~navíc by se tím eliminoval problém frustrace uživatele, který, vidí-li požadované slovo ve špatném tvaru, musí přemýšlet, zda je výhodnější predikci v~chybném tvaru zvolit a~opravit koncovku, nebo celé slovo napsat bez využití predikce. 
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.5\textwidth]{daria}
-\end{figure}
 
 \clearpage
 
