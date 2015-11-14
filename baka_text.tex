@@ -61,10 +61,13 @@
   ,maxnames=2
   ,minnames=1
   ,urldate=long
-  ,spacecolon=true
+  ,spacecolon=false
   ]
   {biblatex}
+
 % \usepackage[backend=biber, style=authoryear, sortlocale=cs_CZ, minnames=1, maxnames=2]{biblatex}
+% \DeclareFieldFormat[article]{citetitle}{{\it #1}}
+% \DeclareFieldFormat[article]{title}{{\it #1}}
 
 \addbibresource{bibliografie.bib}
 
@@ -143,7 +146,7 @@
 Na tomto místě bych rád poděkoval Adamu Rambouskovi za veškerou pomoc, trpělivost a~všechny odborné rady, jež mi ochotně poskytoval po celou dobu psaní této práce. 
 
 Děkuji také své rodině za morální podporu, Janu Šedovi za cenné rady v~oblasti programování v~JavaScriptu a~Marii Staré za pomoc s~jazykovými korekturami.
-
+\nocite{citest}
 \clearpage
 
 \section*{Abstrakt}
