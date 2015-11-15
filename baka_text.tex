@@ -1,6 +1,6 @@
 %!TEX program = xelatex
-\documentclass[a4paper,11pt,openany]{book} % twoside
-\usepackage[]{geometry}
+\documentclass[a4paper,11pt,openany,twoside]{book} % twoside
+\usepackage[inner=3.5cm,outer=2.5cm, top=2.5cm]{geometry} %showframe
 % \documentclass[twoside, 12pt]{article}
 
 \usepackage{url}
@@ -127,8 +127,8 @@
 	\end{titlepage}
 
 
-% \pretolerance=1000
-	
+\cleardoublepage
+
 \par
 \par\vspace*{\fill}
 	\pagestyle{plain}
@@ -175,9 +175,9 @@ text prediction, language model, text input, KSPC
 
 \tableofcontents
 
-\clearpage
+\cleardoublepage
 
-\newgeometry{top=2cm}
+% \newgeometry{top=2.5cm}
 
 \chapter*{Úvod}\label{uvod}
 
@@ -193,7 +193,7 @@ Cílem této práce je tedy vytvořit implementaci systému predikce textu, kter
 
 Pro zajištění co nejvyšší kompatibility s~různými systémy byla zvolena forma zásuvného modulu do CKEditoru\footnote{\url{http://ckeditor.com/}}, webového editoru HTML (Hyper Text Markup Language). Použitými technologiemi tedy byl především JavaScript pro programovou logiku, Ajax (asynchronous JavaScript and XML (Extensible Markup Language)) pro komunikaci se serverem a~HTML a~CSS (Cascading Style Sheets) pro uživatelské rozhraní.
 
-\restoregeometry
+% \restoregeometry
 
 \part{Teoretická část}
 \pagestyle{sensible}
@@ -427,7 +427,7 @@ Klávesnice ITU je textová klávesnice na tónovém telefonu, která má na jed
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.4\textwidth]{telephone-keypad.eps}
+	\includegraphics[width=0.2\textwidth]{telephone-keypad.eps}
 	\caption{Klávesnice ITU (ISO 9995-8)\protect\footnotemark}
 	\label{fig:phoneKeyboard}
 \end{figure}
@@ -558,6 +558,8 @@ Taková predikce textu může napomoci např. lepší sociální interakci těch
 
 \chapter{Analýza}
 
+\begin{spacing}{1.01}
+
 Jak bylo naznačeno v~úvodu, cílem této práce je implementovat tradiční, byť poněkud zjednodušený, model automatického doplňování textu pro uživatele s~fyzickou klávesnicí QWERTY s~tím, že na rozdíl od tradičních systémů popsaných v~práci výše nebude mít tato aplikace lokální slovník nebo databázi n-gramů, ale veškeré operace produkující možná doplnění budou prováděny na vzdáleném serveru.
 
 Základní výhodou tohoto modelu je fakt, že na vzdáleném serveru, na němž se provádí všechny operace spojené s~analýzou vstupu a~tvorbou predikcí, je možné skladovat výrazně vyšší množství jazykových dat, které slouží jako databáze známých slov.
@@ -599,6 +601,8 @@ Frontend, neboli část aplikace, se kterou interaguje uživatel, byla v~této p
 
 CKEditor je open source aplikace, což znamená, že jeho zdrojový kód je veřejně dostupný a~každý jej může libovolně používat, modifikovat a~distribuovat za dodržení jistých podmínek. Výhodou CKEditoru je jeho modularita, která spočívá v~možnosti rozšiřovat jej pomocí zásuvných modulů. Tvorba zásuvných modulů není vyhrazena pouze pro vybrané autory, ale  díky otevřenosti kódu editoru se jí může zabývat takřka kdokoliv \parencite{cksource2015}. Proto je CKEditor vhodným výběrem pro tuto práci. %  cit. http://ckeditor.com/about 
 
+\end{spacing}
+
 \chapter{Návrh}\label{navrh}
 
 Jelikož uživatelské rozhraní zde popisované aplikace je určeno pro použití ve webovém prohlížeči, byly při vývoji využity výhradně webové technologie, tedy JavaScript v~kombinaci s~knihovnou Ajax, značkovací jazyk HTML a~kaskádové styly (CSS). 
@@ -638,7 +642,7 @@ Druhá forma prostého textu se využívá v~odpovědích serveru. Skript na po�
 Knihovna jQuery\footnote{\url{https://jquery.com/}} je navržená pro usnadnění programovaní v~jazyce JavaScript. Zaměřuje se především na zjednodušení zpracování prvků v~HTML dokumentu, práci s~událostmi (např. stisk klávesy) a~komunikaci mezi klientem a~serverem pomocí Ajaxu.
 % https://jquery.com/ 
 
-\begin{spacing}{1.05}
+% \begin{spacing}{1.05}
 \section{HTML}
 
 HTML je standardní značkovací jazyk velice podobný jazyku XML. Je hojně používaný při tvorbě elektronických dokumentů pro webové prohlížeče, jako je kupříkladu Mozilla Firefox\footnote{\url{https://www.mozilla.org/en-US/firefox/desktop/}}. Webové prohlížeče jsou schopny HTML zpracovat a~zobrazit uživateli výslednou stránku, která obsahuje vizuální prvky a~textové formátování. \parencite[19--22]{raggett1999html}
@@ -658,7 +662,7 @@ Druhou technologií, která je relativně málo využita, ale pro koncového už
 Hlavním smyslem CSS je oddělení obsahu webové stránky od její vizuální prezentace. To je důležité především pro snazší udržování stránky a~větší flexibilitu. Použití CSS navíc umožňuje zobrazit jednu stránku různými způsoby, jedním z~nichž může být například možnost zobrazení pro barvoslepé uživatele.
 
 Ve zde popisované aplikaci je tedy CSS využíváno k~definici vizuální prezentace nabídky doplnění.
-\end{spacing}
+% \end{spacing}
 
 \chapter{Implementace}
 
@@ -762,9 +766,9 @@ V dalším vývoji by bylo vhodné zaměřit se především na problém s~tvary
 
 \pagestyle{plain}
 
-% \begin{spacing}{0.7}
+\begin{spacing}{1.05}
 \printbibliography[title={Seznam literatury}]
-% \end{spacing}
+\end{spacing}
 
 \addcontentsline{toc}{chapter}{Seznam literatury}
 
