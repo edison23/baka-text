@@ -14,6 +14,7 @@
 \usepackage{xunicode}
 \usepackage{xltxtra}
 \usepackage{todonotes}
+\usepackage{chngcntr}
 \usepackage{epstopdf}
 % \usepackage{fancyhdr}
 \usepackage[czech]{babel}
@@ -26,6 +27,9 @@
 }
 
 \newcommand\exmp{\textsf}
+
+\counterwithout{figure}{chapter}
+\counterwithout{footnote}{chapter}
 
 
 \newpagestyle{sensible}{
@@ -40,7 +44,7 @@
 % \fancyhead[R]{\rightmark} % section title on the left
 % \fancyfoot[C]{\thepage}   % page number on the right
 
-\setlength\emergencystretch{2em}
+\setlength\emergencystretch{1em}
 \setlength\headheight{14pt}
 \setstretch{1.1}
 \setcounter{secnumdepth}{4}
@@ -208,9 +212,9 @@ Automatické opravy a~predikce textu jsou dva velmi úzce svázané pojmy. Prvn�
 
 Ačkoliv je praktická část této práce zaměřena na predikci textu a~disambiguací se nezabývá, zdálo se vhodné popsat i~vývoj a~některé způsoby řešení problematiky disambiguace vstupu, protože řeší podobné problémy.
 
-\section{Úskalí jazyků s~rozvinutou flexí}
+\section{Úskalí jazyků s~rozvinutým tvaroslovím}
 
-Systémy pro predikci textu určené k~tvorbě volného textu jsou obvykle, jak bude zřejmé z~dalšího popisu jednotlivých aplikací, založeny na více či méně rozsáhlém lokálně uloženém slovníku jednotlivých slov či slovních spojení, ze kterého vybírají možná doplnění. Tyto systémy zpravidla umožňují uživateli přidávat manuálně slova, která napsal a~nejsou ve slovníku, což slouží jako základní uživatelské přizpůsobení. Lokální slovník má ovšem tu nevýhodu, že jeho velikost je značně limitována možnostmi zařízení, tj.~jeho paměťovou a~výpočetní kapacitou. To je problém především pro jazyky s~rozvinutou flexí, jako je čeština, které potřebují na rozdíl od analytických jazyků, např. angličtiny, poněkud větší množství tvarů jednotlivých slov. 
+Systémy pro predikci textu určené k~tvorbě volného textu jsou obvykle, jak bude zřejmé z~dalšího popisu jednotlivých aplikací, založeny na více či méně rozsáhlém lokálně uloženém slovníku jednotlivých slov či slovních spojení, ze kterého vybírají možná doplnění. Tyto systémy zpravidla umožňují uživateli přidávat manuálně slova, která napsal a~nejsou ve slovníku, což slouží jako základní uživatelské přizpůsobení. Lokální slovník má ovšem tu nevýhodu, že jeho velikost je značně limitována možnostmi zařízení, tj.~jeho paměťovou a~výpočetní kapacitou. To je problém především pro jazyky s~rozvinutým tvaroslovím, jako je čeština, které potřebují na rozdíl od analytických jazyků, např. angličtiny, poněkud větší množství tvarů jednotlivých slov. 
 
 Rozdílnost angličtiny a~češtiny v~ohledu množství slovních tvarů připadajících na jedno lemma\footnote{základní slovní tvar} lze porovnat například na dvou velkých korpusech, enTenTen13 a~czTenTen12 \parencite{suchomel2012}. Jde o~korpusy vytvořené z~textů získaných na Internetu, které byly vyčištěny a~zbaveny duplikátů nástrojem Onion\footnote{\url{http://corpus.tools/wiki/Onion}}. Anglický korpus enTenTen13 obsahuje 39~452~714 slov a~37~366~565 lemmat \parencite{czTenTen12_info}. Naproti tomu český korpus czTenTen12 obsahuje slov 18~725~879 a~lemmat pouze 13~976~481 \parencite{enTenTen13_info}. V~češtině tedy podle výše uvedených dat připadá na jedno lemma 1,339 slovního tvaru, naproti tomu v~angličtině na jedno lemma připadá pouze 1,056 slovního tvaru. Je tedy vidět, že slovník pro češtinu by v~ideálním případě měl být minimálně 1,27× větší než slovník o~stejném množství lemmat pro angličtinu. Zde je na místě uvést, že to je ve srovnání s~údaji, jež uvádí \textcite{nemeth2012word}, velice málo. Ti totiž píší, že pro udržení míry chybovosti v~rozpoznávání řeči je pro němčinu potřeba slovník zhruba 4× větší a~pro maďarštinu dokonce 20× větší než pro angličtinu.
 
@@ -222,7 +226,7 @@ Množství slovních tvarů na lemma ve flektivních jazycích komplikuje implem
 
 \chapter{Klíčové vlastnosti systému pro predikci textu}
 
-Navzdory velmi odlišným způsobům použití systémů pro doplňování textů jsou některé jejich klíčové vlastnosti pro většinu implementací společné. Studie, které zkoumaly efektivitu těchto systémů, obecně docházejí k podobným závěrům, co se požadavků na tyto systémy týče. Ať jde o~vyhledávač typu Google\footnote{\url{https://www.google.com}} nebo o~predikci volného textu v~textovém editoru, musí systém mít několik vlastností, aby měl uživatel při užívání aplikace pocit, že mu doplňování textu skutečně pomáhá.  Primární je rychlost, s~níž aplikace možná doplnění uživateli zobrazuje. \textcite{nandi2007assisted} uvádí, že by odezva neměla převyšovat 100 ms. Tento faktor je rozhodující pro to, zda se uživatel rozhodne nabídnutá doplnění použít, nebo raději napíše zbytek textu sám. V~případě implementace predikce textu do editoru, kde uživatel zadává volný text, jímž si je relativně jist, je tato vlastnost pro uživatelovo rozhodnutí patrně klíčová. Naproti tomu ve vyhledávání lze očekávat, že uživatel bude ochoten počkat delší chvíli na zobrazení doplnění. S~tímto souvisí i~další vlastnost -- umožnit uživateli pohodlně nabízené predikce ignorovat \parencite{ward2012autocomplete}. Rozhodne-li se totiž uživatel, že např. bude rychlejší text manuálně napsat a~predikce nepoužít, je žádoucí, aby mu grafické zpracování nabídky žádným způsobem neztěžovalo tak učinit. Z~tohoto důvodu je ve většině systémů nabídka předvídaných výrazů zobrazována pod textovým polem (např. automatické doplňování ve vyhledávači Google \parencite{google2015}). 
+Navzdory velmi odlišným způsobům použití systémů pro doplňování textů jsou některé jejich klíčové vlastnosti pro většinu implementací společné. Studie, které zkoumaly efektivitu těchto systémů, obecně docházejí k~podobným závěrům, co se požadavků na tyto systémy týče. Ať jde o~vyhledávač typu Google\footnote{\url{https://www.google.com}} nebo o~predikci volného textu v~textovém editoru, musí systém mít několik vlastností, aby měl uživatel při užívání aplikace pocit, že mu doplňování textu skutečně pomáhá.  Primární je rychlost, s~níž aplikace možná doplnění uživateli zobrazuje. \textcite{nandi2007assisted} uvádí, že by odezva neměla převyšovat 100 ms. Tento faktor je rozhodující pro to, zda se uživatel rozhodne nabídnutá doplnění použít, nebo raději napíše zbytek textu sám. V~případě implementace predikce textu do editoru, kde uživatel zadává volný text, jímž si je relativně jist, je tato vlastnost pro uživatelovo rozhodnutí patrně klíčová. Naproti tomu ve vyhledávání lze očekávat, že uživatel bude ochoten počkat delší chvíli na zobrazení doplnění. S~tímto souvisí i~další vlastnost -- umožnit uživateli pohodlně nabízené predikce ignorovat \parencite{ward2012autocomplete}. Rozhodne-li se totiž uživatel, že např. bude rychlejší text manuálně napsat a~predikce nepoužít, je žádoucí, aby mu grafické zpracování nabídky žádným způsobem neztěžovalo tak učinit. Z~tohoto důvodu je ve většině systémů nabídka předvídaných výrazů zobrazována pod textovým polem (např. automatické doplňování ve vyhledávači Google \parencite{google2015}). 
 % https://support.google.com/websearch/answer/106230?hl=cs&vid=1-635809595515389355-3739668669
 % Done
 
@@ -242,7 +246,7 @@ Lze tedy říci, že nabídka slov, která daný systém vyhodnotil jako vhodná
 
 \section{Predikce jako způsob zjednodušení zápisu}
 
-Důvody, pro které si může uživatel vybrat užívat predikce textu, se liší podle přístroje, na němž píše, a~dalších okolností. Na mobilních zařízeních, která disponují nejednoznačnou klávesnicí (typicky starší mobilní telefony s klávesnicí ITU, tedy typickou 12tlačítkovou klávesnicí), je predikce výhodná proto, že umožňuje zadávat text jediným stisknutím kláves, které reprezentují znaky obsažené v~psaném slově. Bez predikce by byl uživatel nucen v~případě písmene, které na klávese není na první pozici, stisknout tutéž klávesu vícekrát po sobě\footnote{Více o~klávesnicích ITU v~kapitole \ref{itu-kb}.}.
+Důvody, pro které si může uživatel vybrat užívat predikce textu, se liší podle přístroje, na němž píše, a~dalších okolností. Na mobilních zařízeních, která disponují nejednoznačnou klávesnicí (typicky starší mobilní telefony s~klávesnicí ITU, tedy typickou 12tlačítkovou klávesnicí), je predikce výhodná proto, že umožňuje zadávat text jediným stisknutím kláves, které reprezentují znaky obsažené v~psaném slově. Bez predikce by byl uživatel nucen v~případě písmene, které na klávese není na první pozici, stisknout tutéž klávesu vícekrát po sobě\footnote{více o~klávesnicích ITU v~kapitole \ref{itu-kb}.}.
 
 Dalším případem jsou mobilní zařízení, která mají dotykový displej, kde je zase problém s~přesností, s~jakou je uživatel schopen se na klávesy trefit prstem nebo stylem. Tento případ sice spadá do kategorie automatických oprav, ale může být kombinován s~predikcí textu. \parencite{kocienda2012method} % cit. http://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO1&Sect2=HITOFF&d=PALL&p=1&u=%2Fnetahtml%2FPTO%2Fsrchnum.htm&r=1&f=G&l=50&s1=8232973.PN.&OS=PN/8232973&RS=PN/8232973 --background || tahle citace, from now on: applePatent01
 	% Done
@@ -271,7 +275,7 @@ Z výše uvedeného lze tedy vyvozovat, že automatické doplňování textu na 
 
 \section{Slovníkový model}
 
-Pokud prediktivní systém využívá slovníkového modelu, znamená to, že má v~paměti zařízení uložený slovník (seznam slov) společně s~jejich frekvencemi v~referenčním korpusu, tedy tzv. frekvenční slovník\footnote{Více o~frekvenčních slovnících v~kapitole \ref{frecdic}}. % cit. http://lifehacker.com/how-predictive-keyboards-work-and-how-you-can-train-yo-1643795640 -- searchfor:"The single thing that unites these" 
+Pokud prediktivní systém využívá slovníkového modelu, znamená to, že má v~paměti zařízení uložený slovník (seznam slov) společně s~jejich frekvencemi v~referenčním korpusu, tedy tzv. frekvenční slovník\footnote{více o~frekvenčních slovnících v~kapitole \ref{frecdic}}. % cit. http://lifehacker.com/how-predictive-keyboards-work-and-how-you-can-train-yo-1643795640 -- searchfor:"The single thing that unites these" 
 	% Done
 Implementace frekvenčních slovníků v~aplikacích pro predikci textu se pravděpodobně značně liší a~vzhledem k~tomu, že jde většinou o~uzavřené komerční systémy, není možné konkrétní implementace zjistit. \parencite{alanhenry2014}
 
@@ -287,14 +291,14 @@ Systémy s~plnou klávesnicí QWERTY na mobilních zařízeních čelí, jak byl
 	\exmp{pes, oes, les, prs, pds, pws, pss, pew, pee, pea, ped, pex, pez}
 \end{center}
 
-Dalším řešením je hledání slov ve slovníku, která mají od zadaného slova určitou editační vzdálenost. Editační vzdálenost je Levenshteinova vzdálenost, tedy vyjádření míry odlišnosti dvou řetězců minimálním množstvím operací {\bf vložit} znak, {\bf smazat} znak, {\bf prohodit} dva sousední znaky a~{\bf nahradit} jeden znak jiným, které je nutno provést, aby z~prvního řetězce byl vytvořen druhý \parencite{levenshtein-en1966}. \nocite{levenshtein1965}  % cit. https://en.wikipedia.org/wiki/Levenshtein_distance
+Dalším řešením je hledání slov ve slovníku, která mají od zadaného slova určitou editační vzdálenost. Editační neboli Levenshteinova vzdálenost je vyjádření míry odlišnosti dvou řetězců minimálním množstvím operací {\bf vložit} znak, {\bf smazat} znak, {\bf prohodit} dva sousední znaky a~{\bf nahradit} jeden znak jiným, které je nutno provést, aby z~prvního řetězce byl vytvořen druhý \parencite{levenshtein-en1966}. \nocite{levenshtein1965}  % cit. https://en.wikipedia.org/wiki/Levenshtein_distance
 	% Done
 Tato metoda také využívá frekvenčního slovníku, který navíc kombinuje se statistickým modelem pravděpodobnosti výskytu a~pravděpodobnosti souvýskytu. \parencite{peternorvig} % cit. http://norvig.com/spell-correct.html
 	% Done
 
 \subsection{Frekvenční slovníky}\label{frecdic}
 
-Frekvenční slovník je slovník, který ke každému heslu uvádí hodnoty spojené s~frekvencí daného slova ve zdrojovém korpusu. Obvykle to je hodnota absolutní frekvence daného slova, tedy počet výskytů všech tvarů daného slova v korpusu. Například {\it Frekvenční slovník češtiny} \parencite{vcermak2004frekvenvcni} %  cit. Čerák et al. 
+Frekvenční slovník ke každému heslu uvádí hodnoty spojené s~frekvencí daného slova ve zdrojovém korpusu. Obvykle to je hodnota absolutní frekvence daného slova, tedy počet výskytů všech tvarů daného slova v~korpusu. Například {\it Frekvenční slovník češtiny} \parencite{vcermak2004frekvenvcni} %  cit. Čerák et al. 
 vedle ní uvádí také průměrnou redukovanou frekvenci, což je hodnota, jež vychází z~absolutní frekvence, avšak zohledňuje rozložení daného slova v~korpusu. Pokud tedy mají dvě slova stejnou frekvenci, avšak první z~nich se vyskytuje pouze v~malém množství odborných textů, zatímco výskyty druhého jsou rovnoměrně rozloženy přes celý korpus, druhé slovo dostane vyšší číselnou hodnotu ARF (average reduced frequency) než slovo první. Podle hodnoty ARF tak lze vyvodit, že druhé slovo je obecně známější a~užívanější širším publikem \parencite{vcermak2004frekvenvcni}. %  cit. Frek slovník, Čermák, předmluva % Done
 % cit. https://debtest.fi.muni.cz:8020/czechency?action=getdoc&amp;tr=preview2&amp;id=FREKVEN%C4%8CN%C3%8D%20SLOVN%C3%8DK  % Not Done
 V~kontextu s~predikcí slov to může například znamenat, že je pravděpodobnější, že uživatel chce napsat spíše druhé slovo nežli první, které je pravděpodobně značně odborné.
@@ -323,7 +327,7 @@ Hranice mezi statistickým a~slovníkovým modelem není v~tomto případě zcel
 
 Často se stává, že návrhy učiněné aplikacemi se slovníkovým či statistickým modelem jsou v~daném kontextu nevhodné a~mnohdy i~negramatické. Tento problém se snaží řešit systémy, které kombinují další metody zúžení výběru návrhů. 
 
-Gramatické správnosti lze docílit využitím syntaktické analýzy zadaného řetězce (věty) a~využitím n-gramů slovních druhů vytvořených z~korpusu (jinými slovy databáze pravděpodobností, že slovní druh $X$~je následován slovním druhem $Y$). Tento model může dále využívat gramatiky pro generování korektních vět. \parencite[5234--5235]{ghayoomi2009overview}
+Gramatické správnosti lze docílit využitím syntaktické analýzy zadaného řetězce (věty) a n-gramů slovních druhů vytvořených z~korpusu (které tvoří databázi pravděpodobností, s jakou je slovní druh $X$~následován slovním druhem $Y$). Tento model může dále využívat gramatiky pro generování korektních vět. \parencite[5234--5235]{ghayoomi2009overview}
 
 Aby bylo docíleno kontextové správnosti návrhů, je nutno zapojit do predikce i~sémantickou analýzu. Pro takovou analýzu je možno využít například rozsáhlé sémantické sítě Wordnet\footnote{\url{https://wordnet.princeton.edu/}}. \parencite[5235]{ghayoomi2009overview}
 
@@ -345,7 +349,7 @@ Měřit rychlost zadávání textu pak lze několika odlišnými způsoby. Uživ
 
 \section{Měření počtu úhozů na znak}
 
-Metoda měření počtu úhozů na znak, neboli KSPC\footnote{Přestože název obsahuje stisky kláves, veličina se používá i~pro měření účinnosti zadávání textu např. pomocí stylu na dotykovém zařízení.} (keystrokes per character), je nejužitečnější metrikou pro vyhodnocování těch metod zadávání textu, které se snaží o~snížení množství úhozů na znak, jako  je například prediktivní systém T9\footnote{Více o~predikci T9 v~kapitole \ref{t9}.}. KSPC tedy udává průměrný počet úhozů nutný k~zadání jednoho znaku.
+Metoda měření počtu úhozů na znak, neboli KSPC\footnote{Přestože název obsahuje stisky kláves, veličina se používá i~pro měření účinnosti zadávání textu např. pomocí stylu na dotykovém zařízení.} (keystrokes per character), je nejužitečnější metrikou pro vyhodnocování těch metod zadávání textu, které se snaží o~snížení množství úhozů na znak, jako  je například prediktivní systém T9\footnote{více o~predikci T9 v~kapitole \ref{t9}}. KSPC tedy udává průměrný počet úhozů nutný k~zadání jednoho znaku.
 
 \subsection{Primitivní výpočet}
 
@@ -417,7 +421,7 @@ Dalším způsobem, jak změřit chybovost, s~jakou uživatel text zadal, je vyh
 
 \section{Klávesnice ITU}\label{itu-kb}
 
-Klávesnice ITU je textová klávesnice na tónovém telefonu, která má na jednu klávesu přiřazeno více písmen. V~průběhu vývoje se vyskytovalo několik různých způsobů, jak byla písmena na klávesnici rozřazena, podle mezinárodního standardu ITU E.161/ISO 9995-8 je rozložení následující: % cit norma ITU E.161/ISO 9995-8 
+Klávesnice ITU je textová klávesnice na tónovém telefonu, která má na jednu klávesu přiřazeno více písmen. V~průběhu vývoje se vyskytovalo několik různých způsobů, jak byla písmena na klávesnici rozřazena, podle mezinárodního standardu ITU E.161/ISO 9995-8 \textcite{iso9995-8} je rozložení následující: % cit norma ITU E.161/ISO 9995-8 
 % \cite{mfmtlqoxL48pMk3T}
 % TODO: nejsem schopen to v~tom dokumentu najit - http://www.itu.int/rec/T-REC-E.161/en
 
@@ -428,7 +432,7 @@ Klávesnice ITU je textová klávesnice na tónovém telefonu, která má na jed
 	\label{fig:phoneKeyboard}
 \end{figure}
 
-\footnotetext{Převzato z~Wikimedia Commons}
+\footnotetext{převzato z~Wikimedia Commons}
 
 \subsection{Multitap}
 
@@ -446,7 +450,7 @@ Aby bylo možné zbavit se tohoto problému u~klávesnic, které mají méně kl
 
 Slovníková disambiguace umožňuje uživateli zadávat text jediným stiskem každé klávesy s~požadovaným písmenem. Systém potom vyhledává ve slovníku záznamy korespondující se sekvencí stisknutých kláves, tzn.~slova, která obsahují písmena ze stisknutých kláves. Pokud sekvenci stisknutých kláves odpovídá více slov, je uživateli prezentován seznam těchto slov seřazený obvykle podle frekvence výskytu. % http://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO1&Sect2=HITOFF&d=PALL&p=1&u=%2Fnetahtml%2FPTO%2Fsrchnum.htm&r=1&f=G&l=50&s1=6011554.PN.&OS=PN/6011554&RS=PN/6011554
 
-Tento způsob disambiguace samozřejmě není dokonalý, protože mnoho různých slov sdílí stejné kombinace kláves. V takovém případě pak uživatel musí pomocí speciálních kláves požadované slovo vybrat \parencite{MacKenzie2001}. Například kombinace kláves \exmp{7725} má v~češtině možné min. tři interpretace: \exmp{prak, pral, psal}.
+Tento způsob disambiguace samozřejmě není dokonalý, protože mnoho různých slov sdílí stejné kombinace kláves. V~takovém případě pak uživatel musí pomocí speciálních kláves požadované slovo vybrat \parencite{MacKenzie2001}. Například kombinace kláves \exmp{7725} má v~češtině možné min. tři interpretace: \exmp{prak, pral, psal}.
 
 Slova, která se zapisují stiskem stejných kláves, se nazývají textonyma \parencite{ericzorn2007} a v~angličtině jsou jimi např. slova \exmp{book} a~\exmp{cool}. Zatímco obvykle tento jev pouze snižuje efektivitu zápisu textu, v~roce 2010 záměna dvou textonym v~textové zprávě vedla ve Spojených státech k~vraždě. \parencite{t9kill}
 
@@ -539,7 +543,7 @@ Nutno podotknout, že firma Nuance, jež systém Swype v~současnosti vyvíjí, 
 
 % http://www.nuance.com/ucmprod/groups/corporatecomms/@web-enus/documents/webasset/nc\_024737.pdf
 
-Swype také používá Andvance Language Model (AML), „pokročilý jazykový model“, který pracuje s~bigramy a~trigramy vytvořenými mimo jiné na základě textů, které už uživatel zadal. To aplikaci umožňuje účinněji disambiguovat slova, která vychází jako možná řešení uživatelova vstupu, či předvídat další slovo, které by mohlo přijít po již napsaném. Oficiální dokumentace uvádí, že díky AML aplikace dokáže na základě kontextu správně rozlišit slova, která mají stejnou trasu tahu, tedy v angličtině např. \exmp{put}, \exmp{pit} a \exmp{pot}. \parencite{swypehowto}
+Swype také používá Andvance Language Model (AML), „pokročilý jazykový model“, který pracuje s~bigramy a~trigramy vytvořenými mimo jiné na základě textů, které už uživatel zadal. To aplikaci umožňuje účinněji disambiguovat slova, která vychází jako možná řešení uživatelova vstupu, či předvídat další slovo, které by mohlo přijít po již napsaném. Oficiální dokumentace uvádí, že díky AML aplikace dokáže na základě kontextu správně rozlišit slova, která mají stejnou trasu tahu, tedy v~angličtině např. \exmp{put}, \exmp{pit} a \exmp{pot}. \parencite{swypehowto}
 % http://www.nuance.com/ucmprod/groups/corporatecomms/@web-enus/documents/webasset/nc\_024737.pdf
 
 \subsection{Predikce na fyzických klávesnicích QWERTY}
@@ -591,7 +595,7 @@ Díky tomuto jednoduchému konceptu komunikace tedy stačí, aby aplikace, kter�
 
 \section{Frontend}
 
-Frontend, neboli část aplikace, se kterou interaguje uživatel, byla v~této práci pojata jako zásuvný modul do webového editoru CKEditor, což je vizuální editor HTML, jehož cílem je zjednodušit produkci obsahu pro webové stránky. Editor umožňuje pracovat s~formátováním ve značkovacím jazyce HTML, který se používá pro tvorbu webových stránek a~webového obsahu. Práce s~formátováním je v CKEditoru založena na principu WYSIWYG\footnote{what you see is what you get}, což znamená, že uživatel nemusí mít žádné znalosti HTML, protože pro aplikaci formátování lze použít vizuální prvky ve formě tlačítek a~rozbalovacích menu, podobně jako v~klasických kancelářských textových procesorech typu LibreOffice Writer nebo Microsoft Office Word.
+Frontend, neboli část aplikace, se kterou interaguje uživatel, byla v~této práci pojata jako zásuvný modul do webového editoru CKEditor, což je vizuální editor HTML, jehož cílem je zjednodušit produkci obsahu pro webové stránky. Editor umožňuje pracovat s~formátováním ve značkovacím jazyce HTML, který se používá pro tvorbu webových stránek a~webového obsahu. Práce s~formátováním je v~CKEditoru založena na principu WYSIWYG\footnote{what you see is what you get}, což znamená, že uživatel nemusí mít žádné znalosti HTML, protože pro aplikaci formátování lze použít vizuální prvky ve formě tlačítek a~rozbalovacích menu, podobně jako v~klasických kancelářských textových procesorech typu LibreOffice Writer nebo Microsoft Office Word.
 
 CKEditor je open source aplikace, což znamená, že jeho zdrojový kód je veřejně dostupný a~každý jej může libovolně používat, modifikovat a~distribuovat za dodržení jistých podmínek. Výhodou CKEditoru je jeho modularita, která spočívá v~možnosti rozšiřovat jej pomocí zásuvných modulů. Tvorba zásuvných modulů není vyhrazena pouze pro vybrané autory, ale  díky otevřenosti kódu editoru se jí může zabývat takřka kdokoliv \parencite{cksource2015}. Proto je CKEditor vhodným výběrem pro tuto práci. %  cit. http://ckeditor.com/about 
 
@@ -627,7 +631,7 @@ Druhá forma prostého textu se využívá v~odpovědích serveru. Skript na po�
 	\label{fig:clientserver}
 \end{figure}
 
-\footnotetext{Schéma obsahuje ikony od Freepik vytvořené pod licencí Creative Commons BY 3.0}
+\footnotetext{schéma obsahuje ikony od Freepik vytvořené pod licencí Creative Commons BY 3.0}
 
 \section{jQuery}
 
@@ -677,7 +681,7 @@ Aby mohla být serverovému skriptu odeslána data, na jejichž základě budou 
 
 Všechny operace spojené s~modifikacemi textu v~editoru i~prezentací nabídky predikcí jsou prováděny pouze v~případě aktivity uživatele. 
 
-Prvním krokem je rozdělení obsahu editoru na jednotlivá slova. To zajišťuje funkce {\tt sliceContent()}, jež přijímá text editoru ve formě řetězce. Text rozděluje postupně na řádky podle tagu {\tt <br>}, kterým končí v~CKEditoru každý řádek, a~dále zpracovává pouze poslední řádek. To znemožňuje používat predikci na jiném než posledním řádku, což ale nevadí, protože momentálně plugin nepodporuje práci s~predikcemi na jiných místech než na úplném konci vkládaného textu. To je jeden ze známých nedostatků, který bude rozebrán v kapitole \ref{vyhodnoceni}. 
+Prvním krokem je rozdělení obsahu editoru na jednotlivá slova. To zajišťuje funkce {\tt sliceContent()}, jež přijímá text editoru ve formě řetězce. Text rozděluje postupně na řádky podle tagu {\tt <br>}, kterým končí v~CKEditoru každý řádek, a~dále zpracovává pouze poslední řádek. To znemožňuje používat predikci na jiném než posledním řádku, což ale nevadí, protože momentálně plugin nepodporuje práci s~predikcemi na jiných místech než na úplném konci vkládaného textu. To je jeden ze známých nedostatků, který bude rozebrán v~kapitole \ref{vyhodnoceni}. 
 
 Následně funkce odstraní tagy HTML, nahradí nedělitelné mezery normálními a~rozdělí zpracovávaný řádek na jednotlivá slova. Jako datový typ pro uložení řetězce rozděleného na slova bylo zvoleno pole (array), jež má v~jazyce JavaScript připraveno velké množství metod vhodných pro tuto aplikaci. 
 
@@ -685,7 +689,7 @@ Jakmile má skript k~dispozici slova z~aktuálního (posledního) řádku v~edit
 
 Po tomto kroku funkce {\tt getSuggestions()} provádí ajaxové volání na server za účelem získání predikcí vytvořených z~korpusových dat. Tato funkce přijímá několik hodnot, a~to pole se slovy z~posledního řádku, počet slov, která mají být odeslána na server, a~dále callback na funkci {\tt handleSuggestion()}, která zpracovává získaná doplnění.
 
-Ve funkci {\tt getSuggestions()} proběhne připravení řetězce se slovy, která mají být odeslána na server. To znamená, že funkce metodou {\tt slice()} vyřízne z~pole posledních $N$ slov, kde $N$ je počet slov odesílaných na server a~výsledné pole $N$ prvků spojí do řetězce s~tím, že mezi jednotlivé prvky (slova) vloží znak {\tt +} (plus). Znak {\tt +} byl zvolen proto, že slova jsou odesílána, jak již bylo popsáno v~kapitole \ref{navrh}, metodou GET, tedy jako parametry adresy URL. V rámci dat odesílaných metodou GET lze reprezentovat mezeru buď znakem {\tt +} nebo řetězcem {\tt \%20}, přičemž tyto způsoby jsou v~praxi rovnocenné.
+Ve funkci {\tt getSuggestions()} proběhne připravení řetězce se slovy, která mají být odeslána na server. To znamená, že funkce metodou {\tt slice()} vyřízne z~pole posledních $N$ slov, kde $N$ je počet slov odesílaných na server a~výsledné pole $N$ prvků spojí do řetězce s~tím, že mezi jednotlivé prvky (slova) vloží znak {\tt +} (plus). Znak {\tt +} byl zvolen proto, že slova jsou odesílána, jak již bylo popsáno v~kapitole \ref{navrh}, metodou GET, tedy jako parametry adresy URL. V~rámci dat odesílaných metodou GET lze reprezentovat mezeru buď znakem {\tt +} nebo řetězcem {\tt \%20}, přičemž tyto způsoby jsou v~praxi rovnocenné.
 
 Následně funkce čeká předem nastavenou dobu (250 ms), zda nenastane další aktivita uživatele, a~v případě, že nenastane, odešle ajaxový požadavek na server.
 
@@ -710,9 +714,9 @@ Pro toto řešení je využíváno tzv. stínového editoru, který je pomocí C
 
 Vzhledem k~tomu, že predikce nejsou vždy dokonalé nebo není možné jednoznačně rozhodnout, které slovo uživatel zamýšlí napsat, ukázalo se nutným zobrazovat i~alternativní predikce. 
 
-Tyto alternativní predikce jsou prezentovány pod pozicí kursoru ve formě seznamu. Pokud chce uživatel využít některou predikci zobrazenou v~seznamu, stačí mu opětovně stisknout klávesu tabulátor, pomocí níž lze v~seznamu jednosměrně cyklovat mezi položkami. Aktuální položka se pak zároveň kopíruje do hlavního editoru, takže po dosažení požadované predikce uživatel vloží mezeru a~může pokračovat v~psaní. Tato metoda volby byla navržena především s~ohledem na původní cíl aplikace, tedy usnadnit psaní uživatelům, kteří z~mají z~nějakého důvodu problém zadávat text na klávesnici QWERTY. Cílem tedy není zrychlení psaní, jako tomu bývá u~implementací predikce textu například pro dotyková zařízení, ale co nejvíce snížit množství stisků různých kláves pro volby predikce.
+Tyto alternativní predikce jsou prezentovány pod pozicí kursoru ve formě seznamu. Pokud chce uživatel využít některou predikci zobrazenou v~seznamu, stačí mu opětovně stisknout klávesu tabulátor, pomocí níž lze v~seznamu jednosměrně přecházet mezi položkami. Aktuální položka se pak zároveň kopíruje do hlavního editoru, takže po dosažení požadované predikce uživatel vloží mezeru a~může pokračovat v~psaní. Tato metoda volby byla navržena především s~ohledem na původní cíl aplikace, tedy usnadnit psaní uživatelům, kteří z~mají z~nějakého důvodu problém zadávat text na klávesnici QWERTY. Cílem tedy není zrychlení psaní, jako tomu bývá u~implementací predikce textu například pro dotyková zařízení, ale co nejvíce snížit množství stisků různých kláves pro volby predikce.
 
-Nabídka alternativních predikcí je zobrazována vždy pod kursorem, aby uživatel nebyl nucen dělit svou pozornost na různá místa obrazovky. O~zobrazení nabídky v~místě kursoru se stará funkce {\tt show\-Alternatives()}, která je závislá na funkci {\tt get\-Selection\-Coords()}. Z~pohledu problematiky implementace je zajímavá především funkce {\tt get\-Selection\-Coords()}, která pomocí zjišťování pozice aktuálního výběru\footnote{Více o výběrech v kapitole \ref{vybery}} textu získává absolutní pozici kursoru na obrazovce, jež je nutná pro správné zobrazení alternativ. Implementace výběrů se může lišit podle konkrétního prohlížeče, avšak obecně lze říci, že aktuální výběr vždy končí v~místě, kde je právě umístěn kursor. S~ohledem na tuto skutečnost a~na to, že API (application program interface) moderních prohlížečů umožňují získat pozice začátku a~konce výběru, lze pozici konce aktuálního výběru považovat za pozici kursoru, na níž se má zobrazit nabídka alternativních doplnění. 
+Nabídka alternativních predikcí je zobrazována vždy pod kursorem, aby uživatel nebyl nucen dělit svou pozornost na různá místa obrazovky. O~zobrazení nabídky v~místě kursoru se stará funkce {\tt show\-Alternatives()}, která je závislá na funkci {\tt get\-Selection\-Coords()}. Z~pohledu problematiky implementace je zajímavá především funkce {\tt get\-Selection\-Coords()}, která pomocí zjišťování pozice aktuálního výběru\footnote{více o výběrech v~kapitole \ref{vybery}} textu získává absolutní pozici kursoru na obrazovce, jež je nutná pro správné zobrazení alternativ. Implementace výběrů se může lišit podle konkrétního prohlížeče, avšak obecně lze říci, že aktuální výběr vždy končí v~místě, kde je právě umístěn kursor. S~ohledem na tuto skutečnost a~na to, že API (application program interface) moderních prohlížečů umožňují získat pozice začátku a~konce výběru, lze pozici konce aktuálního výběru považovat za pozici kursoru, na níž se má zobrazit nabídka alternativních doplnění. 
 
 \section{Vkládání predikcí}
 
@@ -726,7 +730,7 @@ V~případě doplňování pouhé části slova jde vzhledem k~tomu, že servero
 
 \subsubsection{Výběry}\label{vybery}
 
-Manipulace s~kursorem v~textu se v~prohlížečích provádí pomocí výběrů. Výběr je objekt, který reprezentuje text označený v~textovém poli, přičemž může mít i~nulovou délku v případě, že není označen žádný text. Výběr má různé vlastnosti včetně pozice, s~nimiž lze manipulovat \parencite{mdn2015selections}. Pozice výběru může být vyjádřena dvěma způsoby, a to jako absolutní pozicí na obrazovce, tedy pixelovými souřadnicemi, nebo jako pozice v~textu, tedy počet znaků relativní k určitému místu v textu. % https://developer.mozilla.org/en-US/docs/Web/API/Selection
+Manipulace s~kursorem v~textu se v~prohlížečích provádí pomocí výběrů. Výběr je objekt\footnote{míněno jako objekt v objektově orientovaném programování}, který reprezentuje text označený v~textovém poli, přičemž může mít i~nulovou délku v~případě, že není označen žádný text. Výběr má různé vlastnosti včetně pozice, s~nimiž lze manipulovat \parencite{mdn2015selections}. Pozice výběru může být vyjádřena dvěma způsoby, a to jako absolutní pozicí na obrazovce, tedy pixelovými souřadnicemi, nebo jako pozice v~textu, tedy počet znaků relativní k~určitému místu v~textu. % https://developer.mozilla.org/en-US/docs/Web/API/Selection
 
 Přesun kursoru je tedy řešitelný přemístěním výběru v~textu o~délku predikce dále, ale v~praxi se ukazuje, že existuje nezanedbatelné množství případů, kdy zjišťování pozice výběru v~textu není přesné, a~tudíž výsledná pozice kursoru nemusí být správná. Z~toho pramení i~nedokonalosti v~implementaci popsané v~kapitole \ref{vyhodnoceni}.
 
@@ -734,7 +738,7 @@ Přesun kursoru je tedy řešitelný přemístěním výběru v~textu o~délku p
 
 Z~testování během vývoje zásuvného modulu, který je předmětem této práce, lze potvrdit, že jeho použití šetří počet úhozů nutný k~napsání textu, takže cíl práce byl splněn. Vzhledem k~tomu, že se zásuvný modul zatím nedočkal nasazení v~reálných situacích, nelze jeho skutečný přínos uživatelům hodnotit.
 
-Množství ušetřených úhozů značně závisí na povaze textu, který uživatel píše. V~rámci vývoje bylo provedeno krátké manuální testování na odlišných textech, které ukázalo, že kvalita predikcí je velmi závislá na podobnosti zdrojového korpusu a~psaného textu. Vzhledem k~tomu, že při testování byly použity n-gramy z~korpusu czTenTen12, nejlepších výsledků dosahoval systém na textech ze zpravodajských serverů, kde bylo dosaženo KSPC cca 0,4. Naopak v~případě, že text obsahoval například osobní jména, byla účinnost predikce výrazně omezena. Nejhoršího výsledku bylo dosaženo na textu mírně technického rázu (manuál k instalaci počítačového programu), a~to KSPC cca 0,7. Do úhozů byly počítány všechny klávesy.
+Množství ušetřených úhozů značně závisí na povaze textu, který uživatel píše. V~rámci vývoje bylo provedeno krátké manuální testování na odlišných textech, které ukázalo, že kvalita predikcí je velmi závislá na podobnosti zdrojového korpusu a~psaného textu. Vzhledem k~tomu, že při testování byly použity n-gramy z~korpusu czTenTen12, nejlepších výsledků dosahoval systém na textech ze zpravodajských serverů, kde bylo dosaženo KSPC cca 0,4. Naopak v~případě, že text obsahoval například osobní jména, byla účinnost predikce výrazně omezena. Nejhoršího výsledku bylo dosaženo na textu mírně technického rázu (manuál k~instalaci počítačového programu), a~to KSPC cca 0,7. Do úhozů byly počítány všechny klávesy.
 
 Nutno podotknout, že se v~predikcích mnohdy vyskytovalo správné slovo, ale bylo ve špatném tvaru. Je tedy zřejmé, že by predikci značně vylepšila syntaktická analýza, případně kdyby doplňování probíhalo po částech, tedy nejdříve kmen slova a~poté jeho koncovka.
 
@@ -750,7 +754,7 @@ Celkově ale je implementace frontendu pro psaní s~výrazně sníženým prům�
 
 \addcontentsline{toc}{chapter}{Závěr}
 
-Byla vyvinuta aplikace, která umožňuje zadávání textu bez nutnosti stisku všech kláves korespondujících s~písmeny ve slovech zadávaného textu. Pokud uživatel chce zadat text, jehož slova existují v~korpusu, z~něhož jsou vybírány predikce, má možnost z~těchto predikcí vybrat vhodně ty, které odpovídají jeho záměru, a~snížit tak počet úhozů na znak na hodnotu menší než jedna. Vzhledem k~velikosti korpusu, z~něhož jsou predikce vybírány, je rozumné předkládat, že takového výsledku lze dosáhnout téměř s~libovolným textem v~českém jazyce, což prokázaly i krátké testy. Současná implementace navíc umožňuje snížit počet stisknutých kláves na počet znaků v~textu také tím, že mezi predikce zařazuje již zadaná delší slova. Tato funkcionalita může být užitečná například pro uživatele, kteří zadávají text s~větším množstvím dlouhých odborných termínů (dobrým příkladem budiž lékařské texty).
+Byla vyvinuta aplikace, která umožňuje zadávání textu bez nutnosti stisku všech kláves korespondujících s~písmeny ve slovech zadávaného textu. Pokud uživatel chce zadat text, jehož slova existují v~korpusu, z~něhož jsou vybírány predikce, má možnost z~těchto predikcí vybrat vhodně ty, které odpovídají jeho záměru, a~snížit tak počet úhozů na znak na hodnotu menší než jedna. Vzhledem k~velikosti korpusu, z~něhož jsou predikce vybírány, je rozumné předkládat, že takového výsledku lze dosáhnout téměř s~libovolným textem v~českém jazyce, což prokázaly i~krátké testy. Současná implementace navíc umožňuje snížit počet stisknutých kláves na počet znaků v~textu také tím, že mezi predikce zařazuje již zadaná delší slova. Tato funkcionalita může být užitečná například pro uživatele, kteří zadávají text s~větším množstvím dlouhých odborných termínů (dobrým příkladem budiž lékařské texty).
 
 V dalším vývoji by bylo vhodné zaměřit se především na problém s~tvary slov, jehož řešením může být buď syntaktická analýza nebo nabízení predikcí po částech, tedy oddělit kmen a~koncovku. Tímto krokem by bylo možné dále snížit hodnotu KSPC a~navíc by se tím eliminoval problém frustrace uživatele, který, vidí-li požadované slovo ve špatném tvaru, musí přemýšlet, zda je výhodnější predikci v~chybném tvaru zvolit a~opravit koncovku, nebo celé slovo napsat bez využití predikce. 
 
