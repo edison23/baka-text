@@ -20,6 +20,10 @@
 \usepackage[czech]{babel}
 \usepackage[pagestyles,medium]{titlesec}
 \usepackage{setspace}
+\usepackage{emptypage}
+\usepackage{xpatch}
+
+\xpatchcmd{\part}{\thispagestyle{plain}}{\thispagestyle{empty}}{}{}
 % \usepackage[sorting=nyt,style=apa]{biblatex}
 
 \newcommand{\td}[2][]{
@@ -175,7 +179,9 @@ text prediction, language model, text input, KSPC
 
 \tableofcontents
 
+
 \cleardoublepage
+\pagenumbering{gobble}
 
 % \newgeometry{top=2.5cm}
 
@@ -421,7 +427,7 @@ Dalším způsobem, jak změřit chybovost, s~jakou uživatel text zadal, je vyh
 
 \section{Klávesnice ITU}\label{itu-kb}
 
-Klávesnice ITU je textová klávesnice na tónovém telefonu, která má na jednu klávesu přiřazeno více písmen. V~průběhu vývoje se vyskytovalo několik různých způsobů, jak byla písmena na klávesnici rozřazena, podle mezinárodního standardu ITU E.161/ISO 9995-8 \textcite{iso9995-8} je rozložení následující: % cit norma ITU E.161/ISO 9995-8 
+Klávesnice ITU je textová klávesnice na tónovém telefonu, která má na jednu klávesu přiřazeno více písmen. V~průběhu vývoje se vyskytovalo několik různých způsobů, jak byla písmena na klávesnici rozřazena, podle mezinárodního standardu \textcite{iso9995-8} je rozložení následující: % cit norma ITU E.161/ISO 9995-8 
 % \cite{mfmtlqoxL48pMk3T}
 % TODO: nejsem schopen to v~tom dokumentu najit - http://www.itu.int/rec/T-REC-E.161/en
 
